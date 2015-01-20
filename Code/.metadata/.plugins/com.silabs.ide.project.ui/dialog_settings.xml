@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="buildConfig">
+		<item value="440" key="DIALOG_WIDTH"/>
+		<item value="360" key="DIALOG_HEIGHT"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="com.silabs.ide.project.core.cdtMbsProjectType">
+		<item value="com.silabs.ide.project.core.templates.model.com.silabs.sdk.si32.efm32.sls.2.0.4.EFM32ZG_STK3200.template.blink" key="selectedTemplateId"/>
+		<item value="true" key="filterTemplatesByToolchain"/>
+		<item value="true" key="filterTemplatesByPartSdk"/>
+		<item value="COPY" key="settingImportModeOption"/>
+		<item value="com.silabs.ide.project.ui.exampleWizardType" key="projectTypeId"/>
+	</section>
+</section>

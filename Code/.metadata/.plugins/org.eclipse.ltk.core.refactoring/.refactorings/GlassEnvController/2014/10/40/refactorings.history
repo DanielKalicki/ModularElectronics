@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;GlassEnvController/src/empty_project.c&apos; to &apos;main.c&apos;" description="Rename resource &apos;empty_project.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/empty_project.c" name="main.c" stamp="1412343398427" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;GlassEnvController/si7013&apos; to &apos;si7013.h&apos;" description="Rename resource &apos;si7013&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="si7013" name="si7013.h" stamp="1412511997936" updateReferences="true"/>
+</session>

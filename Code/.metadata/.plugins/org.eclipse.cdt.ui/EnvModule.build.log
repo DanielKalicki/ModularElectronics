@@ -1,0 +1,95 @@
+15:30:44 **** Build of configuration GNU ARM v4.7.3 - Debug for project EnvModule ****
+make -j4 all 
+Building file: ../src/main.c
+Building file: ../emlib/em_system.c
+Building file: ../CMSIS/efm32zg/startup_gcc_efm32zg.s
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O0 -Wall -c -fmessage-length=0 -mno-sched-prolog -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O0 -Wall -c -fmessage-length=0 -mno-sched-prolog -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"emlib/em_system.d" -MT"emlib/em_system.o" -o "emlib/em_system.o" "../emlib/em_system.c"
+../src/main.c: In function 'readHumidityAndTemperature':
+Building file: ../CMSIS/efm32zg/system_efm32zg.c
+Invoking: GNU ARM Assembler
+arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb -c -x assembler-with-cpp -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" '-DEFM32ZG110F32=1' -o "CMSIS/efm32zg/startup_gcc_efm32zg.o" "../CMSIS/efm32zg/startup_gcc_efm32zg.s"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O0 -Wall -c -fmessage-length=0 -mno-sched-prolog -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"CMSIS/efm32zg/system_efm32zg.d" -MT"CMSIS/efm32zg/system_efm32zg.o" -o "CMSIS/efm32zg/system_efm32zg.o" "../CMSIS/efm32zg/system_efm32zg.c"
+../src/main.c:426:3: warning: pointer targets in passing argument 3 of 'Si7013_ReadTemperature' differ in signedness [-Wpointer-sign]
+Finished building: ../CMSIS/efm32zg/startup_gcc_efm32zg.s
+../src/main.c:338:12: note: expected 'uint32_t *' but argument is of type 'int32_t *'
+Finished building: ../emlib/em_system.c
+../src/main.c: In function 'RTC_IRQHandler':
+../src/main.c:551:2: warning: implicit declaration of function 'i2c_Scan' [-Wimplicit-function-declaration]
+../src/main.c:601:4: warning: format '%d' expects argument of type 'int', but argument 3 has type 'uint32_t' [-Wformat]
+ 
+../src/main.c: At top level:
+ 
+Finished building: ../CMSIS/efm32zg/system_efm32zg.c
+ 
+../src/main.c:655:6: warning: conflicting types for 'i2c_Scan' [enabled by default]
+../src/main.c:551:2: note: previous implicit declaration of 'i2c_Scan' was here
+../src/main.c: In function 'i2c_Scan':
+../src/main.c:661:4: warning: implicit declaration of function 'uart_sendText' [-Wimplicit-function-declaration]
+../src/main.c: In function 'Si7013_ReadTemperature':
+../src/main.c:367:4: warning: 'ret' may be used uninitialized in this function [-Wuninitialized]
+Finished building: ../src/main.c
+ 
+Building target: EnvModule.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb -T "EnvModule.ld" -Xlinker --gc-sections -Xlinker -Map="EnvModule.map" --specs=nano.specs -o EnvModule.axf "./src/main.o" "./emlib/em_system.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+./src/main.o: In function `initOscillators':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:27: undefined reference to `CMU_ClockEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:29: undefined reference to `CMU_ClockEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:30: undefined reference to `CMU_ClockEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:31: undefined reference to `CMU_ClockEnable'
+./src/main.o: In function `initGPIO':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:35: undefined reference to `GPIO_PinModeSet'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:36: undefined reference to `GPIO_PinModeSet'
+./src/main.o: In function `initUART':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:54: undefined reference to `USART_InitAsync'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:61: undefined reference to `USART_Enable'
+./src/main.o: In function `initI2C':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:102: undefined reference to `CMU_ClockEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:103: undefined reference to `CMU_ClockEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:107: undefined reference to `GPIO_PinModeSet'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:108: undefined reference to `GPIO_PinModeSet'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:129: undefined reference to `I2C_Init'
+./src/main.o: In function `I2C0_IRQHandler':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:136: undefined reference to `I2C_Transfer'
+./src/main.o: In function `i2c_RegisterGet':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:155: undefined reference to `I2C_TransferInit'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:162: undefined reference to `I2C_Transfer'
+./src/main.o: In function `i2c_RegisterSet':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:200: undefined reference to `I2C_TransferInit'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:204: undefined reference to `I2C_Transfer'
+./src/main.o: In function `i2c_Detect':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:236: undefined reference to `I2C_TransferInit'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:239: undefined reference to `I2C_Transfer'
+./src/main.o: In function `Si7013_ReadTemperature':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:355: undefined reference to `I2C_TransferInit'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:358: undefined reference to `I2C_Transfer'
+./src/main.o: In function `forceRhMeasurment':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:386: undefined reference to `I2C_TransferInit'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:389: undefined reference to `I2C_Transfer'
+./src/main.o: In function `readHumidityAndTemperature':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:406: undefined reference to `I2C_TransferInit'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:413: undefined reference to `I2C_Transfer'
+./src/main.o: In function `RTC_IRQHandler':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:560: undefined reference to `RTC_CompareSet'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:606: undefined reference to `RTC_CompareSet'
+./src/main.o: In function `startLfxoForRtc':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:624: undefined reference to `CMU_OscillatorEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:627: undefined reference to `CMU_ClockSelectSet'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:628: undefined reference to `CMU_ClockEnable'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:631: undefined reference to `CMU_ClockEnable'
+./src/main.o: In function `setupRtc':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:645: undefined reference to `RTC_CompareSet'
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:652: undefined reference to `RTC_Init'
+./src/main.o: In function `i2c_Scan':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:661: undefined reference to `uart_sendText'
+./src/main.o: In function `main':
+C:\Users\terg\SimplicityStudio\v2_workspace\EnvModule\GNU ARM v4.7.3 - Debug/../src/main.c:693: undefined reference to `EMU_EnterEM2'
+collect2.exe: error: ld returned 1 exit status
+make: *** [EnvModule.axf] Error 1
+
+15:30:56 Build Finished (took 12s.158ms)
+

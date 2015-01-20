@@ -1,0 +1,21 @@
+17:52:17 **** Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6324	    120	    168	   6612	   19d4	BluetoothCommunication.axf
+ 
+
+17:53:05 Build Finished (took 48s.355ms)
+

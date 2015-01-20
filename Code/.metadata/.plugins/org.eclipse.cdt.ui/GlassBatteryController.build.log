@@ -1,0 +1,16 @@
+21:05:17 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project GlassBatteryController ****
+make -j4 all 
+Building target: GlassBatteryController.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "GlassBatteryController.ld" -Xlinker --gc-sections -Xlinker -Map="GlassBatteryController.map" --specs=nano.specs -T "GlassBatteryController.ld" -T "C:\Users\terg\SimplicityStudio\v2_workspace\GlassBatteryController\GNU ARM v4.7.3 - Release\GlassBatteryController.ld" -o GlassBatteryController.axf "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/bin/ld.exe:GlassBatteryController.ld:10: warning: redeclaration of memory region `FLASH'
+d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/bin/ld.exe:GlassBatteryController.ld:11: warning: redeclaration of memory region `RAM'
+d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/bin/ld.exe:C:\Users\terg\SimplicityStudio\v2_workspace\GlassBatteryController\GNU ARM v4.7.3 - Release\GlassBatteryController.ld:10: warning: redeclaration of memory region `FLASH'
+d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/bin/ld.exe:C:\Users\terg\SimplicityStudio\v2_workspace\GlassBatteryController\GNU ARM v4.7.3 - Release\GlassBatteryController.ld:11: warning: redeclaration of memory region `RAM'
+d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/bin/ld.exe: FLASH memory overflowed !
+d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/bin/ld.exe: FLASH memory overflowed !
+collect2.exe: error: ld returned 1 exit status
+make: *** [GlassBatteryController.axf] Error 1
+
+21:05:30 Build Finished (took 13s.68ms)
+

@@ -1,0 +1,21 @@
+17:55:52 **** Build of configuration GNU ARM v4.7.3 - Debug for project LiPolController ****
+make -j4 all 
+Building target: LiPolController.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb -T "LiPolController.ld" -Xlinker --gc-sections -Xlinker -Map="LiPolController.map" --specs=nano.specs -o LiPolController.axf "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: LiPolController.axf
+ 
+Building hex file: LiPolController.hex
+arm-none-eabi-objcopy -O ihex "LiPolController.axf" "LiPolController.hex"
+ 
+Building bin file: LiPolController.bin
+arm-none-eabi-objcopy -O binary "LiPolController.axf" "LiPolController.bin"
+ 
+Running size tool
+arm-none-eabi-size "LiPolController.axf"
+   text	   data	    bss	    dec	    hex	filename
+  10740	    120	    468	  11328	   2c40	LiPolController.axf
+ 
+
+17:56:34 Build Finished (took 41s.779ms)
+
