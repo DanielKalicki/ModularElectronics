@@ -2041,3 +2041,31 @@ arm-none-eabi-size "LiPolController.axf"
    text	   data	    bss	    dec	    hex	filename
   10740	    120	    468	  11328	   2c40	LiPolController.axf
  
+21:06:48 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+Finished building: ../src/main.c
+ 
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7068	    120	    172	   7360	   1cc0	BluetoothCommunication.axf
+ 

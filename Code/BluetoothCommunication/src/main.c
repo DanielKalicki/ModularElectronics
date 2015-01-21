@@ -9,6 +9,7 @@
 
 #include "uart_connection.h"
 #include "i2c_connection.h"
+#include "RTC_.h"
 #include "HM11.h"
 
 //-------------INIT--------------
@@ -22,6 +23,20 @@ void testWait(){
 		unsigned int counter=0;
 		while (counter<1000000) {counter++;__asm("NOP");};
 	}
+}
+
+//-------------RTC--------------
+void RTC_IRQHandler(void){
+	static uint16_t counter=0;
+
+	counter++;
+	if(counter>32000) counter=0;
+
+	char text[30];
+	sprintf(text,"Test: %d",counter);
+	uart_sendText(text);
+
+	//test EM1 sleep level.
 }
 
 //-------------MAIN-------------
@@ -41,20 +56,10 @@ int main(void)
 	  testWait();
   }
 
-  uint16_t counter=0;
+  /* Setting up rtc */
+  setupRtc();
 
   while(1){
-
-	  counter++;
-	  if(counter>32000) counter=0;
-
-	  char text[30];
-	  sprintf(text,"Test: %d",counter);
-	  uart_sendText(text);
-
-	  {
-		  unsigned int counter=0;
-		  while (counter<1000000) {counter++;__asm("NOP");};
-	  }
+	  //EMU_EnterEM1();
   }
 }

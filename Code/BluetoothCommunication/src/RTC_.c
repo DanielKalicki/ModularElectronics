@@ -28,7 +28,7 @@ void setupRtc(void)
   rtcInit.debugRun = false;     /* Counter shall keep running during debug halt. */
 
   /* Setting the compare value of the RTC */
-  RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_1);
+  RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP);
 
   /* Enabling Interrupt from RTC */
   RTC_IntEnable(RTC_IFC_COMP0);
