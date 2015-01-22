@@ -33,10 +33,11 @@ void RTC_IRQHandler(void){
 	if(counter>32000) counter=0;
 
 	char text[30];
-	sprintf(text,"Test: %d",counter);
+	sprintf(text,"%d",counter);
 	uart_sendText(text);
 
-	//test EM1 sleep level.
+	/* Clear interrupt source */
+	RTC_IntClear(RTC_IFC_COMP0);
 }
 
 //-------------MAIN-------------
@@ -48,18 +49,25 @@ int main(void)
   //initI2C();
   initUART();
 
+  inittest();
+
+  GPIO_PinOutSet(gpioPortC, 0);
+  GPIO_PinOutClear(gpioPortC, 1);
+
   uint8_t initHM11_fail=1;
   while(initHM11_fail){
 	  initHM11_fail=initHM11();
 	  testWait();
 	  uart_sendText("AT+START?");
 	  testWait();
+	  GPIO_PinOutToggle(gpioPortC, 1);
   }
 
   /* Setting up rtc */
   setupRtc();
 
   while(1){
-	  //EMU_EnterEM1();
+	  EMU_EnterEM1();
+
   }
 }

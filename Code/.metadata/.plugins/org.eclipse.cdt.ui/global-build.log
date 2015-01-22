@@ -2069,3 +2069,703 @@ arm-none-eabi-size "BluetoothCommunication.axf"
    text	   data	    bss	    dec	    hex	filename
    7068	    120	    172	   7360	   1cc0	BluetoothCommunication.axf
  
+22:27:31 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+Finished building: ../src/main.c
+ 
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7068	    120	    172	   7360	   1cc0	BluetoothCommunication.axf
+ 
+22:31:00 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7136	    120	    172	   7428	   1d04	BluetoothCommunication.axf
+ 
+22:34:45 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7084	    120	    172	   7376	   1cd0	BluetoothCommunication.axf
+ 
+22:36:22 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7136	    120	    172	   7428	   1d04	BluetoothCommunication.axf
+ 
+22:40:43 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6392	    120	    172	   6684	   1a1c	BluetoothCommunication.axf
+ 
+22:47:13 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6408	    120	    172	   6700	   1a2c	BluetoothCommunication.axf
+ 
+22:51:30 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6408	    120	    172	   6700	   1a2c	BluetoothCommunication.axf
+ 
+22:54:09 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   5744	    120	    172	   6036	   1794	BluetoothCommunication.axf
+ 
+22:55:41 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   5672	    120	    172	   5964	   174c	BluetoothCommunication.axf
+ 
+22:57:09 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   5672	    120	    172	   5964	   174c	BluetoothCommunication.axf
+ 
+23:03:29 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   5704	    120	    172	   5996	   176c	BluetoothCommunication.axf
+ 
+23:06:16 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+Finished building: ../src/RTC_.c
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6384	    120	    172	   6676	   1a14	BluetoothCommunication.axf
+ 
+23:07:15 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   5708	    120	    172	   6000	   1770	BluetoothCommunication.axf
+ 
+23:08:42 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6344	    120	    172	   6636	   19ec	BluetoothCommunication.axf
+ 
+23:10:35 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6384	    120	    172	   6676	   1a14	BluetoothCommunication.axf
+ 
+23:13:36 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6344	    120	    172	   6636	   19ec	BluetoothCommunication.axf
+ 
+23:16:32 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+Finished building: ../src/RTC_.c
+../src/main.c:55:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   5688	    120	    172	   5980	   175c	BluetoothCommunication.axf
+ 
+23:30:16 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6396	    120	    172	   6688	   1a20	BluetoothCommunication.axf
+ 
+23:34:45 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+Finished building: ../src/RTC_.c
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   6420	    120	    172	   6712	   1a38	BluetoothCommunication.axf
+ 
+23:39:43 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/RTC_.c
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7164	    120	    172	   7456	   1d20	BluetoothCommunication.axf
+ 
+23:40:37 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+Finished building: ../src/RTC_.c
+../src/main.c:51:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7156	    120	    172	   7448	   1d18	BluetoothCommunication.axf
+ 
+23:41:57 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+../src/main.c: In function 'main':
+../src/main.c:52:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7136	    120	    172	   7428	   1d04	BluetoothCommunication.axf
+ 
+23:43:31 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function 'main':
+Finished building: ../src/RTC_.c
+../src/main.c:52:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+ 
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7148	    120	    172	   7440	   1d10	BluetoothCommunication.axf
+ 
+23:45:05 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+make -j4 all 
+Building file: ../src/RTC_.c
+Building file: ../src/main.c
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "src/RTC_.o" "../src/RTC_.c"
+Invoking: GNU ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+Finished building: ../src/RTC_.c
+ 
+../src/main.c: In function 'main':
+../src/main.c:52:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
+ 
+Building target: BluetoothCommunication.axf
+Invoking: GNU ARM C Linker
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -T "BluetoothCommunication.ld" -Xlinker --gc-sections -Xlinker -Map="BluetoothCommunication.map" --specs=nano.specs -o BluetoothCommunication.axf "./src/HM11.o" "./src/RTC_.o" "./src/i2c_connection.o" "./src/main.o" "./src/uart_connection.o" "./emlib/em_cmu.o" "./emlib/em_emu.o" "./emlib/em_gpio.o" "./emlib/em_i2c.o" "./emlib/em_int.o" "./emlib/em_rmu.o" "./emlib/em_rtc.o" "./emlib/em_system.o" "./emlib/em_timer.o" "./emlib/em_usart.o" "./emlib/em_wdog.o" "./CMSIS/efm32zg/startup_gcc_efm32zg.o" "./CMSIS/efm32zg/system_efm32zg.o" -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+Finished building target: BluetoothCommunication.axf
+ 
+Building hex file: BluetoothCommunication.hex
+arm-none-eabi-objcopy -O ihex "BluetoothCommunication.axf" "BluetoothCommunication.hex"
+ 
+Building bin file: BluetoothCommunication.bin
+arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunication.bin"
+ 
+Running size tool
+arm-none-eabi-size "BluetoothCommunication.axf"
+   text	   data	    bss	    dec	    hex	filename
+   7136	    120	    172	   7428	   1d04	BluetoothCommunication.axf
+ 

@@ -1,4 +1,4 @@
-21:06:48 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
+23:45:05 **** Incremental Build of configuration GNU ARM v4.7.3 - Release for project BluetoothCommunication ****
 make -j4 all 
 Building file: ../src/RTC_.c
 Building file: ../src/main.c
@@ -7,8 +7,10 @@ arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -
 Invoking: GNU ARM C Compiler
 arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DNDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -O3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
 Finished building: ../src/RTC_.c
-Finished building: ../src/main.c
  
+../src/main.c: In function 'main':
+../src/main.c:52:3: warning: implicit declaration of function 'inittest' [-Wimplicit-function-declaration]
+Finished building: ../src/main.c
  
 Building target: BluetoothCommunication.axf
 Invoking: GNU ARM C Linker
@@ -24,8 +26,8 @@ arm-none-eabi-objcopy -O binary "BluetoothCommunication.axf" "BluetoothCommunica
 Running size tool
 arm-none-eabi-size "BluetoothCommunication.axf"
    text	   data	    bss	    dec	    hex	filename
-   7068	    120	    172	   7360	   1cc0	BluetoothCommunication.axf
+   7136	    120	    172	   7428	   1d04	BluetoothCommunication.axf
  
 
-21:07:44 Build Finished (took 56s.62ms)
+23:45:16 Build Finished (took 10s.555ms)
 
