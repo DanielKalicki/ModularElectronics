@@ -1,6 +1,0 @@
-13:42:58 **** Incremental Build of configuration GNU ARM v4.7.3 - Debug for project GlassEnvModule ****
-make -j4 all 
-Command canceled
-
-13:43:16 Build Cancelled (took 18s.109ms)
-

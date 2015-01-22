@@ -1,6 +1,0 @@
-19:38:33 **** Incremental Build of configuration GNU ARM v4.7.3 - Debug for project GlassLiPolController ****
-make -j4 all 
-make: Nothing to be done for `all'.
-
-19:38:38 Build Finished (took 5s.208ms)
-

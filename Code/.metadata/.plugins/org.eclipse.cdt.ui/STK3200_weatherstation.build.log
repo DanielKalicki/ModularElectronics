@@ -1,6 +1,0 @@
-16:10:15 **** Build of configuration GNU ARM v4.7.3 - Debug for project STK3200_weatherstation ****
-make -j4 all 
-Command canceled
-
-16:10:30 Build Cancelled (took 14s.933ms)
-
