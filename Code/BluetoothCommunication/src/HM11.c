@@ -7,8 +7,8 @@
 #include <stdio.h>
 
 void inittest(){
-	GPIO_PinModeSet(gpioPortC, 0, gpioModePushPull, 0);
-	GPIO_PinModeSet(gpioPortC, 1, gpioModePushPull, 0);
+	//GPIO_PinModeSet(gpioPortC, 0, gpioModePushPull, 0);
+	//GPIO_PinModeSet(gpioPortC, 1, gpioModePushPull, 0);
 }
 
 #define DEBUG

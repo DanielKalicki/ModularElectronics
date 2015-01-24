@@ -32,9 +32,15 @@ void RTC_IRQHandler(void){
 	counter++;
 	if(counter>32000) counter=0;
 
-	char text[30];
-	sprintf(text,"%d",counter);
-	uart_sendText(text);
+	for (int i=4;i<20;i++){
+		uart_sendChar(i2c_Detect(I2C0,i));
+	}
+
+	if(counter%5==0){
+		char text[30];
+			sprintf(text,"%d",counter);
+			uart_sendText(text);
+	}
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
@@ -46,10 +52,10 @@ int main(void)
   CHIP_Init();
   initOscillators();
 
-  //initI2C();
+  initI2C();
   initUART();
 
-  inittest();
+  //inittest();
 
   GPIO_PinOutSet(gpioPortC, 0);
   GPIO_PinOutClear(gpioPortC, 1);

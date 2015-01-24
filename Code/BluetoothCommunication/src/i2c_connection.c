@@ -174,6 +174,7 @@ bool i2c_Detect    (I2C_TypeDef *i2c, uint8_t addr)
 
 void i2c_Scan (I2C_TypeDef *i2c){
 	int i=0;
+	uart_sendText("i2cSCAN");
 	for (;i<128;i++){
 		if (i2c_Detect(i2c,i*2)==1){
 			char buff[30];
