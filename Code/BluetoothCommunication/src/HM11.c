@@ -204,25 +204,56 @@ uint8_t startModule(){
 	}
 }
 
+uint8_t setBaudRate(enum BAUD_RATE value){
+	uint32_t counter=0;
+	char request[30];
+	char cValue;
+	if(value < 8){
+		cValue = value+'0';
+	}
+	else {
+		return 1;
+	}
+	sprintf(request,"AT+BAUD%c",cValue);
+
+	initUART_9600();
+	while (counter<100000){counter++;};
+	uart_sendText(request);
+
+	initUART_baud(19200);
+	counter=0;
+	while (counter<100000){counter++;};
+	uart_sendText(request);
+
+	initUART_9600();
+	while (counter<100000){counter++;};
+	uart_sendText(request);
+
+	return 0;
+}
+
 uint8_t initHM11(){
-	inittest();
+
+	//if(setBaudRate(BAUD_9600)==1){
+	//	return 1;
+	//}
 
 	if (testHM11()==1){
 		return 1;	//test failed.
 	}
 
-	if(setAdvertisingInterval(ADV_INT_1022_5ms)==1){
-		return 1;//ERROR
-	}
+	//if(setAdvertisingInterval(ADV_INT_1022_5ms)==1){
+	//	return 1;//ERROR
+	//}
 
 
-	/*if(setModuleName("FitB\\o/")==1){
-		return 1;//ERROR
-	}*/
+	//if(setModuleName("DanK")==1){
+	//	return 1;//ERROR
+	//}
 
-	if(setModulePower(POWER_MINUS_23_dbm)==1){
-		return 1;//ERROR
-	}
+	//if(setModulePower(POWER_MINUS_23_dbm)==1){
+	//	return 1;//ERROR
+	//}
 
 //	if(startModule()==1){
 //		return 1;//ERROR

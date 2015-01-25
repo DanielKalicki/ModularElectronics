@@ -6,7 +6,7 @@
 
 //volatile struct messageBuffer rxBuff={ {0}, 0, false };
 
-void initUART(void){
+void initUART_9600(void){
 	//Oscillators
 	CMU_ClockEnable(cmuClock_USART1, true);                 // enable USART1 peripheral clock
 
@@ -30,9 +30,39 @@ void initUART(void){
 	 USART_InitAsync(USART1, &uartInit);      // apply configuration to USART1
 	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | USART_ROUTE_LOCATION_LOC2; // clear buffers, enable transmitter and receiver pins
 
-	 //USART_IntClear(USART1, _USART_IF_MASK);  // clear all USART interrupt flags
-	 //NVIC_ClearPendingIRQ(USART1_RX_IRQn);    // clear pending RX interrupt flag in NVIC
-	 //NVIC_ClearPendingIRQ(USART1_TX_IRQn);    // clear pending TX interrupt flag in NVIC
+	 USART_IntClear(USART1, _USART_IF_MASK);
+	 USART_IntEnable(USART1, USART_IF_RXDATAV);
+	 NVIC_ClearPendingIRQ(USART1_RX_IRQn);
+	 NVIC_ClearPendingIRQ(USART1_TX_IRQn);
+	 NVIC_EnableIRQ(USART1_RX_IRQn);
+	 NVIC_EnableIRQ(USART1_TX_IRQn);
+
+	 USART_Enable(USART1, usartEnable);       // enable transmitter and receiver
+}
+
+void initUART_baud(unsigned int baud){
+	//Oscillators
+	CMU_ClockEnable(cmuClock_USART1, true);                 // enable USART1 peripheral clock
+
+	//GPIOs
+	GPIO_PinModeSet(COM_PORT, TX_PIN, gpioModePushPull, 1); // set TX pin to push-pull output, initialize high (otherwise glitches can occur)
+	GPIO_PinModeSet(COM_PORT, RX_PIN, gpioModeInput, 0);    // set RX pin as input (no filter)
+
+	USART_InitAsync_TypeDef uartInit =
+	  {	//230400
+	    .enable = usartDisable,     // wait to enable transmitter and receiver
+	    .refFreq = 0,               // setting refFreq to 0 will invoke the CMU_ClockFreqGet() function and measure the HFPER clock
+	    .baudrate = baud,	        // desired baud rate
+	    .oversampling = usartOVS16, // set oversampling to x16
+	    .databits = usartDatabits8, // 8 data bits
+	    .parity = usartNoParity,    // no parity bits
+	    .stopbits = usartStopbits1, // 1 stop bit
+	    .mvdis = false,             // use majority voting
+	    .prsRxEnable = false,       // not using PRS input
+	    .prsRxCh = usartPrsRxCh0,   // doesn't matter what channel we select
+	 };
+	 USART_InitAsync(USART1, &uartInit);      // apply configuration to USART1
+	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | USART_ROUTE_LOCATION_LOC2; // clear buffers, enable transmitter and receiver pins
 
 	 USART_IntClear(USART1, _USART_IF_MASK);
 	 USART_IntEnable(USART1, USART_IF_RXDATAV);
@@ -43,6 +73,7 @@ void initUART(void){
 
 	 USART_Enable(USART1, usartEnable);       // enable transmitter and receiver
 }
+
 void uart_sendChar(char c){
 	while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 	USART1->TXDATA = c; 			       // send character

@@ -43,6 +43,19 @@ enum MOD_POWER {
 };
 uint8_t setModulePower(enum MOD_POWER value);
 
+enum BAUD_RATE {
+	BAUD_9600 = 0,
+	BAUD_19200,
+	BAUD_38400,
+	BAUD_57600,
+	BAUD_115200,
+	BAUD_4800,
+	BAUD_2400,
+	BAUD_1200,
+	BAUD_230400
+};
+uint8_t setBaudRate(enum BAUD_RATE value);
+
 uint8_t resetModule();
 
 uint8_t startModule();

@@ -21,7 +21,8 @@ volatile struct messageBuffer{
 	bool ready;
 } rxBuff;
 
-void initUART(void);
+void initUART_9600  (void);
+void initUART_baud(unsigned int baud);
 void uart_sendChar(char c);
 void uart_sendText(char * text);
 
