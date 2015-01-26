@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">ModularElectronics</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="BluetoothLETerminal_text">Bluetooth LE Terminal:</string>
 
 </resources>
