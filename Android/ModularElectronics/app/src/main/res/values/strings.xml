@@ -3,7 +3,7 @@
 
     <string name="app_name">ModularElectronics</string>
     <string name="action_settings">Settings</string>
-    <string name="ble_terminal_text">Bluetooth LE Terminal:</string>
+    <string name="ble_terminal_text">Bluetooth LE Terminal:\n</string>
     <string name="ble_not_supported">Bluetooth LE is not supported on this device</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on this device</string>
 
