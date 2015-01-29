@@ -2,6 +2,7 @@ package modularelectronics.modularelectronics;
 
 import android.app.Service;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -47,6 +49,7 @@ public class MainActivity extends Activity {
     private boolean mConnected = false;
 
     TextView bleTerminal_text;
+    TextView bleTerminal_output;
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -86,17 +89,65 @@ public class MainActivity extends Activity {
                 invalidateOptionsMenu();
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                updateConnectionState("connected");
+                updateConnectionState("unconnected");
                 invalidateOptionsMenu();
                 clearUI();
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
-                //displayGattServices(mBluetoothLeService.getSupportedGattServices());
+                displayGattServices(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }
         }
     };
+
+    // Demonstrates how to iterate through the supported GATT Services/Characteristics.
+    // In this sample, we populate the data structure that is bound to the ExpandableListView
+    // on the UI.
+    private void displayGattServices(List<BluetoothGattService> gattServices) {
+        bleTerminal_text.append("displayGattServices()\n");
+        if (gattServices == null) return;
+        String uuid = null;
+        String unknownServiceString = "Unknown service";
+        String unknownCharaString = "unknown_characteristic";
+        ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
+        ArrayList<ArrayList<HashMap<String, String>>> gattCharacteristicData
+                = new ArrayList<ArrayList<HashMap<String, String>>>();
+        mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
+
+        bleTerminal_text.setText("");
+
+        // Loops through available GATT Services.
+        for (BluetoothGattService gattService : gattServices) {
+            HashMap<String, String> currentServiceData = new HashMap<String, String>();
+            uuid = gattService.getUuid().toString();
+            bleTerminal_output.append("(S): "+uuid+"\n");
+            gattServiceData.add(currentServiceData);
+
+            ArrayList<HashMap<String, String>> gattCharacteristicGroupData =
+                    new ArrayList<HashMap<String, String>>();
+            List<BluetoothGattCharacteristic> gattCharacteristics =
+                    gattService.getCharacteristics();
+            ArrayList<BluetoothGattCharacteristic> charas =
+                    new ArrayList<BluetoothGattCharacteristic>();
+
+            // Loops through available Characteristics.
+            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+                charas.add(gattCharacteristic);
+                HashMap<String, String> currentCharaData = new HashMap<String, String>();
+                uuid = gattCharacteristic.getUuid().toString();
+                bleTerminal_output.append("\t\t\t(C): "+uuid+"\n");
+                gattCharacteristicGroupData.add(currentCharaData);
+
+                if(uuid.toString().equals("0000ffe1-0000-1000-8000-00805f9b34fb")) {
+                    bleTerminal_output.append("Service found\n");
+                    mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
+                }
+            }
+            mGattCharacteristics.add(charas);
+            gattCharacteristicData.add(gattCharacteristicGroupData);
+        }
+    }
 
     private void updateConnectionState(final String text) {
         runOnUiThread(new Runnable() {
@@ -180,6 +231,8 @@ public class MainActivity extends Activity {
         bleTerminal_text = (TextView)findViewById(R.id.ble_terminal_text);
         bleTerminal_text.append("Test\n");
 
+        bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
+
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
@@ -206,8 +259,11 @@ public class MainActivity extends Activity {
     }
 
     private void displayData(String data) {
+        if(data.toString().contains("L:")){
+            bleTerminal_output.setText("");
+        }
         if (data != null) {
-            bleTerminal_text.setText(data);
+            bleTerminal_output.append(data+"\n");
         }
     }
 
