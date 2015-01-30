@@ -1,18 +1,17 @@
 package modularelectronics.modularelectronics;
 
-import android.app.Service;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-import android.content.BroadcastReceiver;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.ComponentName;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,12 +20,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -83,20 +82,25 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
-                updateConnectionState("connected");
-                invalidateOptionsMenu();
-            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
-                updateConnectionState("unconnected");
-                invalidateOptionsMenu();
-                clearUI();
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                // Show all the supported services and characteristics on the user interface.
-                displayGattServices(mBluetoothLeService.getSupportedGattServices());
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+            switch (action) {
+                case BluetoothLeService.ACTION_GATT_CONNECTED:
+                    mConnected = true;
+                    updateConnectionState("connected");
+                    invalidateOptionsMenu();
+                    break;
+                case BluetoothLeService.ACTION_GATT_DISCONNECTED:
+                    mConnected = false;
+                    updateConnectionState("unconnected");
+                    invalidateOptionsMenu();
+                    clearUI();
+                    break;
+                case BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED:
+                    // Show all the supported services and characteristics on the user interface.
+                    displayGattServices(mBluetoothLeService.getSupportedGattServices());
+                    break;
+                case BluetoothLeService.ACTION_DATA_AVAILABLE:
+                    getDataFromBle(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                    break;
             }
         }
     };
@@ -107,39 +111,37 @@ public class MainActivity extends Activity {
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         bleTerminal_text.append("displayGattServices()\n");
         if (gattServices == null) return;
-        String uuid = null;
-        String unknownServiceString = "Unknown service";
-        String unknownCharaString = "unknown_characteristic";
+        String uuid;
         ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
         ArrayList<ArrayList<HashMap<String, String>>> gattCharacteristicData
-                = new ArrayList<ArrayList<HashMap<String, String>>>();
-        mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
+                = new ArrayList<>();
+        mGattCharacteristics = new ArrayList<>();
 
         bleTerminal_text.setText("");
 
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
-            HashMap<String, String> currentServiceData = new HashMap<String, String>();
+            HashMap<String, String> currentServiceData = new HashMap<>();
             uuid = gattService.getUuid().toString();
             bleTerminal_output.append("(S): "+uuid+"\n");
             gattServiceData.add(currentServiceData);
 
             ArrayList<HashMap<String, String>> gattCharacteristicGroupData =
-                    new ArrayList<HashMap<String, String>>();
+                    new ArrayList<>();
             List<BluetoothGattCharacteristic> gattCharacteristics =
                     gattService.getCharacteristics();
             ArrayList<BluetoothGattCharacteristic> charas =
-                    new ArrayList<BluetoothGattCharacteristic>();
+                    new ArrayList<>();
 
             // Loops through available Characteristics.
             for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                 charas.add(gattCharacteristic);
-                HashMap<String, String> currentCharaData = new HashMap<String, String>();
+                HashMap<String, String> currentCharaData = new HashMap<>();
                 uuid = gattCharacteristic.getUuid().toString();
                 bleTerminal_output.append("\t\t\t(C): "+uuid+"\n");
                 gattCharacteristicGroupData.add(currentCharaData);
 
-                if(uuid.toString().equals("0000ffe1-0000-1000-8000-00805f9b34fb")) {
+                if(uuid.equals("0000ffe1-0000-1000-8000-00805f9b34fb")) {
                     bleTerminal_output.append("Service found\n");
                     mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
                 }
@@ -258,12 +260,65 @@ public class MainActivity extends Activity {
         return intentFilter;
     }
 
-    private void displayData(String data) {
-        if(data.toString().contains("L:")){
-            bleTerminal_output.setText("");
-        }
+    private ArrayList<Double> temp = new ArrayList<>();
+    private ArrayList<Double> light = new ArrayList<>();
+    private ArrayList<Double> press = new ArrayList<>();
+
+    private void getDataFromBle(String data) {
+        bleTerminal_text.setText("");
+
         if (data != null) {
-            bleTerminal_output.append(data+"\n");
+            String[] dataSplit = data.split("\n");
+            for (int i=0;i<dataSplit.length-1;i++) {
+
+                bleTerminal_text.append(dataSplit[i]);
+                String[] stringValue = dataSplit[i].split("\\[",2);
+                stringValue[0] = stringValue[0].replaceAll("[^\\d.]","");
+                double value = 0;
+                try{
+                    value = Double.parseDouble(stringValue[0]);
+                } catch (NumberFormatException e) {
+                    value = 0;
+                }
+
+                if (dataSplit[i].charAt(1)==':') {
+                    switch (dataSplit[i].charAt(0)) {
+                        case 'T':
+                            temp.add(value);
+                            break;
+                        case 'L':
+                            light.add(value);
+                            break;
+                        case 'P':
+                            press.add(value);
+                            break;
+                    }
+                }
+
+            }
+        }
+
+        try {
+            bleTerminal_output.setText("");
+
+            int arrayTempSize=temp.size();
+            for(int i=arrayTempSize-1;i>=arrayTempSize-20;i--){
+                bleTerminal_output.append(Double.toString(temp.get(i))+ "    ");
+                bleTerminal_output.append(Double.toString(light.get(i))+ "    ");
+                bleTerminal_output.append(Double.toString(press.get(i))+ "");
+                bleTerminal_output.append("\n");
+            }
+
+        }
+        catch (IndexOutOfBoundsException e) {
+            //bleTerminal_output.setText("Wait..\n");
+        }
+    }
+
+    private void printArrayData(ArrayList<Double> arr){
+        int arrayTempSize=arr.size();
+        for(int i=arrayTempSize-1;i>=arrayTempSize-10;i--){
+            bleTerminal_output.append(Double.toString(arr.get(i))+ " ");
         }
     }
 
@@ -279,7 +334,6 @@ public class MainActivity extends Activity {
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
     }
-
 
     private void scanLeDevice(final boolean enable) {
         if(enable){
@@ -311,23 +365,17 @@ public class MainActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            bleTerminal_text.setText("Found: " + device.getName().toString() + " " + Integer.toString(rssi) + "\n");
-                            bleTerminal_text.append("Addr: " + device.getAddress().toString() + " Uuids" + device.getUuids() + " Type:" + device.getType() + "\n");
+                            bleTerminal_text.setText("Found: " + device.getName() + " " + Integer.toString(rssi) + "\n");
+                            bleTerminal_text.append("Addr: " + device.getAddress() + " Uuids" + device.getUuids() + " Type:" + device.getType() + "\n");
                             if(device.getName().equals("DanK")){
                                 bleTerminal_text.append("Bluetooth module found\n");
                                 scanLeDevice(false);
-                                connectToBle(device.getAddress());
                             }
 
-                        }
+                        }/**/
                     });
                 }
             };
-
-    private void connectToBle(String address) {
-        mBluetoothLeService.initialize();
-        mBluetoothLeService.connect(address);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
