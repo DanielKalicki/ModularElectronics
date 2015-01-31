@@ -17,7 +17,7 @@
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 
-#define sensors i2c_registers[1]
+#define sensors i2c_registers[5]		//5 - REG_SENSORS
 
 #define SI7013_SENS		0x01
 #define SI1142_SENS		0x02
@@ -32,19 +32,25 @@
  * [12:13] - Si7013 temperature ->	e.g. temp=25.23*C [12]=25 [13]=23
  * [14:15] - Si1142 ambient light ->  [14] -> ambient light High byte  [15] -> ambient light Low byte
  * [16]    - AS3935 number of lighting detection
- * [17:37] - AS3935 every byte contains estimate distance from lighting for every lighting detection
- * [38:39] - BMP085 temperature if it is measured, else it should be zero ->	e.g. temp=25.23*C [0]=25 [1]=23
- * [40:42] - BMP085 pressure  -> e.g. pressure=101399.8 [40]=101 [41]=39 [42]=98
- * [43:48] - HMC5883L [43:44] - X data, [45:46] - Y data [47:48] - Z data
- * [49:54] - MPU6050 accel  [49:50] - X accel data [51:52] - Y accel data [53:54] - Z accel data
- * [55:60] - MPU6050 gyro   [55:56] - X gyro data  [57:58] - Y gyro data  [59:60] - Z gyro data
- * [61:76] - MPU pedometer  [61:68] - number of steps in binary format
- *                          [69:76] - number of walking time in binary format in miliseconds
- * [77:87] - MPU dmp events [77:87] - detected tap events
+ * [17:18] - BMP085 temperature if it is measured, else it should be zero ->	e.g. temp=25.23*C [17]=25 [18]=23
+ * [19:21] - BMP085 pressure  -> e.g. pressure=101399.8 [19]=101 [20]=39 [21]=98
+ * [22:27] - HMC5883L [22:23] - X data, [24:25] - Y data [26:27] - Z data
+ * [28:33] - MPU6050 accel  [28:29] - X accel data [30:31] - Y accel data [32:33] - Z accel data
+ * [34:39] - MPU6050 gyro   [34:35] - X gyro data  [36:37] - Y gyro data  [38:39] - Z gyro data
+ * [40:55] - MPU pedometer  [40:47] - number of steps in binary format
+ *                          [48:55] - number of walking time in binary format in miliseconds
+ * [56:65] - MPU dmp events [55:54] - detected tap events
+ * [66:85]  AS3935 every byte contains estimate distance from lighting for every lighting detection
  * */
 enum registerMap{
 
-	REG_SENSORS				=1,
+	REG_DATA_LENGTH			=0,
+
+	REG_MODULE_ID_1			=1,
+	REG_MODULE_ID_2			=2,
+	REG_MODULE_ID_3			=3,
+
+	REG_SENSORS				=5,
 	REG_MPU6050_CONFIG		=REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
 
 	REG_SI7013_HUM_HIGH		=10,
@@ -644,11 +650,12 @@ int main(void) {
 	  i2c_registers[i]=0;
   }
 
+  i2c_registers[REG_DATA_LENGTH]=86;
+
   initI2C_Master();
   i2c_Scan(I2C0);
 
   detectSensors();
-
   initSensors();
 
   /* Setting up rtc */

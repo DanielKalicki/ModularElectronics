@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#define REG_MPU6050_CONFIG_NUMBER 0x02
+#define REG_MPU6050_CONFIG_NUMBER 0x06
 
 #define DEFAULT_MPU_HZ  (100)
 

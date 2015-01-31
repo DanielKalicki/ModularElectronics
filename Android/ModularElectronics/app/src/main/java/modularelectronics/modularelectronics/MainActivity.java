@@ -311,7 +311,7 @@ public class MainActivity extends Activity {
 
         }
         catch (IndexOutOfBoundsException e) {
-            //bleTerminal_output.setText("Wait..\n");
+            //dont do anythin, we are still waiting for the tab to full up.
         }
     }
 
