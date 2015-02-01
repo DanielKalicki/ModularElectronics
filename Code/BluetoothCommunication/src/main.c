@@ -157,6 +157,8 @@ void RTC_IRQHandler(void){
 		uart_sendChar('\n');
 	}
 
+	//receive ack
+
 	uart_sendText(buff);
 
 	/* Clear interrupt source */

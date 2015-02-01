@@ -23,9 +23,15 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -49,6 +55,8 @@ public class MainActivity extends Activity {
 
     TextView bleTerminal_text;
     TextView bleTerminal_output;
+
+    private String modulesDescription="web\n";
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -239,6 +247,36 @@ public class MainActivity extends Activity {
         bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
         bleTerminal_text.append("onCreate()\n");
+
+        new Thread(new Runnable(){
+            public void run(){
+                //TODO check if there is network connection here
+                getModuleInformationFromHttp();
+            }
+        }).start();
+    }
+
+    private void getModuleInformationFromHttp() {
+        URLConnection feedUrl;
+        try {
+            // Create a URL for the desired page
+            feedUrl = new URL("http://www.student.agh.edu.pl/dkalicki/modulesDescription.txt").openConnection();
+            InputStream is = feedUrl.getInputStream();
+
+            // Read all the text returned by the server
+            BufferedReader in = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+            String str;
+            while ((str = in.readLine()) != null) {
+                // str is one line of text; readLine() strips the newline character(s)
+                modulesDescription += str +"\n";
+            }
+            in.close();
+            Log.e("-",modulesDescription);
+        } catch (MalformedURLException e) {
+            Log.e("-","getModuleInformationFromHttp() - MalformedURLException");
+        } catch (IOException e) {
+            Log.e("-","getModuleInformationFromHttp() - IOException");
+        }
     }
 
     @Override
@@ -265,6 +303,8 @@ public class MainActivity extends Activity {
     private ArrayList<Double> press = new ArrayList<>();
 
     private void getDataFromBle(String data) {
+        bleTerminal_text.append(modulesDescription);
+
         bleTerminal_text.setText("");
 
         if (data != null) {
