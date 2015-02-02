@@ -272,6 +272,7 @@ public class MainActivity extends Activity {
             }
             in.close();
             Log.e("-",modulesDescription);
+            //TODO store this on the device
         } catch (MalformedURLException e) {
             Log.e("-","getModuleInformationFromHttp() - MalformedURLException");
         } catch (IOException e) {
