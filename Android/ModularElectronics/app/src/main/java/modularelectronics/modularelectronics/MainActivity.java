@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -256,27 +258,44 @@ public class MainActivity extends Activity {
         }).start();
     }
 
+    public static final boolean CheckInternetConnection(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private void getModuleInformationFromHttp() {
         URLConnection feedUrl;
-        try {
-            // Create a URL for the desired page
-            feedUrl = new URL("http://www.student.agh.edu.pl/dkalicki/modulesDescription.txt").openConnection();
-            InputStream is = feedUrl.getInputStream();
 
-            // Read all the text returned by the server
-            BufferedReader in = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-            String str;
-            while ((str = in.readLine()) != null) {
-                // str is one line of text; readLine() strips the newline character(s)
-                modulesDescription += str +"\n";
+        if (CheckInternetConnection(MainActivity.this)==true){ //check internet connection
+            Log.e("-","Internet ok!");
+            try {
+                // Create a URL for the desired page
+                feedUrl = new URL("http://www.student.agh.edu.pl/dkalicki/modulesDescription.txt").openConnection();
+                InputStream is = feedUrl.getInputStream();
+
+                // Read all the text returned by the server
+                BufferedReader in = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+                String str;
+                while ((str = in.readLine()) != null) {
+                    // str is one line of text; readLine() strips the newline character(s)
+                    modulesDescription += str +"\n";
+                }
+                in.close();
+                Log.e("-",modulesDescription);
+                //TODO store this on the device
+            } catch (MalformedURLException e) {
+                Log.e("-","getModuleInformationFromHttp() - MalformedURLException");
+            } catch (IOException e) {
+                Log.e("-","getModuleInformationFromHttp() - IOException");
             }
-            in.close();
-            Log.e("-",modulesDescription);
-            //TODO store this on the device
-        } catch (MalformedURLException e) {
-            Log.e("-","getModuleInformationFromHttp() - MalformedURLException");
-        } catch (IOException e) {
-            Log.e("-","getModuleInformationFromHttp() - IOException");
+        }
+        else{
+            Log.e("-","No internet");
         }
     }
 
