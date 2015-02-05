@@ -322,13 +322,40 @@ public class MainActivity extends Activity {
     private ArrayList<Double> light = new ArrayList<>();
     private ArrayList<Double> press = new ArrayList<>();
 
+    private int dataCounter=0;
+    private int dataErrCounter=0;
+    private String prevLastOneData;
+
     private void getDataFromBle(String data) {
-        bleTerminal_text.append(modulesDescription);
+
+        //TODO try catch this function
 
         bleTerminal_text.setText("");
+        bleTerminal_text.append(modulesDescription);
+        bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
 
         if (data != null) {
+
             String[] dataSplit = data.split("\n");
+            String lastOne = dataSplit[dataSplit.length - 1];
+            String[] hexData=lastOne.split(" ");
+            if (lastOne.charAt(0)== '7') {      //7 is the first char of 124 in hex
+                if(prevLastOneData!=null) {
+                    String[] prevHexData = prevLastOneData.split(" ");
+                    if (Integer.parseInt(prevHexData[prevHexData.length - 1], 16) != 124) {
+                        dataErrCounter++;
+                    }
+                }
+                dataCounter++;
+                bleTerminal_output.setText("");
+            }
+            for (int i=0;i<hexData.length;i++){
+                bleTerminal_output.append(Integer.toString(Integer.parseInt(hexData[i],16))+" ");
+            }
+
+            prevLastOneData=lastOne;
+        }
+            /*String[] dataSplit = data.split("\n");
             for (int i=0;i<dataSplit.length-1;i++) {
 
                 bleTerminal_text.append(dataSplit[i]);
@@ -372,7 +399,7 @@ public class MainActivity extends Activity {
         }
         catch (IndexOutOfBoundsException e) {
             //dont do anythin, we are still waiting for the tab to full up.
-        }
+        }*/
     }
 
     private void printArrayData(ArrayList<Double> arr){

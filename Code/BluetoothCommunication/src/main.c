@@ -120,11 +120,11 @@ void RTC_IRQHandler(void){
 	counter++;
 	if(counter>32000) counter=0;
 
-	char buff[40];
+	char buff[150];
 
 	sprintf(buff,"");
 
-	if(counter%5==0){
+	/*if(counter%5==0){
 		uint8_t ALS_H=0;	uint8_t ALS_L=0;
 		i2c_RegisterGet(I2C0,0x10,REG_SI1142_ALS_HIGH,&ALS_H);	i2c_RegisterGet(I2C0,0x10,REG_SI1142_ALS_LOW ,&ALS_L);
 		sprintf(buff,"L: %d.%d [%d]",ALS_H,ALS_L,counter);
@@ -139,7 +139,7 @@ void RTC_IRQHandler(void){
 		i2c_RegisterGet(I2C0,0x10,REG_BMP085_PRESS_XHIGH,&BMP_press_XH);	i2c_RegisterGet(I2C0,0x10,REG_BMP085_PRESS_HIGH ,&BMP_press_H);	i2c_RegisterGet(I2C0,0x10,REG_BMP085_PRESS_LOW ,&BMP_press_L);
 		sprintf(buff,"P:%d%d%d [%d]",BMP_press_XH,BMP_press_H,BMP_press_L,counter);
 	}
-	else if(counter%5==3){
+	else if(counter%5==3){*/
 		uint8_t data_length=0;
 		i2c_RegisterGet(I2C0,0x10,0x00,&data_length);
 
@@ -150,16 +150,17 @@ void RTC_IRQHandler(void){
 		uint8_t reg_vals[200];
 		i2c_Register_Read_Block(I2C0,0x10,0x00,data_length,reg_vals);
 
-		uart_sendText("|||");
+		uart_sendText("|");
 
 		for(int i=0;i<data_length;i++)
 			uart_sendChar(reg_vals[i]);
-		uart_sendChar('\n');
-	}
+
+		uart_sendText("|");
+	//}
 
 	//receive ack
 
-	uart_sendText(buff);
+	//uart_sendText(buff);
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
