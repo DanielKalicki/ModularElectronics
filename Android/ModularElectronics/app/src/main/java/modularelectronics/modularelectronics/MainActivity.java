@@ -21,19 +21,32 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 
 public class MainActivity extends Activity {
@@ -108,6 +121,15 @@ public class MainActivity extends Activity {
             }
         }
     };
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
+    }
 
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         bleTerminal_text.append("displayGattServices()\n");
@@ -194,8 +216,10 @@ public class MainActivity extends Activity {
 
             } catch (MalformedURLException e) {
                 Log.e("-","getModuleInformation() - MalformedURLException");
+                return;
             } catch (IOException e) {
                 Log.e("-","getModuleInformation() - IOException");
+                return;
             }
         }
         else {
@@ -210,8 +234,12 @@ public class MainActivity extends Activity {
                 Log.e("-", "Module desc file read from internal storage:");
                 Log.e("-", "------"+modulesDescriptionFile);
 
-            } catch (Exception e) { }
+            } catch (Exception e) {
+                Log.e("-","getModuleInformation() - No internet IOException");
+                return;
+            }
         }
+        parseXML(modulesDescriptionFile);
     }
 
     public static final boolean CheckInternetConnection(Context context) {
@@ -241,13 +269,53 @@ public class MainActivity extends Activity {
         }
     }
 
-    private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
+    private void parseXML(String xml){
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            return;
+        }
+        InputSource is = new InputSource(new StringReader(xml));
+        Document doc;
+        try {
+            doc = builder.parse(is);
+        } catch (SAXException e) {
+            e.printStackTrace();
+            return;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        doc.getDocumentElement().normalize();
+        Log.e("-","Root element :" + doc.getDocumentElement().getNodeName());
+
+        NodeList nModuleList = doc.getElementsByTagName("Module");
+        for (int i = 0; i < nModuleList.getLength(); i++) {
+            //--Module---
+            Node nModule = nModuleList.item(i);
+            Log.e("-","Node name : " + nModule.getNodeName());
+            if (nModule.getNodeType() == Node.ELEMENT_NODE) {
+                Element eModuleDesc = (Element) nModule;
+                Log.e("-","Module id : " + eModuleDesc.getAttribute("id"));
+                Log.e("-","Module name : " + eModuleDesc.getAttribute("name"));
+
+                //--Variable--
+                NodeList nVariableList = eModuleDesc.getElementsByTagName("Variable");
+                for (int ii = 0; ii < nVariableList.getLength(); ii++) {
+                    Node nVariable = nVariableList.item(ii);
+                    if (nVariable.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eVariableDesc = (Element) nVariable;
+                        Log.e("-","Variable name: " + eVariableDesc.getAttribute("name"));
+                        Log.e("-","Variable eq: " + eVariableDesc.getAttribute("equation"));
+                    }
+                }
+            }
+        }
+
     }
 
     //-------------------------------------------
