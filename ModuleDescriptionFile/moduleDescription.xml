@@ -1,0 +1,18 @@
+<Modules>
+    <Module id="0" name="environmental sensor">
+        <Variable name="humidity"      equation="d[10]+d[11]/100"></Variable>
+		<Variable name="temperature"   equation="d[12]+d[13]/100"></Variable>
+		<Variable name="ambient light" equation="d[14]*256+d[15]"></Variable>
+		<Variable name="pressure"      equation="d[19]*1000+d[20]*10+d[21]/10"></Variable>
+		<Variable name="BMP085 temp"   equation="d[18]+d[19]/100"></Variable>
+		<Variable name="compass X"     equation="d[22]*256+d[23]"></Variable>
+		<Variable name="compass Y"     equation="d[24]*256+d[25]"></Variable>
+		<Variable name="compass Z"     equation="d[26]*256+d[27]"></Variable>
+		<Variable name="accel X"       equation="d[28]*256+d[29]"></Variable>
+		<Variable name="accel Y"       equation="d[30]*256+d[31]"></Variable>
+		<Variable name="accel Z"       equation="d[32]*256+d[33]"></Variable>
+		<Variable name="gyro X"        equation="d[34]*256+d[35]"></Variable>
+		<Variable name="gyro Y"        equation="d[36]*256+d[37]"></Variable>
+		<Variable name="gyro Z"        equation="d[38]*256+d[39]"></Variable>
+    </Module>
+</Modules>

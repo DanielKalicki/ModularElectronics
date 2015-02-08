@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
     TextView bleTerminal_output;
 
     private String modulesDescriptionFile="";
-    private String modulesDescription_FileName="moduleDescription.txt";
+    private String modulesDescription_FileName="moduleDescription.xml";
 
     //-------------------------------------------
     //      Code to manage Service lifecycle.
@@ -173,7 +173,10 @@ public class MainActivity extends Activity {
             try {
                 // Create a URL for the desired page
                 URLConnection feedUrl;
-                feedUrl = new URL("http://www.student.agh.edu.pl/dkalicki/modulesDescription.txt").openConnection();
+                Log.e("-","http://www.student.agh.edu.pl/dkalicki/"+modulesDescription_FileName);
+                //TODO change file name to modulesDescription_FileName
+                feedUrl = new URL("http://www.student.agh.edu.pl/dkalicki/"+modulesDescription_FileName).openConnection();
+
                 InputStream is = feedUrl.getInputStream();
 
                 // Read all the text returned by the server
@@ -190,9 +193,9 @@ public class MainActivity extends Activity {
                 storeDescriptionFile(modulesDescriptionFile);
 
             } catch (MalformedURLException e) {
-                Log.e("-","getModuleInformationFromHttp() - MalformedURLException");
+                Log.e("-","getModuleInformation() - MalformedURLException");
             } catch (IOException e) {
-                Log.e("-","getModuleInformationFromHttp() - IOException");
+                Log.e("-","getModuleInformation() - IOException");
             }
         }
         else {
