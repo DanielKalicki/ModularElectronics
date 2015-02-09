@@ -43,6 +43,9 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -210,7 +213,7 @@ public class MainActivity extends Activity {
                 }
                 in.close();
                 Log.e("-", "Module desc file read from INTERNET");
-                Log.e("-",modulesDescriptionFile);
+                //Log.e("-",modulesDescriptionFile);
 
                 storeDescriptionFile(modulesDescriptionFile);
 
@@ -232,7 +235,7 @@ public class MainActivity extends Activity {
                 }
                 modulesDescriptionFile = temp;
                 Log.e("-", "Module desc file read from internal storage:");
-                Log.e("-", "------"+modulesDescriptionFile);
+                //Log.e("-", "------"+modulesDescriptionFile);
 
             } catch (Exception e) {
                 Log.e("-","getModuleInformation() - No internet IOException");
@@ -269,14 +272,14 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void parseXML(String xml){
+    private Document parseXML(String xml){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
         InputSource is = new InputSource(new StringReader(xml));
         Document doc;
@@ -284,56 +287,29 @@ public class MainActivity extends Activity {
             doc = builder.parse(is);
         } catch (SAXException e) {
             e.printStackTrace();
-            return;
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
-        doc.getDocumentElement().normalize();
-        Log.e("-","Root element :" + doc.getDocumentElement().getNodeName());
-
-        NodeList nModuleList = doc.getElementsByTagName("Module");
-        for (int i = 0; i < nModuleList.getLength(); i++) {
-            //--Module---
-            Node nModule = nModuleList.item(i);
-            Log.e("-","Node name : " + nModule.getNodeName());
-            if (nModule.getNodeType() == Node.ELEMENT_NODE) {
-                Element eModuleDesc = (Element) nModule;
-                Log.e("-","Module id : " + eModuleDesc.getAttribute("id"));
-                Log.e("-","Module name : " + eModuleDesc.getAttribute("name"));
-
-                //--Variable--
-                NodeList nVariableList = eModuleDesc.getElementsByTagName("Variable");
-                for (int ii = 0; ii < nVariableList.getLength(); ii++) {
-                    Node nVariable = nVariableList.item(ii);
-                    if (nVariable.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eVariableDesc = (Element) nVariable;
-                        Log.e("-","Variable name: " + eVariableDesc.getAttribute("name"));
-                        Log.e("-","Variable eq: " + eVariableDesc.getAttribute("equation"));
-                    }
-                }
-            }
-        }
-
+        return doc;
     }
 
     //-------------------------------------------
     //          Parse received Ble data
     //-------------------------------------------
-    private ArrayList<Double> temp = new ArrayList<>();
-    private ArrayList<Double> light = new ArrayList<>();
-    private ArrayList<Double> press = new ArrayList<>();
     private int dataCounter=0;
     private int dataErrCounter=0;
     private String prevLastOneData;
-    
+    ArrayList<Integer> d = new ArrayList<>();
+
     private void getDataFromBle(String data) {
 
         //TODO try catch this function
 
         bleTerminal_text.setText("");
-        bleTerminal_text.append(modulesDescriptionFile);
+        //bleTerminal_text.append(modulesDescriptionFile);
         bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
 
         if (data != null) {
@@ -350,12 +326,68 @@ public class MainActivity extends Activity {
                 }
                 dataCounter++;
                 bleTerminal_output.setText("");
+                parseReceiveModuleData(d);
+                d.clear();
             }
             for (int i=0;i<hexData.length;i++){
-                bleTerminal_output.append(Integer.toString(Integer.parseInt(hexData[i],16))+" ");
+                Integer value = Integer.parseInt(hexData[i], 16);
+                bleTerminal_output.append(Integer.toString(value)+" ");
+                d.add(value);
             }
 
             prevLastOneData=lastOne;
+        }
+    }
+
+    private void parseReceiveModuleData(ArrayList<Integer> d) {
+        Map<String,Double> rData = new HashMap<>();
+
+        Document doc = parseXML(modulesDescriptionFile);
+
+        doc.getDocumentElement().normalize();
+        //Log.e("-","Root element :" + doc.getDocumentElement().getNodeName());
+
+        NodeList nModuleList = doc.getElementsByTagName("Module");
+        for (int i = 0; i < nModuleList.getLength(); i++) {
+            //--Module---
+            Node nModule = nModuleList.item(i);
+            if (nModule.getNodeType() == Node.ELEMENT_NODE) {
+
+                Element eModuleDesc = (Element) nModule;
+
+                //--Variable--
+                NodeList nVariableList = eModuleDesc.getElementsByTagName("Variable");
+                for (int ii = 0; ii < nVariableList.getLength(); ii++) {
+
+                    Node nVariable = nVariableList.item(ii);
+
+                    if (nVariable.getNodeType() == Node.ELEMENT_NODE) {
+
+                        Element eVariableDesc = (Element) nVariable;
+
+                        Double value=0.0;
+                        String varEquation = eVariableDesc.getAttribute("equation");
+                        String equation = varEquation;
+                        Pattern pattern = Pattern.compile("d\\[[0-9]+\\]");
+                        Matcher matcher = pattern.matcher(varEquation);
+                        while (matcher.find())
+                        {
+                            String matchedStr = matcher.group(0);
+                            String numbs= matchedStr.replaceAll("[^0-9]", "");
+                            Integer numb = Integer.parseInt(numbs);
+                            try {
+                                String dVal = Integer.toString(d.get(numb));
+                                equation = equation.replace(matchedStr, dVal); //TODO this can throw an exception at d.get(numb)
+                            }
+                            catch (IndexOutOfBoundsException e){};
+                        }
+
+                        Log.e("-","ePar:"+equation);
+
+                        //rData.put(eVariableDesc.getAttribute("name"),value);*/
+                    }
+                }
+            }
         }
     }
 
