@@ -29,7 +29,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -342,6 +341,8 @@ public class MainActivity extends Activity {
     private void parseReceiveModuleData(ArrayList<Integer> d) {
         Map<String,Double> rData = new HashMap<>();
 
+        MathEval math=new MathEval();
+
         Document doc = parseXML(modulesDescriptionFile);
 
         doc.getDocumentElement().normalize();
@@ -382,16 +383,23 @@ public class MainActivity extends Activity {
                             catch (IndexOutOfBoundsException e){};
                         }
 
-                        Log.e("-","ePar:"+equation);
-
-                        //rData.put(eVariableDesc.getAttribute("name"),value);*/
+                        try {
+                            value = math.evaluate(equation);
+                        }
+                        catch(ArithmeticException e) {
+                            value = 0.0d/0.0;
+                        }
+                        rData.put(eVariableDesc.getAttribute("name"),value);
                     }
                 }
             }
         }
+        Log.e("-",rData.get("BMP085 temp").toString());
     }
 
-    //Application life time functions
+    //-------------------------------------------
+    //      Application life time functions
+    //-------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

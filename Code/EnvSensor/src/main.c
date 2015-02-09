@@ -28,7 +28,7 @@
 
 /********** i2c slave register map **********
  * [0:9] - configuration registers
- * [10:11] - Si7013 humidity   -> 	e.g. hum=56.256%  [10]=56 [11]=25
+ * [10:11] - Si7013 humidity   -> 	e.g. hum=56.25%  [10]=56 [11]=25
  * [12:13] - Si7013 temperature ->	e.g. temp=25.23*C [12]=25 [13]=23
  * [14:15] - Si1142 ambient light ->  [14] -> ambient light High byte  [15] -> ambient light Low byte
  * [16]    - AS3935 number of lighting detection
