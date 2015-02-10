@@ -13,8 +13,13 @@ package modularelectronics.modularelectronics;
 
 //package <your-package-here>;
 
-import java.math.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Math Evaluator.  Provides the ability to evaluate a String math expression, with support for pureFunctions, variables and

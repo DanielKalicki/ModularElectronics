@@ -18,8 +18,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GraphViewSeries;
+import com.jjoe64.graphview.LineGraphView;
+import com.jjoe64.graphview.GraphView.GraphViewData;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,7 +56,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 
 public class MainActivity extends Activity {
 
@@ -110,6 +116,7 @@ public class MainActivity extends Activity {
                 case BluetoothLeService.ACTION_GATT_DISCONNECTED:
                     mConnected = false;
                     updateConnectionState("unconnected");
+                    //TODO automaticly try to connect again.
                     invalidateOptionsMenu();
                     clearUI();
                     break;
@@ -378,7 +385,7 @@ public class MainActivity extends Activity {
                             Integer numb = Integer.parseInt(numbs);
                             try {
                                 String dVal = Integer.toString(d.get(numb));
-                                equation = equation.replace(matchedStr, dVal); //TODO this can throw an exception at d.get(numb)
+                                equation = equation.replace(matchedStr, dVal);
                             }
                             catch (IndexOutOfBoundsException e){};
                         }
@@ -394,7 +401,7 @@ public class MainActivity extends Activity {
                 }
             }
         }
-        Log.e("-",rData.get("BMP085 temp").toString());
+        Log.e("-", rData.get("BMP085 temp").toString());
     }
 
     //-------------------------------------------
@@ -402,7 +409,6 @@ public class MainActivity extends Activity {
     //-------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         Log.e("-","onCreate()");
 
         super.onCreate(savedInstanceState);
@@ -410,6 +416,22 @@ public class MainActivity extends Activity {
         mHandler=new Handler();
 
         setContentView(R.layout.activity_main);
+
+
+        // initilize graph series data
+        GraphViewSeries sampleGraph = new GraphViewSeries(new GraphViewData[] {
+                new GraphViewData(1, 2.0d)
+                , new GraphViewData(2, 1.5d)
+                , new GraphViewData(3, 2.5d)
+                , new GraphViewData(4, 1.0d)
+        });
+        GraphView graphView = new LineGraphView(
+                this // context
+                , "Sample Graph" // heading
+        );
+        graphView.addSeries(sampleGraph);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+        layout.addView(graphView);
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -445,6 +467,9 @@ public class MainActivity extends Activity {
                 getModulesInformation();
             }
         }).start();
+
+
+
     }
     @Override
     protected void onResume() {
