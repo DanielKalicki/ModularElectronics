@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -405,6 +406,43 @@ public class MainActivity extends Activity {
     }
 
     //-------------------------------------------
+    //              Graph functions
+    //-------------------------------------------
+    GraphView graphView;
+    GraphViewSeries graphDataPoints;
+    int graphDataPointsSize;
+    double graphDataPointX;
+
+    protected void graphInit(){
+        // initialize graph series data
+        graphDataPoints = new GraphViewSeries(new GraphViewData[] {
+                new GraphViewData(1, 2.0d)
+                , new GraphViewData(2, 1.5d)
+                , new GraphViewData(3, 2.5d)
+                , new GraphViewData(4, 1.0d)
+        });
+        graphView = new LineGraphView( this, "Temperature" );
+        graphDataPointsSize = 4;
+        graphDataPointX=4;
+
+        graphView.addSeries(graphDataPoints);
+        graphView.setScrollable(true);
+        graphView.setViewPort(0,graphDataPointsSize);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+        layout.addView(graphView);
+    }
+
+    protected void graphAddPoint(double x, double y){
+        if(graphDataPointX < x) { //x must be greater than previous x
+            graphDataPointsSize++;
+            graphDataPointX = x;
+            graphView.setViewPort(0, graphDataPointsSize);
+            graphDataPoints.appendData(new GraphViewData(x, y), true, 500);
+            graphView.redrawAll();
+        }
+    }
+
+    //-------------------------------------------
     //      Application life time functions
     //-------------------------------------------
     @Override
@@ -417,21 +455,13 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
+        graphInit();
+        for (int i=5;i<100;i++) {
+            Random rand = new Random();
 
-        // initilize graph series data
-        GraphViewSeries sampleGraph = new GraphViewSeries(new GraphViewData[] {
-                new GraphViewData(1, 2.0d)
-                , new GraphViewData(2, 1.5d)
-                , new GraphViewData(3, 2.5d)
-                , new GraphViewData(4, 1.0d)
-        });
-        GraphView graphView = new LineGraphView(
-                this // context
-                , "Sample Graph" // heading
-        );
-        graphView.addSeries(sampleGraph);
-        LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
-        layout.addView(graphView);
+            int  n = rand.nextInt(50) + 1;
+            graphAddPoint(i, n);
+        }
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
