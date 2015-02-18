@@ -450,8 +450,11 @@ public class MainActivity extends Activity {
         if(graphDataPointX < x) { //x must be greater than previous x
             graphDataPointsSize++;
             graphDataPointX = x;
+            if(graphDataPointsSize-graphStartPoint>1000){
+                graphStartPoint++;
+            }
             graphView.setViewPort(graphStartPoint, graphDataPointsSize-graphStartPoint);
-            graphDataPoints.appendData(new GraphViewData(x, y), true, 200);
+            graphDataPoints.appendData(new GraphViewData(x, y), true, 1000);
             graphView.redrawAll();
         }
     }
