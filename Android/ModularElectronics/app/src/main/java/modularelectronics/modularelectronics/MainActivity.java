@@ -19,6 +19,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,6 +75,10 @@ public class MainActivity extends Activity {
 
     TextView bleTerminal_text;
     TextView bleTerminal_output;
+
+    Button   mPlotSelectButton;
+    EditText mPlotVariableName;
+    String   plotVariableName="BMP085 temp";
 
     private String modulesDescriptionFile="";
     private String modulesDescription_FileName="moduleDescription.xml";
@@ -383,7 +389,7 @@ public class MainActivity extends Activity {
                         {
                             String matchedStr = matcher.group(0);
                             String numbs= matchedStr.replaceAll("[^0-9]", "");
-                            Integer numb = Integer.parseInt(numbs);
+                            Integer numb = Integer.parseInt(numbs)+1;   //plus one because the first character is start indicator.
                             try {
                                 String dVal = Integer.toString(d.get(numb));
                                 equation = equation.replace(matchedStr, dVal);
@@ -393,6 +399,10 @@ public class MainActivity extends Activity {
 
                         try {
                             value = math.evaluate(equation);
+                            if (eVariableDesc.getAttribute("name").equals(plotVariableName)){
+                                Log.e("-",equation+"  = "+value);
+
+                            }
                         }
                         catch(ArithmeticException e) {
                             value = 0.0d/0.0;
@@ -402,7 +412,13 @@ public class MainActivity extends Activity {
                 }
             }
         }
-        Log.e("-", rData.get("BMP085 temp").toString());
+        //Log.e("-", rData.get(plotVariableName).toString());
+        try {
+            graphAddPoint(graphDataPointX + 1, rData.get(plotVariableName));
+        }
+        catch (NullPointerException e) {
+            graphAddPoint(graphDataPointX + 1, 0);
+        }
     }
 
     //-------------------------------------------
@@ -411,19 +427,17 @@ public class MainActivity extends Activity {
     GraphView graphView;
     GraphViewSeries graphDataPoints;
     int graphDataPointsSize;
+    int graphStartPoint=0;
     double graphDataPointX;
 
     protected void graphInit(){
         // initialize graph series data
         graphDataPoints = new GraphViewSeries(new GraphViewData[] {
-                new GraphViewData(1, 2.0d)
-                , new GraphViewData(2, 1.5d)
-                , new GraphViewData(3, 2.5d)
-                , new GraphViewData(4, 1.0d)
+                new GraphViewData(0, 0.0d)
         });
-        graphView = new LineGraphView( this, "Temperature" );
-        graphDataPointsSize = 4;
-        graphDataPointX=4;
+        graphView = new LineGraphView( this, plotVariableName );
+        graphDataPointsSize = 1;
+        graphDataPointX=0;
 
         graphView.addSeries(graphDataPoints);
         graphView.setScrollable(true);
@@ -436,8 +450,8 @@ public class MainActivity extends Activity {
         if(graphDataPointX < x) { //x must be greater than previous x
             graphDataPointsSize++;
             graphDataPointX = x;
-            graphView.setViewPort(0, graphDataPointsSize);
-            graphDataPoints.appendData(new GraphViewData(x, y), true, 500);
+            graphView.setViewPort(graphStartPoint, graphDataPointsSize-graphStartPoint);
+            graphDataPoints.appendData(new GraphViewData(x, y), true, 200);
             graphView.redrawAll();
         }
     }
@@ -455,13 +469,22 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        graphInit();
-        for (int i=5;i<100;i++) {
-            Random rand = new Random();
+        mPlotSelectButton = (Button)findViewById(R.id.plotSelectButton);
+        mPlotVariableName   = (EditText)findViewById(R.id.plotVariableName);
 
-            int  n = rand.nextInt(50) + 1;
-            graphAddPoint(i, n);
-        }
+        mPlotSelectButton.setOnClickListener(
+            new View.OnClickListener()
+            {
+                public void onClick(View view)
+                {
+                    graphView.setTitle(mPlotVariableName.getText().toString());
+                    plotVariableName=mPlotVariableName.getText().toString();
+                    graphStartPoint=graphDataPointsSize;
+                    graphView.redrawAll();
+                }
+            });
+
+        graphInit();
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
