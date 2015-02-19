@@ -94,11 +94,11 @@ int main(void)
   setupRtc();
 
   while(1){
-	  /*if (waitingForBleData==0)
+	  if (waitingForBleData==0)
 		  EMU_EnterEM2(false);
-	  else {*/
+	  else {
 		  EMU_EnterEM1();
-	  //}
+	  }
 
   }
 }
