@@ -482,7 +482,7 @@ public class MainActivity extends Activity {
                 {
                     graphView.setTitle(mPlotVariableName.getText().toString());
                     plotVariableName=mPlotVariableName.getText().toString();
-                    graphStartPoint=graphDataPointsSize;
+                    graphStartPoint=graphDataPointsSize+1;
                     graphView.redrawAll();
                 }
             });
