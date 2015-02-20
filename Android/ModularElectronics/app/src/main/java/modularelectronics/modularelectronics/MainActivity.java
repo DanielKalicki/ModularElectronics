@@ -67,8 +67,8 @@ public class MainActivity extends Activity {
 
     private BluetoothLeService mBluetoothLeService;
 
-    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
-            new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
+    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =  new ArrayList<>();
+    private BluetoothGattCharacteristic mWriteCharacteristic;
 
     private String mDeviceAddress="78:A5:04:85:26:65";
     private boolean mConnected = false;
@@ -183,6 +183,7 @@ public class MainActivity extends Activity {
                 if(uuid.equals("0000ffe1-0000-1000-8000-00805f9b34fb")) {
                     bleTerminal_output.append("Service found\n");
                     mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
+                    mWriteCharacteristic = gattCharacteristic;
                 }
             }
             mGattCharacteristics.add(charas);
@@ -197,6 +198,12 @@ public class MainActivity extends Activity {
                 getActionBar().setTitle(text);
             }
         });
+    }
+
+    private void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (mBluetoothLeService != null) {
+            mBluetoothLeService.writeCharacteristic(characteristic);
+        }
     }
 
     private void clearUI() {
@@ -349,6 +356,32 @@ public class MainActivity extends Activity {
             }
 
             prevLastOneData=lastOne;
+
+            try {
+                String str = "|testtest|";
+                byte[] strBytes = str.getBytes();
+                byte[] bytes = MainActivity.this.mWriteCharacteristic.getValue();
+
+                if (bytes == null) {
+                    // maybe just write a byte into GATT
+                    Log.e("-", "Cannot get Values from mWriteCharacteristic.");
+                    return;
+                } else if (bytes.length <= strBytes.length) {
+                    for (int i = 0; i < bytes.length; i++) {
+                        bytes[i] = strBytes[i];
+                    }
+                } else {
+                    for (int i = 0; i < strBytes.length; i++) {
+                        bytes[i] = strBytes[i];
+                    }
+                }
+
+                MainActivity.this.mWriteCharacteristic.setValue(bytes);
+                MainActivity.this.writeCharacteristic(MainActivity.this.mWriteCharacteristic);
+            }
+            catch (NullPointerException e){
+                Log.e("-","mWriteCharacteristic NullPointerException");
+            }
         }
     }
 
@@ -399,10 +432,6 @@ public class MainActivity extends Activity {
 
                         try {
                             value = math.evaluate(equation);
-                            if (eVariableDesc.getAttribute("name").equals(plotVariableName)){
-                                Log.e("-",equation+"  = "+value);
-
-                            }
                         }
                         catch(ArithmeticException e) {
                             value = 0.0d/0.0;
