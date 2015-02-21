@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -357,7 +356,7 @@ public class MainActivity extends Activity {
 
             prevLastOneData=lastOne;
 
-            try {
+            /*try {
                 String str = "|testtest|";
                 byte[] strBytes = str.getBytes();
                 byte[] bytes = MainActivity.this.mWriteCharacteristic.getValue();
@@ -381,7 +380,7 @@ public class MainActivity extends Activity {
             }
             catch (NullPointerException e){
                 Log.e("-","mWriteCharacteristic NullPointerException");
-            }
+            }*/
         }
     }
 

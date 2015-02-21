@@ -583,21 +583,31 @@ void RTC_IRQHandler(void)
 			i2c_registers[REG_MPU6050_Z_GYRO_HIGH]=      gyro[2]>>8;
 			i2c_registers[REG_MPU6050_Z_GYRO_LOW] =(uint8_t)gyro[2];
 
-			short sensors;
+			short sensors_mpu;
 			long quat[4];
 			unsigned char more;
 
 			// check gesture interrupts
-			dmp_read_fifo(gyro,accel,quat,0,&sensors,&more);
+			dmp_read_fifo(gyro,accel,quat,0,&sensors_mpu,&more);
 
 			// read pedometer data
 			unsigned long pedometer_count=0;
 			dmp_get_pedometer_step_count(&pedometer_count);
 			sprintf(buff,"\t\tPedometer count: %ld",pedometer_count);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_5]=(uint8_t)(pedometer_count>>24);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_6]=(uint8_t)(pedometer_count>>16);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_7]=(uint8_t)(pedometer_count>>8);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_8]=(uint8_t)(pedometer_count);
 			uart_sendText(buff);
+
 			unsigned long pedometer_time=0;
 			dmp_get_pedometer_walk_time(&pedometer_time);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_5]=(uint8_t)(pedometer_time>>24);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_6]=(uint8_t)(pedometer_time>>16);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_7]=(uint8_t)(pedometer_time>>8);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_8]=(uint8_t)(pedometer_time);
 			sprintf(buff,"  Pedometer time: %ld \n",pedometer_time);
+
 			uart_sendText(buff);
 		}
 
