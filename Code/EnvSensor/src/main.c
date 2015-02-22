@@ -37,91 +37,83 @@
  * [22:27] - HMC5883L [22:23] - X data, [24:25] - Y data [26:27] - Z data
  * [28:33] - MPU6050 accel  [28:29] - X accel data [30:31] - Y accel data [32:33] - Z accel data
  * [34:39] - MPU6050 gyro   [34:35] - X gyro data  [36:37] - Y gyro data  [38:39] - Z gyro data
- * [40:55] - MPU pedometer  [40:47] - number of steps in binary format
- *                          [48:55] - number of walking time in binary format in miliseconds
- * [56:65] - MPU dmp events [55:54] - detected tap events
- * [66:85]  AS3935 every byte contains estimate distance from lighting for every lighting detection
+ * [40:47] - MPU pedometer  [40:43] - number of steps in binary format
+ *                          [44:47] - number of walking time in binary format in miliseconds
+ * [48:57] - MPU dmp events [48:57] - detected tap events
+ * [58:67]  AS3935 every byte contains estimate distance from lighting for every lighting detection
  * */
 enum registerMap{
 
-	REG_DATA_LENGTH			=0,
+	REG_DATA_LENGTH				=0,
 
-	REG_MODULE_ID_1			=1,
-	REG_MODULE_ID_2			=2,
-	REG_MODULE_ID_3			=3,
+	REG_MODULE_ID_1				=1,
+	REG_MODULE_ID_2				=2,
+	REG_MODULE_ID_3				=3,
 
-	REG_SENSORS				=5,
-	REG_MPU6050_CONFIG		=REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
+	REG_SENSORS					=5,
+	REG_MPU6050_CONFIG			=REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
 
-	REG_SI7013_HUM_HIGH		=10,
-	REG_SI7013_HUM_LOW		=11,
+	REG_SI7013_HUM_HIGH			=10,
+	REG_SI7013_HUM_LOW			=11,
 
-	REG_SI7013_TEMP_HIGH	=12,
-	REG_SI7013_TEMP_LOW		=13,
+	REG_SI7013_TEMP_HIGH		=12,
+	REG_SI7013_TEMP_LOW			=13,
 
-	REG_SI1142_ALS_HIGH		=14,
-	REG_SI1142_ALS_LOW		=15,
+	REG_SI1142_ALS_HIGH			=14,
+	REG_SI1142_ALS_LOW			=15,
 
-	REG_AS3935_LIGHT_DET_NUM=16,
+	REG_AS3935_LIGHT_DET_NUM	=16,
 
-	REG_BMP085_TEMP_HIGH	=17,
-	REG_BMP085_TEMP_LOW		=18,
+	REG_BMP085_TEMP_HIGH		=17,
+	REG_BMP085_TEMP_LOW			=18,
 
-	REG_BMP085_PRESS_XHIGH	=19,
-	REG_BMP085_PRESS_HIGH	=20,
-	REG_BMP085_PRESS_LOW	=21,
+	REG_BMP085_PRESS_XHIGH		=19,
+	REG_BMP085_PRESS_HIGH		=20,
+	REG_BMP085_PRESS_LOW		=21,
 
-	REG_HMC5883L_X_HIGH		=22,
-	REG_HMC5883L_X_LOW		=23,
-	REG_HMC5883L_Y_HIGH		=24,
-	REG_HMC5883L_Y_LOW		=25,
-	REG_HMC5883L_Z_HIGH		=26,
-	REG_HMC5883L_Z_LOW		=27,
+	REG_HMC5883L_X_HIGH			=22,
+	REG_HMC5883L_X_LOW			=23,
+	REG_HMC5883L_Y_HIGH			=24,
+	REG_HMC5883L_Y_LOW			=25,
+	REG_HMC5883L_Z_HIGH			=26,
+	REG_HMC5883L_Z_LOW			=27,
 
-	REG_MPU6050_X_ACCEL_HIGH=28,
-	REG_MPU6050_X_ACCEL_LOW	=29,
-	REG_MPU6050_Y_ACCEL_HIGH=30,
-	REG_MPU6050_Y_ACCEL_LOW	=31,
-	REG_MPU6050_Z_ACCEL_HIGH=32,
-	REG_MPU6050_Z_ACCEL_LOW	=33,
+	REG_MPU6050_X_ACCEL_HIGH	=28,
+	REG_MPU6050_X_ACCEL_LOW		=29,
+	REG_MPU6050_Y_ACCEL_HIGH	=30,
+	REG_MPU6050_Y_ACCEL_LOW		=31,
+	REG_MPU6050_Z_ACCEL_HIGH	=32,
+	REG_MPU6050_Z_ACCEL_LOW		=33,
 
-	REG_MPU6050_X_GYRO_HIGH	=34,
-	REG_MPU6050_X_GYRO_LOW	=35,
-	REG_MPU6050_Y_GYRO_HIGH	=36,
-	REG_MPU6050_Y_GYRO_LOW	=37,
-	REG_MPU6050_Z_GYRO_HIGH	=38,
-	REG_MPU6050_Z_GYRO_LOW	=39,
+	REG_MPU6050_X_GYRO_HIGH		=34,
+	REG_MPU6050_X_GYRO_LOW		=35,
+	REG_MPU6050_Y_GYRO_HIGH		=36,
+	REG_MPU6050_Y_GYRO_LOW		=37,
+	REG_MPU6050_Z_GYRO_HIGH		=38,
+	REG_MPU6050_Z_GYRO_LOW		=39,
 
 	REG_MPU6050_X_PEDO_COUNT_1	=40,
 	REG_MPU6050_X_PEDO_COUNT_2	=41,
 	REG_MPU6050_X_PEDO_COUNT_3	=42,
 	REG_MPU6050_X_PEDO_COUNT_4	=43,
-	REG_MPU6050_X_PEDO_COUNT_5	=44,
-	REG_MPU6050_X_PEDO_COUNT_6	=45,
-	REG_MPU6050_X_PEDO_COUNT_7	=46,
-	REG_MPU6050_X_PEDO_COUNT_8	=47,
 
-	REG_MPU6050_X_PEDO_TIME_1	=48,
-	REG_MPU6050_X_PEDO_TIME_2	=49,
-	REG_MPU6050_X_PEDO_TIME_3	=50,
-	REG_MPU6050_X_PEDO_TIME_4	=51,
-	REG_MPU6050_X_PEDO_TIME_5	=52,
-	REG_MPU6050_X_PEDO_TIME_6	=53,
-	REG_MPU6050_X_PEDO_TIME_7	=54,
-	REG_MPU6050_X_PEDO_TIME_8	=55,
+	REG_MPU6050_X_PEDO_TIME_1	=44,
+	REG_MPU6050_X_PEDO_TIME_2	=45,
+	REG_MPU6050_X_PEDO_TIME_3	=46,
+	REG_MPU6050_X_PEDO_TIME_4	=47,
 
-	REG_MPU6050_X_TAP_EVENT_1	=56,
-	REG_MPU6050_X_TAP_EVENT_2	=57,
-	REG_MPU6050_X_TAP_EVENT_3	=58,
-	REG_MPU6050_X_TAP_EVENT_4	=59,
-	REG_MPU6050_X_TAP_EVENT_5	=60,
-	REG_MPU6050_X_TAP_EVENT_6	=61,
-	REG_MPU6050_X_TAP_EVENT_7	=62,
-	REG_MPU6050_X_TAP_EVENT_8	=63,
-	REG_MPU6050_X_TAP_EVENT_9	=64,
-	REG_MPU6050_X_TAP_EVENT_10	=65,
+	REG_MPU6050_X_TAP_EVENT_1	=48,
+	REG_MPU6050_X_TAP_EVENT_2	=49,
+	REG_MPU6050_X_TAP_EVENT_3	=50,
+	REG_MPU6050_X_TAP_EVENT_4	=51,
+	REG_MPU6050_X_TAP_EVENT_5	=52,
+	REG_MPU6050_X_TAP_EVENT_6	=53,
+	REG_MPU6050_X_TAP_EVENT_7	=54,
+	REG_MPU6050_X_TAP_EVENT_8	=55,
+	REG_MPU6050_X_TAP_EVENT_9	=56,
+	REG_MPU6050_X_TAP_EVENT_10	=57,
 
-	REG_AS3935_lIGH_DIST_1	=66,
+	REG_AS3935_lIGH_DIST_1		=58,
 	REG_AS3935_lIGH_DIST_2,
 	REG_AS3935_lIGH_DIST_3,
 	REG_AS3935_lIGH_DIST_4,
@@ -131,7 +123,6 @@ enum registerMap{
 	REG_AS3935_lIGH_DIST_8,
 	REG_AS3935_lIGH_DIST_9,
 	REG_AS3935_lIGH_DIST_10,
-	//ADD VALUES TO _20
 };
 
 //-------------INIT--------------
@@ -590,22 +581,32 @@ void RTC_IRQHandler(void)
 			// check gesture interrupts
 			dmp_read_fifo(gyro,accel,quat,0,&sensors_mpu,&more);
 
+			for (int i=0;i<10;i++){
+				if(i<i_tapData){
+					i2c_registers[REG_MPU6050_X_TAP_EVENT_1+i]=tapData[i];
+				}
+				else {
+					i2c_registers[REG_MPU6050_X_TAP_EVENT_1+i]=0;
+				}
+			}
+			i_tapData=0;
+
 			// read pedometer data
 			unsigned long pedometer_count=0;
 			dmp_get_pedometer_step_count(&pedometer_count);
 			sprintf(buff,"\t\tPedometer count: %ld",pedometer_count);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_5]=(uint8_t)(pedometer_count>>24);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_6]=(uint8_t)(pedometer_count>>16);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_7]=(uint8_t)(pedometer_count>>8);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_8]=(uint8_t)(pedometer_count);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_1]=(uint8_t)(pedometer_count>>24);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_2]=(uint8_t)(pedometer_count>>16);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_3]=(uint8_t)(pedometer_count>>8);
+			i2c_registers[REG_MPU6050_X_PEDO_COUNT_4]=(uint8_t)(pedometer_count);
 			uart_sendText(buff);
 
 			unsigned long pedometer_time=0;
 			dmp_get_pedometer_walk_time(&pedometer_time);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_5]=(uint8_t)(pedometer_time>>24);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_6]=(uint8_t)(pedometer_time>>16);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_7]=(uint8_t)(pedometer_time>>8);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_8]=(uint8_t)(pedometer_time);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_1]=(uint8_t)(pedometer_time>>24);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_2]=(uint8_t)(pedometer_time>>16);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_3]=(uint8_t)(pedometer_time>>8);
+			i2c_registers[REG_MPU6050_X_PEDO_TIME_4]=(uint8_t)(pedometer_time);
 			sprintf(buff,"  Pedometer time: %ld \n",pedometer_time);
 
 			uart_sendText(buff);
@@ -660,7 +661,10 @@ int main(void) {
 	  i2c_registers[i]=0;
   }
 
-  i2c_registers[REG_DATA_LENGTH]=86;
+  i2c_registers[REG_DATA_LENGTH]=68;
+  i2c_registers[REG_MODULE_ID_1]='E';
+  i2c_registers[REG_MODULE_ID_2]='S';
+  i2c_registers[REG_MODULE_ID_3]='N';
 
   initI2C_Master();
   i2c_Scan(I2C0);

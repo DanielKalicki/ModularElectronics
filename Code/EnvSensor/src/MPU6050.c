@@ -55,11 +55,15 @@ static void tap_cb(unsigned char direction, unsigned char count)
     char buff[30];
     sprintf(buff,"\n\n\tPACKET_TYPE_TAP dir:%d count:%d\n\n",data[0],data[1]);
     uart_sendText(buff);
+    tapData[i_tapData]=(direction<<3)+(count&0x07);
+    if(i_tapData<9) i_tapData++;
 }
 static void android_orient_cb(unsigned char orientation)
 {
     char buff[30];
     sprintf(buff,"\n\n\tPACKET_TYPE_ANDROID_ORIENT %d\n\n",orientation);
+    tapData[i_tapData]=orientation<<3;	//if count value is equal to 0 this means we got an orientation change event
+    if(i_tapData<9) i_tapData++;
     uart_sendText(buff);
 }
 

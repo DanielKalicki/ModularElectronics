@@ -16,6 +16,9 @@ uint16_t MPU6050_getFifoCount(void);
 void MPU6050_getMotion6(int16_t *ax, int16_t *ay, int16_t *az, int16_t *gx, int16_t *gy, int16_t *gz);
 void MPU6050_config_register();
 
+volatile uint8_t tapData[10];
+volatile uint8_t i_tapData;
+
 #ifdef __cplusplus
 }
 #endif
