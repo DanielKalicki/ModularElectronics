@@ -53,6 +53,10 @@ enum registerMap{
 	REG_SENSORS					=5,
 	REG_MPU6050_CONFIG			=REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
 
+	REG_COMMAND_CODE			=7,		//this registers are used to send commands to the module
+	REG_COMMAND_DATA_1			=8,
+	REG_COMMAND_DATA_2			=9,
+
 	REG_SI7013_HUM_HIGH			=10,
 	REG_SI7013_HUM_LOW			=11,
 
@@ -296,7 +300,7 @@ void forceRhMeasurment(){
 	seq.addr  = SI7013_ADDR;
 	seq.flags = I2C_FLAG_WRITE;
 	/* Select command to issue */
-	i2c_write_data[0] = 0xF5;			//Measure Relative Humidity, No Hold Master Mode
+	i2c_write_data[0] = 0xE5;			//Measure Relative Humidity, No Hold Master Mode
 	seq.buf[0].data   = i2c_write_data;
 	seq.buf[0].len    = 1;
 
@@ -319,14 +323,11 @@ int readHumidityAndTemperature(uint32_t *rhData, int32_t *tData){
 	 seq.buf[0].data = data;
 	 seq.buf[0].len  = 2;
 
-	 /* Do a polled transfer */
 	 I2C_Status = I2C_TransferInit(I2C0, &seq);
 	 uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
 	 while (I2C_Status == i2cTransferInProgress && timeout--)
 	 {
-	    /* Enter EM1 while waiting for I2C interrupt */
 	    //EMU_EnterEM1();
-	    /* Could do a timeout function here. */
 		I2C_Status = I2C_Transfer(I2C0);
 	 }
 	 if(timeout==(uint32_t)(-1)){
@@ -492,6 +493,7 @@ void RTC_IRQHandler(void)
 		//change RTC time to 100ms
 		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_2);
 		RTC_interrupt_type=1;
+
 	}
 	else if(RTC_interrupt_type==1){
 		char buff[30];

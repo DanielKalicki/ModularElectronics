@@ -79,6 +79,8 @@ public class MainActivity extends Activity {
     EditText mPlotVariableName;
     String   plotVariableName="BMP085 temp";
 
+    Intent gattServiceIntent;
+
     private String modulesDescriptionFile="";
     private String modulesDescription_FileName="moduleDescription.xml";
 
@@ -123,6 +125,7 @@ public class MainActivity extends Activity {
                     mConnected = false;
                     updateConnectionState("unconnected");
                     //TODO automaticly try to connect again.
+                    //bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
                     invalidateOptionsMenu();
                     clearUI();
                     break;
@@ -356,8 +359,8 @@ public class MainActivity extends Activity {
 
             prevLastOneData=lastOne;
 
-            /*try {
-                String str = "|testtest|";
+            try {
+                String str = "W"+Character.toString((char)4)+Character.toString((char)(dataCounter%256));
                 byte[] strBytes = str.getBytes();
                 byte[] bytes = MainActivity.this.mWriteCharacteristic.getValue();
 
@@ -380,7 +383,7 @@ public class MainActivity extends Activity {
             }
             catch (NullPointerException e){
                 Log.e("-","mWriteCharacteristic NullPointerException");
-            }*/
+            }
         }
     }
 
@@ -541,7 +544,7 @@ public class MainActivity extends Activity {
 
         bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
 
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
         bleTerminal_text.append("onCreate()\n");
@@ -551,8 +554,6 @@ public class MainActivity extends Activity {
                 getModulesInformation();
             }
         }).start();
-
-
 
     }
     @Override

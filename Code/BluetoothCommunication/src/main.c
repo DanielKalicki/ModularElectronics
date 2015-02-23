@@ -30,7 +30,6 @@ volatile int waitingForBleData=0;
 
 //-------------RTC--------------
 void RTC_IRQHandler(void){
-	static uint8_t rxCounter=0;
 	if (waitingForBleData==0){
 
 		uint8_t data_length=0;
@@ -48,7 +47,6 @@ void RTC_IRQHandler(void){
 		for(int i=0;i<data_length;i++)
 			uart_sendChar(reg_vals[i]);
 
-		uart_sendChar(rxCounter);
 		uart_sendChar('|');
 
 		waitingForBleData=1;	//enter EMU1 to wait for input data from ble
@@ -57,18 +55,21 @@ void RTC_IRQHandler(void){
 	}
 	else {
 		if(rxBuff.wrI>0){
-			rxCounter++;
-			if(rxCounter>254) rxCounter=0;
-			for (int i=0;i<rxBuff.wrI;i++){
+			/*for (int i=0;i<rxBuff.wrI;i++){
 				uart_sendChar(rxBuff.data[i]);
+			}*/
+			if(rxBuff.wrI>3){
+				if(rxBuff.data[0]=='W'){
+					i2c_RegisterSet(I2C0,0x10,rxBuff.data[1],rxBuff.data[2]);
+				}
 			}
 		}
 
 		clearRxBuffer();
 
 		//wait for the data to be send -> this will be removed in the future
-		int counter=0;
-		while (counter<100) {counter++;__asm("NOP");};
+		/*int counter=0;
+		while (counter<100) {counter++;__asm("NOP");};*/
 
 		waitingForBleData=0;
 		//change the RTC setup
