@@ -360,7 +360,7 @@ public class MainActivity extends Activity {
             prevLastOneData=lastOne;
 
             try {
-                String str = "W"+Character.toString((char)4)+Character.toString((char)(dataCounter%256));
+                String str = Character.toString((char)16)+"W"+Character.toString((char)4)+Character.toString((char)(dataCounter%128));
                 byte[] strBytes = str.getBytes();
                 byte[] bytes = MainActivity.this.mWriteCharacteristic.getValue();
 

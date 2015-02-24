@@ -26,55 +26,69 @@ void testWait(){
 	}
 }
 
-volatile int waitingForBleData=0;
+volatile int RTC_interrupt=0;
 
 //-------------RTC--------------
+
+uint32_t slavesList[4];
+
 void RTC_IRQHandler(void){
-	if (waitingForBleData==0){
 
-		uint8_t data_length=0;
-		i2c_RegisterGet(I2C0,0x10,0x00,&data_length);
-
-		//sprintf(buff,"L:%d [%d]",data_length,counter);
-
-		data_length=87; //test
-
-		uint8_t reg_vals[200];
-		i2c_Register_Read_Block(I2C0,0x10,0x00,data_length,reg_vals);
+	//Time for executing the BLE RX commands.
+	if(RTC_interrupt==0) {
+		if(rxBuff.wrI>0){
+			if(rxBuff.wrI>4){
+				if(rxBuff.data[1]=='W'){
+					//command in the form of I2C_ADDR | Write | reg_addr | data
+					i2c_RegisterSet(I2C0,rxBuff.data[0],rxBuff.data[2],rxBuff.data[3]);
+				}
+			}
+			clearRxBuffer();
+		}
+	}
+	//i2c scan from the master
+	else if(RTC_interrupt==6){
+		static uint8_t scanStart=0;
+		for (uint8_t i=scanStart;i<scanStart+4;i++){
+			if (i2c_Detect(I2C0,(i*2))==1){
+				slavesList[i>>5]|=(1<<(i&0x1F));		//i&0x1F - i%32
+			}
+			else slavesList[i>>5]&=~(1<<(i&0x1F));
+		}
+		if (scanStart<124) scanStart+=4;
+		else scanStart=0;
 
 		uart_sendChar('|');
+		for (int i=0;i<4;i++){
+			uart_sendChar((uint8_t)(slavesList[i]));
+			uart_sendChar((uint8_t)(slavesList[i]>>8));
+			uart_sendChar((uint8_t)(slavesList[i]>>16));
+			uart_sendChar((uint8_t)(slavesList[i]>>24));
+		}
+		uart_sendChar('|');
+	}
+	//first device
+	else if (RTC_interrupt==2){
 
-		for(int i=0;i<data_length;i++)
+		static uint8_t len=10;
+		uart_sendChar('|');
+
+		//data_length=87; //test
+
+		uint8_t reg_vals[200];
+		i2c_Register_Read_Block(I2C0,0x10,0x00,len,reg_vals);
+
+		for(int i=0;i<len;i++)
 			uart_sendChar(reg_vals[i]);
 
 		uart_sendChar('|');
 
-		waitingForBleData=1;	//enter EMU1 to wait for input data from ble
-		//change the RTC setup to wait for data from ble module.
-		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_RX);
+		len=reg_vals[0];
+		if(len==0) len=10;
 	}
-	else {
-		if(rxBuff.wrI>0){
-			/*for (int i=0;i<rxBuff.wrI;i++){
-				uart_sendChar(rxBuff.data[i]);
-			}*/
-			if(rxBuff.wrI>3){
-				if(rxBuff.data[0]=='W'){
-					i2c_RegisterSet(I2C0,0x10,rxBuff.data[1],rxBuff.data[2]);
-				}
-			}
-		}
 
-		clearRxBuffer();
-
-		//wait for the data to be send -> this will be removed in the future
-		/*int counter=0;
-		while (counter<100) {counter++;__asm("NOP");};*/
-
-		waitingForBleData=0;
-		//change the RTC setup
-		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP);
-	}
+	RTC_interrupt++;
+	if(RTC_interrupt>9) RTC_interrupt=0;
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
@@ -85,6 +99,8 @@ int main(void)
 {
   CHIP_Init();
   initOscillators();
+
+  for (int i=0;i<4;i++) slavesList[i]=0;
 
   initI2C();
   initUART_baud(115200);
@@ -99,11 +115,11 @@ int main(void)
   setupRtc();
 
   while(1){
-	  if (waitingForBleData==0)
+	  /*if (waitingForBleData==0)
 		  EMU_EnterEM2(false);
-	  else {
+	  else {*/
 		  EMU_EnterEM1();
-	  }
+	  //}
 
   }
 }
