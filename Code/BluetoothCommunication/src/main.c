@@ -73,8 +73,6 @@ void RTC_IRQHandler(void){
 		static uint8_t len=10;
 		uart_sendChar('|');
 
-		//data_length=87; //test
-
 		uint8_t reg_vals[200];
 		i2c_Register_Read_Block(I2C0,0x10,0x00,len,reg_vals);
 

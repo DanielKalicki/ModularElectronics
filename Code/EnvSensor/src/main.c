@@ -129,6 +129,8 @@ enum registerMap{
 	REG_AS3935_lIGH_DIST_10,
 };
 
+#define REG_DATA_LENGTH_VALUE	68
+
 //-------------INIT--------------
 void initOscillators(void){
 	CMU_ClockEnable(cmuClock_HFPER, true);
@@ -483,6 +485,7 @@ void RTC_IRQHandler(void)
 	clockTest_short();
 
 	parse_received_message();
+	i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
 
 	if(RTC_interrupt_type==0){
 
@@ -630,6 +633,27 @@ void RTC_IRQHandler(void)
 			i2c_registers[REG_BMP085_PRESS_LOW]=pressure%10000;
 		}
 		uart_sendChar('\n');
+
+			i2c_registers[51] = ((uint8_t)(slavesList[0]));
+			i2c_registers[52] = ((uint8_t)(slavesList[0]>>8));
+			i2c_registers[53] = ((uint8_t)(slavesList[0]>>16));
+			i2c_registers[54] = ((uint8_t)(slavesList[0]>>24));
+
+			i2c_registers[55] = ((uint8_t)(slavesList[1]));
+			i2c_registers[56] = ((uint8_t)(slavesList[1]>>8));
+			i2c_registers[57] = ((uint8_t)(slavesList[1]>>16));
+			i2c_registers[58] = ((uint8_t)(slavesList[1]>>24));
+
+			i2c_registers[59] = ((uint8_t)(slavesList[2]));
+			i2c_registers[60] = ((uint8_t)(slavesList[2]>>8));
+			i2c_registers[61] = ((uint8_t)(slavesList[2]>>16));
+			i2c_registers[62] = ((uint8_t)(slavesList[2]>>24));
+
+			i2c_registers[63] = ((uint8_t)(slavesList[3]));
+			i2c_registers[64] = ((uint8_t)(slavesList[3]>>8));
+			i2c_registers[65] = ((uint8_t)(slavesList[3]>>16));
+			i2c_registers[66] = ((uint8_t)(slavesList[3]>>24));
+
 		//change RTC time to 400ms
 		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_1);
 		RTC_interrupt_type=0;
@@ -663,7 +687,11 @@ int main(void) {
 	  i2c_registers[i]=0;
   }
 
-  i2c_registers[REG_DATA_LENGTH]=68;
+  for (int i=0;i<4;i++){
+	  slavesList[i]=0;
+  }
+
+  i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
   i2c_registers[REG_MODULE_ID_1]='E';
   i2c_registers[REG_MODULE_ID_2]='S';
   i2c_registers[REG_MODULE_ID_3]='N';

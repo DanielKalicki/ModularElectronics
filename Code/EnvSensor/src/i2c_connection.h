@@ -36,6 +36,7 @@ volatile bool i2c_startTx;
 volatile uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
 volatile uint8_t i2c_rxBufferIndex;
 volatile uint8_t i2c_registers[I2C_REG_BUFFER_SIZE];
+volatile uint8_t slavesList[4];
 
 I2C_TransferReturn_TypeDef I2C_Status;	//Global variable
 

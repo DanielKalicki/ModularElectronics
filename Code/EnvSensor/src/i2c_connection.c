@@ -25,7 +25,6 @@ void initI2C_Master(void)
   //I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRFast};
   I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRStandard};
 
-
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_I2C0, true);
 
@@ -84,7 +83,7 @@ void initI2C_Slave(void)
 
   /* Setting up to enable slave mode */
   I2C0->SADDR = I2C_SLAVE_ADDRESS;
-  I2C0->SADDRMASK = 0xFE;
+  //I2C0->SADDRMASK = 0xFE;
   I2C0->CTRL |= I2C_CTRL_SLAVE | I2C_CTRL_AUTOACK | I2C_CTRL_AUTOSN;
   enableI2cSlaveInterrupts();
 }
@@ -100,6 +99,8 @@ void disableI2cSlaveInterrupts(void){
   I2C_IntClear(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
 }
 
+uint8_t i2cAddr=0;
+uint8_t addrCounter=0;
 
 void I2C0_IRQHandler(void)
 {
@@ -107,7 +108,6 @@ void I2C0_IRQHandler(void)
   static bool slave_address_ok=false;
   static bool read_data_command=false;
   static int register_to_send = 0;
-
 
   int status;
   status = I2C0->IF;
@@ -119,6 +119,9 @@ void I2C0_IRQHandler(void)
     /* Indicating that reception is started */
 	data = I2C0->RXDATA;
 
+	if (data&0x01) //read request indicate that the i2c slave exists.
+		slavesList[(i2cAddr>>1)>>5] |= (1<<((i2cAddr>>1)&0x1F));
+
     if(data==I2C_SLAVE_ADDRESS){
 		i2c_rxInProgress = true;
 		I2C0->RXDATA;
@@ -127,13 +130,9 @@ void I2C0_IRQHandler(void)
     else if (data==I2C_SLAVE_ADDRESS+1){ //read request
     	i2c_rxInProgress = true;
     	I2C0->RXDATA;
-    	//uart_sendChar('a');
 
     	if(i2c_rxBuffer[0]<I2C_REG_BUFFER_SIZE){
     		register_to_send=0;
-    		/*char buff[30];
-    		sprintf(buff,"%d\n",i2c_rxBuffer[i2c_rxBufferIndex-1]);
-    		uart_sendText(buff);*/
     		I2C0->TXDATA = i2c_registers[i2c_rxBuffer[i2c_rxBufferIndex-1]+register_to_send]; //send data
     		read_data_command=true;
     		slave_address_ok=true;

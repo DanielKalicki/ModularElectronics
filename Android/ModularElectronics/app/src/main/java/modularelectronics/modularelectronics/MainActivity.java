@@ -349,11 +349,14 @@ public class MainActivity extends Activity {
                 dataCounter++;
                 bleTerminal_output.setText("");
                 parseReceiveModuleData(d);
+
                 d.clear();
             }
             for (int i=0;i<hexData.length;i++){
                 Integer value = Integer.parseInt(hexData[i], 16);
-                bleTerminal_output.append(Integer.toString(value)+" ");
+
+                bleTerminal_output.append(Integer.toString(value) + " ");
+
                 d.add(value);
             }
 
