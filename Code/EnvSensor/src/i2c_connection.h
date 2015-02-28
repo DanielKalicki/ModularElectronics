@@ -24,7 +24,7 @@ extern "C" {
 #define I2CDRV_SDA_PORT_SLAVE 		gpioPortD
 #define I2CDRV_SDA_PIN_SLAVE 		6
 #define I2CDRV_PORT_LOCATION_SLAVE 	1
-#define I2C_SLAVE_ADDRESS           0x10
+#define I2C_SLAVE_ADDRESS           i2c_slave_address
 #define I2C_RXBUFFER_SIZE       	10
 #define I2C_REG_BUFFER_SIZE       	100
 #define CORE_FREQUENCY          	14000000
@@ -36,7 +36,9 @@ volatile bool i2c_startTx;
 volatile uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
 volatile uint8_t i2c_rxBufferIndex;
 volatile uint8_t i2c_registers[I2C_REG_BUFFER_SIZE];
-volatile uint8_t slavesList[4];
+volatile uint32_t slavesList[4];
+volatile uint32_t slavesListCheck[4];
+volatile uint8_t i2c_slave_address;
 
 I2C_TransferReturn_TypeDef I2C_Status;	//Global variable
 

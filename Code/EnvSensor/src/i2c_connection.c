@@ -99,9 +99,6 @@ void disableI2cSlaveInterrupts(void){
   I2C_IntClear(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
 }
 
-uint8_t i2cAddr=0;
-uint8_t addrCounter=0;
-
 void I2C0_IRQHandler(void)
 {
   disableRtcInterrupts();
@@ -119,8 +116,15 @@ void I2C0_IRQHandler(void)
     /* Indicating that reception is started */
 	data = I2C0->RXDATA;
 
-	if (data&0x01) //read request indicate that the i2c slave exists.
-		slavesList[(i2cAddr>>1)>>5] |= (1<<((i2cAddr>>1)&0x1F));
+	uint8_t tab_addr = (data>>1);
+	uint32_t tab_bit_addr = (1<<(uint32_t)(tab_addr&0x1F));
+	if (data&0x01) {//read request indicate that the i2c slave exists.
+		slavesList[tab_addr>>5]	|= tab_bit_addr;
+	}
+	/*else {
+		slavesList[tab_addr>>5]	&= ~tab_bit_addr;
+	}*/
+	slavesListCheck[tab_addr>>5]|= tab_bit_addr;
 
     if(data==I2C_SLAVE_ADDRESS){
 		i2c_rxInProgress = true;
@@ -180,7 +184,8 @@ void I2C0_IRQHandler(void)
     register_to_send=0;
   }
 
-  enableRtcInterrupts();
+  if (i2c_slave_address!=0x00)
+	  enableRtcInterrupts();
 }
 
 //void I2C0_IRQHandler(void){

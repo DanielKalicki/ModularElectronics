@@ -50,6 +50,8 @@ enum registerMap{
 	REG_MODULE_ID_2				=2,
 	REG_MODULE_ID_3				=3,
 
+	REG_I2C_ADDR				=4,
+
 	REG_SENSORS					=5,
 	REG_MPU6050_CONFIG			=REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
 
@@ -470,6 +472,16 @@ void parse_received_message(){
 	}
 }
 
+void check_slavesList(){
+	if (i2c_slave_address<0x10){ //addreses lower than 0x10 are set as a default at startup for i2c line sniffing
+		if(slavesListCheck[0]>=0xFFFFFFFE && slavesListCheck[1]==0xFFFFFFFF && slavesListCheck[2]==0xFFFFFFFF && slavesListCheck[3]==0xFFFFFFFF){
+			//this code will be reached if i2c list is full
+			i2c_slave_address = 0x10;
+			i2c_registers[REG_I2C_ADDR] = i2c_slave_address;
+		}
+	}
+}
+
 //------------RTC----------------
 uint8_t RTC_interrupt_type=0;
 void RTC_IRQHandler(void)
@@ -486,6 +498,7 @@ void RTC_IRQHandler(void)
 
 	parse_received_message();
 	i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+	i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
 
 	if(RTC_interrupt_type==0){
 
@@ -629,35 +642,37 @@ void RTC_IRQHandler(void)
 			uart_sendText(buff);
 
 			i2c_registers[REG_BMP085_PRESS_XHIGH]=pressure/1000;
-			i2c_registers[REG_BMP085_PRESS_HIGH]=(pressure%1000)/10;
-			i2c_registers[REG_BMP085_PRESS_LOW]=pressure%10000;
+			i2c_registers[REG_BMP085_PRESS_HIGH] =(pressure%1000)/10;
+			i2c_registers[REG_BMP085_PRESS_LOW]  =pressure%10000;
 		}
 		uart_sendChar('\n');
 
-			i2c_registers[51] = ((uint8_t)(slavesList[0]));
-			i2c_registers[52] = ((uint8_t)(slavesList[0]>>8));
-			i2c_registers[53] = ((uint8_t)(slavesList[0]>>16));
-			i2c_registers[54] = ((uint8_t)(slavesList[0]>>24));
+			i2c_registers[51] = ((uint8_t)(slavesListCheck[0]));
+			i2c_registers[52] = ((uint8_t)(slavesListCheck[0]>>8));
+			i2c_registers[53] = ((uint8_t)(slavesListCheck[0]>>16));
+			i2c_registers[54] = ((uint8_t)(slavesListCheck[0]>>24));
 
-			i2c_registers[55] = ((uint8_t)(slavesList[1]));
-			i2c_registers[56] = ((uint8_t)(slavesList[1]>>8));
-			i2c_registers[57] = ((uint8_t)(slavesList[1]>>16));
-			i2c_registers[58] = ((uint8_t)(slavesList[1]>>24));
+			i2c_registers[55] = ((uint8_t)(slavesListCheck[1]));
+			i2c_registers[56] = ((uint8_t)(slavesListCheck[1]>>8));
+			i2c_registers[57] = ((uint8_t)(slavesListCheck[1]>>16));
+			i2c_registers[58] = ((uint8_t)(slavesListCheck[1]>>24));
 
-			i2c_registers[59] = ((uint8_t)(slavesList[2]));
-			i2c_registers[60] = ((uint8_t)(slavesList[2]>>8));
-			i2c_registers[61] = ((uint8_t)(slavesList[2]>>16));
-			i2c_registers[62] = ((uint8_t)(slavesList[2]>>24));
+			i2c_registers[59] = ((uint8_t)(slavesListCheck[2]));
+			i2c_registers[60] = ((uint8_t)(slavesListCheck[2]>>8));
+			i2c_registers[61] = ((uint8_t)(slavesListCheck[2]>>16));
+			i2c_registers[62] = ((uint8_t)(slavesListCheck[2]>>24));
 
-			i2c_registers[63] = ((uint8_t)(slavesList[3]));
-			i2c_registers[64] = ((uint8_t)(slavesList[3]>>8));
-			i2c_registers[65] = ((uint8_t)(slavesList[3]>>16));
-			i2c_registers[66] = ((uint8_t)(slavesList[3]>>24));
+			i2c_registers[63] = ((uint8_t)(slavesListCheck[3]));
+			i2c_registers[64] = ((uint8_t)(slavesListCheck[3]>>8));
+			i2c_registers[65] = ((uint8_t)(slavesListCheck[3]>>16));
+			i2c_registers[66] = ((uint8_t)(slavesListCheck[3]>>24));
 
 		//change RTC time to 400ms
 		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_1);
 		RTC_interrupt_type=0;
 	}
+
+	check_slavesList();
 
 	initI2C_Slave();
 	enableI2cSlaveInterrupts();
@@ -682,6 +697,8 @@ int main(void) {
 
   uart_sendText("\nSTARTUP\n");
 
+  i2c_slave_address=0x02;
+
   //clear TxBuffer
   for (int i=0;i<I2C_REG_BUFFER_SIZE;i++){
 	  i2c_registers[i]=0;
@@ -695,6 +712,17 @@ int main(void) {
   i2c_registers[REG_MODULE_ID_1]='E';
   i2c_registers[REG_MODULE_ID_2]='S';
   i2c_registers[REG_MODULE_ID_3]='N';
+  i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
+
+
+  /*while (i2c_slave_address==0x00){	//wait for the device to established i2c_slave_address
+	  while(i2c_rxInProgress){
+	  	      EMU_EnterEM1();
+	  }
+	  /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
+	  //check_slavesList();
+	  //EMU_EnterEM2(false);
+  //}*/
 
   initI2C_Master();
   i2c_Scan(I2C0);

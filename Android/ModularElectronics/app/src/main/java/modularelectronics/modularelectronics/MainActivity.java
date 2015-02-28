@@ -347,8 +347,13 @@ public class MainActivity extends Activity {
                     }
                 }
                 dataCounter++;
-                bleTerminal_output.setText("");
-                parseReceiveModuleData(d);
+                try {
+                    if (d.get(1) != 68 ) {
+                        bleTerminal_output.setText("");
+                        parseReceiveModuleData(d);
+                    }
+                }catch(IndexOutOfBoundsException e){}
+
 
                 d.clear();
             }
@@ -362,7 +367,7 @@ public class MainActivity extends Activity {
 
             prevLastOneData=lastOne;
 
-            try {
+            /*try {
                 String str = Character.toString((char)16)+"W"+Character.toString((char)4)+Character.toString((char)(dataCounter%128));
                 byte[] strBytes = str.getBytes();
                 byte[] bytes = MainActivity.this.mWriteCharacteristic.getValue();
@@ -386,7 +391,7 @@ public class MainActivity extends Activity {
             }
             catch (NullPointerException e){
                 Log.e("-","mWriteCharacteristic NullPointerException");
-            }
+            }*/
         }
     }
 
