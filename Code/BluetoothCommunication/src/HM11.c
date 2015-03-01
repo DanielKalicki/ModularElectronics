@@ -251,7 +251,7 @@ uint8_t initHM11(){
 	//	return 1;//ERROR
 	//}
 
-	//if(setModulePower(POWER_MINUS_6_dbm)==1){
+	//if(setModulePower(POWER_MINUS_23_dbm)==1){
 	//	return 1;//ERROR
 	//}
 

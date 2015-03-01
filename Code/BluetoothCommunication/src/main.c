@@ -31,6 +31,8 @@ volatile int RTC_interrupt=0;
 //-------------RTC--------------
 
 uint32_t slavesList[4];
+uint8_t moduleList[10];
+uint8_t i_moduleList=0;
 
 void RTC_IRQHandler(void){
 
@@ -52,6 +54,20 @@ void RTC_IRQHandler(void){
 		for (uint8_t i=scanStart;i<scanStart+4;i++){
 			if (i2c_Detect(I2C0,(i*2))==1){
 				slavesList[i>>5]|=(1<<(i&0x1F));		//i&0x1F - i%32
+				uint8_t existsInList=0;
+				for (int iM=0;iM<i_moduleList;iM++){
+					if (moduleList[iM]==i*2){
+						existsInList=1;
+						break;
+					}
+				}
+				if (existsInList==0){
+					if (i*2>=0x10){ //dont add modules with addr less than 0x10
+						moduleList[i_moduleList]=i*2;
+						i_moduleList++;
+						if(i_moduleList==10) i_moduleList=9;
+					}
+				}
 			}
 			else slavesList[i>>5]&=~(1<<(i&0x1F));
 		}
@@ -65,24 +81,28 @@ void RTC_IRQHandler(void){
 			uart_sendChar((uint8_t)(slavesList[i]>>16));
 			uart_sendChar((uint8_t)(slavesList[i]>>24));
 		}
+		uart_sendChar(']');
+		for (int i=0; i<10;i++) uart_sendChar((uint8_t)moduleList[i]);
 		uart_sendChar('|');
 	}
 	//first device
 	else if (RTC_interrupt==2){
 
-		static uint8_t len=10;
-		uart_sendChar('|');
+		if(moduleList[0]>=0x10){
+			static uint8_t len=10;
+			uart_sendChar('|');
 
-		uint8_t reg_vals[200];
-		i2c_Register_Read_Block(I2C0,0x10,0x00,len,reg_vals);
+			uint8_t reg_vals[200];
+			i2c_Register_Read_Block(I2C0,moduleList[0],0x00,len,reg_vals);
 
-		for(int i=0;i<len;i++)
-			uart_sendChar(reg_vals[i]);
+			for(int i=0;i<len;i++)
+				uart_sendChar(reg_vals[i]);
 
-		uart_sendChar('|');
+			uart_sendChar('|');
 
-		len=reg_vals[0];
-		if(len==0) len=10;
+			len=reg_vals[0];
+			if(len==0) len=10;
+		}
 	}
 
 	RTC_interrupt++;
@@ -98,7 +118,9 @@ int main(void)
   CHIP_Init();
   initOscillators();
 
-  for (int i=0;i<4;i++) slavesList[i]=0;
+  for (int i=0;i<4;i++)  slavesList[i]=0;
+  for (int i=0;i<10;i++) moduleList[i]=0;
+  i_moduleList=0;
 
   initI2C();
   initUART_baud(115200);

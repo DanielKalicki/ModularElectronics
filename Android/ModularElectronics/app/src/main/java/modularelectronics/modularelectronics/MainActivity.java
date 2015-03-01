@@ -354,7 +354,6 @@ public class MainActivity extends Activity {
                     }
                 }catch(IndexOutOfBoundsException e){}
 
-
                 d.clear();
             }
             for (int i=0;i<hexData.length;i++){
@@ -442,6 +441,9 @@ public class MainActivity extends Activity {
 
                         try {
                             value = math.evaluate(equation);
+                            if (eVariableDesc.getAttribute("name").compareTo(plotVariableName)==0){
+                                Log.e("-", eVariableDesc.getAttribute("equation")+"->"+equation+" = "+value);
+                            }
                         }
                         catch(ArithmeticException e) {
                             value = 0.0d/0.0;
