@@ -30,8 +30,8 @@ volatile int RTC_interrupt=0;
 
 //-------------RTC--------------
 
-uint32_t slavesList[4];
-uint8_t moduleList[10];
+uint32_t slavesList[4];		//binary list of detected i2c addresses
+uint8_t moduleList[10];		//list of i2c addresses connected to the bus
 uint8_t i_moduleList=0;
 
 void RTC_IRQHandler(void){
@@ -50,6 +50,8 @@ void RTC_IRQHandler(void){
 	}
 	//i2c scan from the master
 	else if(RTC_interrupt==6){
+
+		//every RTC interrupt the ic is scanning 4 i2c addresses and adding an address to a moduleList if it exists.
 		static uint8_t scanStart=0;
 		for (uint8_t i=scanStart;i<scanStart+4;i++){
 			if (i2c_Detect(I2C0,(i*2))==1){
@@ -74,6 +76,7 @@ void RTC_IRQHandler(void){
 		if (scanStart<124) scanStart+=4;
 		else scanStart=0;
 
+		//send the detected slave list addresses through ble
 		uart_sendChar('|');
 		for (int i=0;i<4;i++){
 			uart_sendChar((uint8_t)(slavesList[i]));
@@ -81,11 +84,13 @@ void RTC_IRQHandler(void){
 			uart_sendChar((uint8_t)(slavesList[i]>>16));
 			uart_sendChar((uint8_t)(slavesList[i]>>24));
 		}
+
+		//send module list through ble.
 		uart_sendChar(']');
 		for (int i=0; i<10;i++) uart_sendChar((uint8_t)moduleList[i]);
 		uart_sendChar('|');
 	}
-	//first device
+	//read data from modules
 	else if (RTC_interrupt==2){
 
 		if(moduleList[0]>=0x10){
