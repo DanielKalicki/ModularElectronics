@@ -16,6 +16,7 @@
 #include "MPU6050.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
+#include "AS3935.h"
 
 #define sensors i2c_registers[5]		//5 - REG_SENSORS
 
@@ -141,12 +142,10 @@ void initOscillators(void){
 	CMU_ClockEnable(cmuClock_I2C0,true);
 }
 void initGPIO(void){
+
 }
-
-
 //------------I2C----------------
 #define SI7013_ADDR 	0x40*2
-#define AS3935_ADDR 	0x03*2
 #define BMP085_ADDR 	0x77*2
 #define SI1142_ADDR 	0x5A*2
 
@@ -242,6 +241,7 @@ void initSensors(){
 	}
 	if(sensors & AS3935_SENS){
 		//initialization need to be implemented
+		AS3935_init();
 		uart_sendText(" AS3935");
 	}
 	if(sensors & BMP085_SENS){
@@ -629,6 +629,10 @@ void RTC_IRQHandler(void)
 
 			uart_sendText(buff);
 		}
+		if(sensors & AS3935_SENS){
+			i2c_registers[REG_AS3935_lIGH_DIST_1]=255;
+			i2c_registers[REG_AS3935_lIGH_DIST_2]=AS3935_read_Interrupt();
+		}
 
 		//dont change the RTC setting
 		RTC_interrupt_type++;
@@ -646,26 +650,6 @@ void RTC_IRQHandler(void)
 			i2c_registers[REG_BMP085_PRESS_LOW]  =pressure%10000;
 		}
 		uart_sendChar('\n');
-
-			i2c_registers[51] = ((uint8_t)(slavesListCheck[0]));
-			i2c_registers[52] = ((uint8_t)(slavesListCheck[0]>>8));
-			i2c_registers[53] = ((uint8_t)(slavesListCheck[0]>>16));
-			i2c_registers[54] = ((uint8_t)(slavesListCheck[0]>>24));
-
-			i2c_registers[55] = ((uint8_t)(slavesListCheck[1]));
-			i2c_registers[56] = ((uint8_t)(slavesListCheck[1]>>8));
-			i2c_registers[57] = ((uint8_t)(slavesListCheck[1]>>16));
-			i2c_registers[58] = ((uint8_t)(slavesListCheck[1]>>24));
-
-			i2c_registers[59] = ((uint8_t)(slavesListCheck[2]));
-			i2c_registers[60] = ((uint8_t)(slavesListCheck[2]>>8));
-			i2c_registers[61] = ((uint8_t)(slavesListCheck[2]>>16));
-			i2c_registers[62] = ((uint8_t)(slavesListCheck[2]>>24));
-
-			i2c_registers[63] = ((uint8_t)(slavesListCheck[3]));
-			i2c_registers[64] = ((uint8_t)(slavesListCheck[3]>>8));
-			i2c_registers[65] = ((uint8_t)(slavesListCheck[3]>>16));
-			i2c_registers[66] = ((uint8_t)(slavesListCheck[3]>>24));
 
 		//change RTC time to 400ms
 		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_1);
@@ -688,6 +672,16 @@ void RTC_IRQHandler(void)
 	RTC_IntClear(RTC_IFC_COMP0);
 }
 
+void GPIO_ODD_IRQHandler(void) {
+	 /* Clear flag for Push Button 0 (pin C15) interrupt */
+	 GPIO_IntClear(0x8000);
+
+	 static uint8_t counter=0;
+	 counter++;
+	 if (counter==255) counter=0;
+	 i2c_registers[REG_AS3935_lIGH_DIST_3]=counter;
+ }
+
 int main(void) {
   /* Chip errata */
   CHIP_Init();
@@ -697,7 +691,7 @@ int main(void) {
 
   uart_sendText("\nSTARTUP\n");
 
-  i2c_slave_address=0x02;
+  i2c_slave_address=0x12;	//change to 0x02
 
   //clear TxBuffer
   for (int i=0;i<I2C_REG_BUFFER_SIZE;i++){
@@ -713,16 +707,6 @@ int main(void) {
   i2c_registers[REG_MODULE_ID_2]='S';
   i2c_registers[REG_MODULE_ID_3]='N';
   i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
-
-
-  /*while (i2c_slave_address==0x00){	//wait for the device to established i2c_slave_address
-	  while(i2c_rxInProgress){
-	  	      EMU_EnterEM1();
-	  }
-	  /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
-	  //check_slavesList();
-	  //EMU_EnterEM2(false);
-  //}*/
 
   initI2C_Master();
   i2c_Scan(I2C0);
