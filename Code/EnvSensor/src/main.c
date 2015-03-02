@@ -630,8 +630,12 @@ void RTC_IRQHandler(void)
 			uart_sendText(buff);
 		}
 		if(sensors & AS3935_SENS){
-			i2c_registers[REG_AS3935_lIGH_DIST_1]=255;
-			i2c_registers[REG_AS3935_lIGH_DIST_2]=AS3935_read_Interrupt();
+			i2c_registers[REG_AS3935_lIGH_DIST_2]=111;
+
+			uint8_t intValue = AS3935_read_Interrupt();
+			//for test show only last non zero value read from interrupt register
+			if (intValue)
+				i2c_registers[REG_AS3935_lIGH_DIST_3]=intValue;
 		}
 
 		//dont change the RTC setting
@@ -676,10 +680,14 @@ void GPIO_ODD_IRQHandler(void) {
 	 /* Clear flag for Push Button 0 (pin C15) interrupt */
 	 GPIO_IntClear(0x8000);
 
+	 if (AS3935_read_Interrupt()&0x08){
+		 i2c_registers[REG_AS3935_lIGH_DIST_1]=AS3935_read_Distance();
+	 }
+
 	 static uint8_t counter=0;
 	 counter++;
 	 if (counter==255) counter=0;
-	 i2c_registers[REG_AS3935_lIGH_DIST_3]=counter;
+	 i2c_registers[REG_AS3935_lIGH_DIST_4]=counter;
  }
 
 int main(void) {
@@ -691,7 +699,7 @@ int main(void) {
 
   uart_sendText("\nSTARTUP\n");
 
-  i2c_slave_address=0x12;	//change to 0x02
+  i2c_slave_address=0x02;	//change to 0x02
 
   //clear TxBuffer
   for (int i=0;i<I2C_REG_BUFFER_SIZE;i++){

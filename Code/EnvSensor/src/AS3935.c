@@ -3,18 +3,17 @@
 #include "em_gpio.h"
 
 void AS3935_init(void){
-	AS3935_set_GainBoost(0);
-	AS3935_set_Watchdog_And_NoiseFloor(0x02,0x02);
-	AS3935_set_MinLightingNumber_And_SpikeRejection(0x00,0x04);
+	AS3935_set_GainBoost(1);
+	AS3935_set_Watchdog_And_NoiseFloor(0x02,0x07);
+	//AS3935_set_MinLightingNumber_And_SpikeRejection(0x00,0x02);
 	AS3935_set_TuningCaps(0x07);
-	//i2c_RegisterSet(I2C0,AS3935_ADDR,0x08,0x87);
 
 	/* By setting the mode to gpioModeInput its value can be read */
-	// GPIO_PinModeSet(gpioPortC, 15, gpioModeInput, 1);
+	GPIO_PinModeSet(gpioPortC, 15, gpioModeInput, 1);
 	/* Enable GPIO_ODD interrupt in NVIC */
-	 //NVIC_EnableIRQ(GPIO_ODD_IRQn);
+	NVIC_EnableIRQ(GPIO_ODD_IRQn);
 	 /* Configure interrupt on falling edge for pins C15 */
-	// GPIO_IntConfig(gpioPortC, 15, true, false, true);
+	GPIO_IntConfig(gpioPortC, 15, true, false, true);
 }
 
 void AS3935_powerDown(){
@@ -34,7 +33,7 @@ void AS3935_set_GainBoost(uint8_t indoor){
 
 void AS3935_set_Watchdog_And_NoiseFloor(uint8_t watchdog, uint8_t noiseFloorLevel){
 	//defualt 010 0010 -> 0x22
-	uint8_t regValue = ((watchdog&0x07)<<4)+(noiseFloorLevel&0x0F);
+	uint8_t regValue = ((noiseFloorLevel&0x07)<<4)+(watchdog&0x0F);
 	i2c_RegisterSet(I2C0,AS3935_ADDR,0x01,regValue);
 }
 
@@ -53,4 +52,10 @@ uint8_t AS3935_read_Interrupt(){
 	uint8_t regValue=0;
 	i2c_RegisterGet(I2C0,AS3935_ADDR,0x03,&regValue);
 	return regValue;
+}
+
+uint8_t AS3935_read_Distance(){
+	uint8_t regValue=0;
+	i2c_RegisterGet(I2C0,AS3935_ADDR,0x07,&regValue);
+	return regValue&0x1F;
 }

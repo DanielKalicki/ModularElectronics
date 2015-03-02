@@ -19,6 +19,7 @@ void AS3935_set_MinLightingNumber_And_SpikeRejection(uint8_t minLightNumber, uin
 void AS3935_set_TuningCaps(uint8_t tunCap);
 
 uint8_t AS3935_read_Interrupt();
+uint8_t AS3935_read_Distance();
 
 #ifdef __cplusplus
 }
