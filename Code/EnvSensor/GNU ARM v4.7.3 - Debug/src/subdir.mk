@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/AS3935.c \
 ../src/HMC5883L.c \
 ../src/MPU6050.c \
 ../src/RTC_.c \
@@ -14,6 +15,7 @@ C_SRCS += \
 ../src/uart_connection.c 
 
 OBJS += \
+./src/AS3935.o \
 ./src/HMC5883L.o \
 ./src/MPU6050.o \
 ./src/RTC_.o \
@@ -24,6 +26,7 @@ OBJS += \
 ./src/uart_connection.o 
 
 C_DEPS += \
+./src/AS3935.d \
 ./src/HMC5883L.d \
 ./src/MPU6050.d \
 ./src/RTC_.d \
@@ -35,6 +38,13 @@ C_DEPS += \
 
 
 # Each subdirectory must supply rules for building sources it contributes
+src/AS3935.o: ../src/AS3935.c
+	@echo 'Building file: $<'
+	@echo 'Invoking: GNU ARM C Compiler'
+	arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -Os -Wall -c -fmessage-length=0 -mno-sched-prolog -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/AS3935.d" -MT"src/AS3935.o" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
 src/HMC5883L.o: ../src/HMC5883L.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GNU ARM C Compiler'
