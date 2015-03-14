@@ -1,6 +1,9 @@
 package modularelectronics.modularelectronics;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.app.TabActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -16,12 +19,14 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,8 +63,10 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTabHost;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 
     private BluetoothAdapter mBluetoothAdapter;
     private Handler mHandler;
@@ -72,12 +79,17 @@ public class MainActivity extends Activity {
     private String mDeviceAddress="78:A5:04:85:26:65";
     private boolean mConnected = false;
 
-    TextView bleTerminal_text;
-    TextView bleTerminal_output;
+    //TextView bleTerminal_text;
+    //TextView bleTerminal_output;
 
     Button   mPlotSelectButton;
     EditText mPlotVariableName;
     String   plotVariableName="BMP085 temp";
+
+    private FragmentTabHost mTabHost;
+    ActionBar actionbar;
+    ViewPager viewpager;
+    FragmentPageAdapter ft;
 
     Intent gattServiceIntent;
 
@@ -91,14 +103,14 @@ public class MainActivity extends Activity {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            bleTerminal_text.append("onServiceConnected()\n");
+            //bleTerminal_text.append("onServiceConnected()\n");
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
-                bleTerminal_text.append("- Unable to initialize Bluetooth\n");
+                //bleTerminal_text.append("- Unable to initialize Bluetooth\n");
                 finish();
             }
             // Automatically connects to the device upon successful start-up initialization.
-            bleTerminal_text.append("Bluetooth init ok, trying to connect\n");
+            //bleTerminal_text.append("Bluetooth init ok, trying to connect\n");
             mBluetoothLeService.connect(mDeviceAddress);
         }
 
@@ -139,7 +151,6 @@ public class MainActivity extends Activity {
             }
         }
     };
-
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
@@ -148,9 +159,8 @@ public class MainActivity extends Activity {
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
-
     private void displayGattServices(List<BluetoothGattService> gattServices) {
-        bleTerminal_text.append("displayGattServices()\n");
+        //bleTerminal_text.append("displayGattServices()\n");
         if (gattServices == null) return;
         String uuid;
         ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
@@ -158,13 +168,13 @@ public class MainActivity extends Activity {
                 = new ArrayList<>();
         mGattCharacteristics = new ArrayList<>();
 
-        bleTerminal_text.setText("");
+        //bleTerminal_text.setText("");
 
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
             HashMap<String, String> currentServiceData = new HashMap<>();
             uuid = gattService.getUuid().toString();
-            bleTerminal_output.append("(S): "+uuid+"\n");
+            //bleTerminal_output.append("(S): "+uuid+"\n");
             gattServiceData.add(currentServiceData);
 
             ArrayList<HashMap<String, String>> gattCharacteristicGroupData =
@@ -179,11 +189,11 @@ public class MainActivity extends Activity {
                 charas.add(gattCharacteristic);
                 HashMap<String, String> currentCharaData = new HashMap<>();
                 uuid = gattCharacteristic.getUuid().toString();
-                bleTerminal_output.append("\t\t\t(C): "+uuid+"\n");
+                //bleTerminal_output.append("\t\t\t(C): "+uuid+"\n");
                 gattCharacteristicGroupData.add(currentCharaData);
 
                 if(uuid.equals("0000ffe1-0000-1000-8000-00805f9b34fb")) {
-                    bleTerminal_output.append("Service found\n");
+                    //bleTerminal_output.append("Service found\n");
                     mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
                     mWriteCharacteristic = gattCharacteristic;
                 }
@@ -192,7 +202,6 @@ public class MainActivity extends Activity {
             gattCharacteristicData.add(gattCharacteristicGroupData);
         }
     }
-
     private void updateConnectionState(final String text) {
         runOnUiThread(new Runnable() {
             @Override
@@ -201,15 +210,13 @@ public class MainActivity extends Activity {
             }
         });
     }
-
     private void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothLeService != null) {
             mBluetoothLeService.writeCharacteristic(characteristic);
         }
     }
-
     private void clearUI() {
-        bleTerminal_text.setText("");
+        //bleTerminal_text.setText("");
     }
 
     //-------------------------------------------
@@ -266,7 +273,6 @@ public class MainActivity extends Activity {
         }
         parseXML(modulesDescriptionFile);
     }
-
     public static final boolean CheckInternetConnection(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -293,7 +299,6 @@ public class MainActivity extends Activity {
             Log.e("-","Write file not found");
         }
     }
-
     private Document parseXML(String xml){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -330,9 +335,9 @@ public class MainActivity extends Activity {
 
         //TODO try catch this function
 
-        bleTerminal_text.setText("");
+        //bleTerminal_text.setText("");
         //bleTerminal_text.append(modulesDescriptionFile);
-        bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
+        //bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
 
         if (data != null) {
 
@@ -349,7 +354,7 @@ public class MainActivity extends Activity {
                 dataCounter++;
                 try {
                     if (d.get(1) != 68 ) {
-                        bleTerminal_output.setText("");
+                        //bleTerminal_output.setText("");
                         parseReceiveModuleData(d);
                     }
                 }catch(IndexOutOfBoundsException e){}
@@ -359,7 +364,7 @@ public class MainActivity extends Activity {
             for (int i=0;i<hexData.length;i++){
                 Integer value = Integer.parseInt(hexData[i], 16);
 
-                bleTerminal_output.append(Integer.toString(value) + " ");
+                //bleTerminal_output.append(Integer.toString(value) + " ");
 
                 d.add(value);
             }
@@ -393,7 +398,6 @@ public class MainActivity extends Activity {
             }*/
         }
     }
-
     private void parseReceiveModuleData(ArrayList<Integer> d) {
         Map<String,Double> rData = new HashMap<>();
 
@@ -483,10 +487,9 @@ public class MainActivity extends Activity {
         graphView.addSeries(graphDataPoints);
         graphView.setScrollable(true);
         graphView.setViewPort(0,graphDataPointsSize);
-        LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
-        layout.addView(graphView);
+        //LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+        //layout.addView(graphView);
     }
-
     protected void graphAddPoint(double x, double y){
         if(graphDataPointX < x) { //x must be greater than previous x
             graphDataPointsSize++;
@@ -513,10 +516,78 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        mPlotSelectButton = (Button)findViewById(R.id.plotSelectButton);
-        mPlotVariableName   = (EditText)findViewById(R.id.plotVariableName);
+        viewpager = (ViewPager)findViewById(R.id.pager);
 
-        mPlotSelectButton.setOnClickListener(
+        ft = new FragmentPageAdapter(getSupportFragmentManager());
+        viewpager.setAdapter(ft);
+        actionbar= getActionBar();
+        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionbar.addTab(actionbar.newTab().setText("Tab1").setTabListener(this));
+        actionbar.addTab(actionbar.newTab().setText("Tab2").setTabListener(this));
+        actionbar.addTab(actionbar.newTab().setText("Tab3").setTabListener(this));
+
+        viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                actionbar.setSelectedNavigationItem(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        // create the TabHost that will contain the Tabs
+        /*mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
+        mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+
+        mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("Tab1"),
+                Tab1Fragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("Tab2"),
+                Tab2Fragment.class, null);/*
+        mTabHost.addTab(mTabHost.newTabSpec("tab3").setIndicator("Tab3"),
+                Tab3Fragment.class, null);*/
+
+        /*mTabHost.addTab(mTabHost.newTabSpec("simple").setIndicator("Simple"),
+                FragmentStackSupport.CountingFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("contacts").setIndicator("Contacts"),
+                LoaderCursorSupport.CursorLoaderListFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("custom").setIndicator("Custom"),
+                LoaderCustomSupport.AppListFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("throttle").setIndicator("Throttle"),
+                LoaderThrottleSupport.ThrottledLoaderListFragment.class, null);*/
+
+        /*TabHost.TabSpec tab1 = tabHost.newTabSpec("First Tab");
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("Second Tab");
+        TabHost.TabSpec tab3 = tabHost.newTabSpec("Third tab");
+
+        // Set the Tab name and Activity
+        // that will be opened when particular Tab will be selected
+        tab1.setIndicator("Tab1");
+        //tab1.setContent(new Intent(this,Tab1Activity.class));
+
+        tab2.setIndicator("Tab2");
+        //tab2.setContent(new Intent(this,Tab2Activity.class));
+
+        tab3.setIndicator("Tab3");
+        //tab3.setContent(new Intent(this,Tab3Activity.class));
+
+        /** Add the tabs  to the TabHost to display. */
+        /*tabHost.addTab(tab1);
+        tabHost.addTab(tab2);
+        tabHost.addTab(tab3);*/
+
+        //mPlotSelectButton = (Button)findViewById(R.id.plotSelectButton);
+        //mPlotVariableName   = (EditText)findViewById(R.id.plotVariableName);
+
+        /*mPlotSelectButton.setOnClickListener(
             new View.OnClickListener()
             {
                 public void onClick(View view)
@@ -526,7 +597,7 @@ public class MainActivity extends Activity {
                     graphStartPoint=graphDataPointsSize+1;
                     graphView.redrawAll();
                 }
-            });
+            });*/
 
         graphInit();
 
@@ -549,15 +620,15 @@ public class MainActivity extends Activity {
             finish();
         }
 
-        bleTerminal_text = (TextView)findViewById(R.id.ble_terminal_text);
-        bleTerminal_text.append("Test\n");
+        //bleTerminal_text = (TextView)findViewById(R.id.ble_terminal_text);
+        //bleTerminal_text.append("Test\n");
 
-        bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
+        //bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
 
         gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
-        bleTerminal_text.append("onCreate()\n");
+        //bleTerminal_text.append("onCreate()\n");
 
         new Thread(new Runnable(){
             public void run(){
@@ -572,7 +643,7 @@ public class MainActivity extends Activity {
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-            bleTerminal_text.append("- Connect request result=" + result);
+            //bleTerminal_text.append("- Connect request result=" + result);
         }
     }
     @Override
@@ -601,5 +672,20 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+        viewpager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
     }
 }

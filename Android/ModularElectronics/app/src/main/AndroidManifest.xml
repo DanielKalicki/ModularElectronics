@@ -24,7 +24,18 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".BluetoothLeService" android:enabled="true"/>
+        <service
+            android:name=".BluetoothLeService"
+            android:enabled="true" />
+
+        <fragment
+            android:name=".Tab1Fragment"
+            android:label="@string/title_activity_tab1_fragment" >
+        </fragment>
+        <fragment
+            android:name=".Tab2Fragment"
+            android:label="@string/title_activity_tab2_fragment" >
+        </fragment>
     </application>
 
 </manifest>

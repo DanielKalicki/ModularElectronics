@@ -7,5 +7,8 @@
     <string name="ble_not_supported">Bluetooth LE is not supported on this device</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on this device</string>
     <string name="plotSelectButton">Change</string>
+    <string name="title_activity_tab1_fragment">Tab1Fragment</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_tab2_fragment">Tab2Fragment</string>
 
 </resources>
