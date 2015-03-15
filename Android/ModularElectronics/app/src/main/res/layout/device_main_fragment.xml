@@ -5,13 +5,14 @@
     android:layout_height="match_parent"
     tools:context=".DeviceFragment"
     android:weightSum="1"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    >
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="498dp"
         android:text="tab1_fragment"
-        android:layout_weight="0.30"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="top|center_vertical"
+        android:id="@+id/textField" />
 
 </LinearLayout>

@@ -12,14 +12,15 @@ public class FragmentPageAdapter extends FragmentPagerAdapter {
         // TODO Auto-generated method stub
         switch (arg0) {
             case 0:
-                return new Tab1Fragment();
+                return new DeviceMainFragment();
             case 1:
-                return new Tab2Fragment();
+                return new ModuleFragment();
             default:
                 break;
         }
         return null;
     }
+
     @Override
     public int getCount() {
         // TODO Auto-generated method stub

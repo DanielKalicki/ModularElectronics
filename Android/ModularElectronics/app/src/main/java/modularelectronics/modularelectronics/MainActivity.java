@@ -1,9 +1,7 @@
 package modularelectronics.modularelectronics;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.app.TabActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -22,12 +20,8 @@ import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
@@ -136,6 +130,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 case BluetoothLeService.ACTION_GATT_DISCONNECTED:
                     mConnected = false;
                     updateConnectionState("unconnected");
+                    updateConnectionState("unconnected");
                     //TODO automaticly try to connect again.
                     //bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
                     invalidateOptionsMenu();
@@ -218,6 +213,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private void clearUI() {
         //bleTerminal_text.setText("");
     }
+
 
     //-------------------------------------------
     //       Get module description file
@@ -338,6 +334,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //bleTerminal_text.setText("");
         //bleTerminal_text.append(modulesDescriptionFile);
         //bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
+        DeviceMainFragment_setText("");
+        DeviceMainFragment_appendText(modulesDescriptionFile);
+        DeviceMainFragment_appendText("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
+
 
         if (data != null) {
 
@@ -355,6 +355,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 try {
                     if (d.get(1) != 68 ) {
                         //bleTerminal_output.setText("");
+                        DeviceMainFragment_setText("");
                         parseReceiveModuleData(d);
                     }
                 }catch(IndexOutOfBoundsException e){}
@@ -363,9 +364,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
             for (int i=0;i<hexData.length;i++){
                 Integer value = Integer.parseInt(hexData[i], 16);
-
-                //bleTerminal_output.append(Integer.toString(value) + " ");
-
                 d.add(value);
             }
 
@@ -504,6 +502,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     }
 
     //-------------------------------------------
+    //      Fragments communication
+    //-------------------------------------------
+    void DeviceMainFragment_setText(String text){
+        DeviceMainFragment tab1 =(DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
+        tab1.setText(text);
+    }
+    void DeviceMainFragment_appendText(String text){
+        DeviceMainFragment tab1 =(DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
+        tab1.appendText(text);
+    }
+
+    //-------------------------------------------
     //      Application life time functions
     //-------------------------------------------
     @Override
@@ -543,46 +553,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
         });
 
-        // create the TabHost that will contain the Tabs
-        /*mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
-        mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
-        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
-
-        mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("Tab1"),
-                Tab1Fragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("Tab2"),
-                Tab2Fragment.class, null);/*
-        mTabHost.addTab(mTabHost.newTabSpec("tab3").setIndicator("Tab3"),
-                Tab3Fragment.class, null);*/
-
-        /*mTabHost.addTab(mTabHost.newTabSpec("simple").setIndicator("Simple"),
-                FragmentStackSupport.CountingFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("contacts").setIndicator("Contacts"),
-                LoaderCursorSupport.CursorLoaderListFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("custom").setIndicator("Custom"),
-                LoaderCustomSupport.AppListFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("throttle").setIndicator("Throttle"),
-                LoaderThrottleSupport.ThrottledLoaderListFragment.class, null);*/
-
-        /*TabHost.TabSpec tab1 = tabHost.newTabSpec("First Tab");
-        TabHost.TabSpec tab2 = tabHost.newTabSpec("Second Tab");
-        TabHost.TabSpec tab3 = tabHost.newTabSpec("Third tab");
-
-        // Set the Tab name and Activity
-        // that will be opened when particular Tab will be selected
-        tab1.setIndicator("Tab1");
-        //tab1.setContent(new Intent(this,Tab1Activity.class));
-
-        tab2.setIndicator("Tab2");
-        //tab2.setContent(new Intent(this,Tab2Activity.class));
-
-        tab3.setIndicator("Tab3");
-        //tab3.setContent(new Intent(this,Tab3Activity.class));
-
-        /** Add the tabs  to the TabHost to display. */
-        /*tabHost.addTab(tab1);
-        tabHost.addTab(tab2);
-        tabHost.addTab(tab3);*/
 
         //mPlotSelectButton = (Button)findViewById(R.id.plotSelectButton);
         //mPlotVariableName   = (EditText)findViewById(R.id.plotVariableName);
@@ -637,6 +607,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }).start();
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -674,6 +645,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         return super.onOptionsItemSelected(item);
     }
 
+    //Tab functions
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         viewpager.setCurrentItem(tab.getPosition());
