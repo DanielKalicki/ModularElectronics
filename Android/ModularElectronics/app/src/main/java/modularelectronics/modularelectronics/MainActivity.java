@@ -94,7 +94,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     //      Code to manage Service lifecycle.
     //-------------------------------------------
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             //bleTerminal_text.append("onServiceConnected()\n");
@@ -107,7 +106,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             //bleTerminal_text.append("Bluetooth init ok, trying to connect\n");
             mBluetoothLeService.connect(mDeviceAddress);
         }
-
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
@@ -129,7 +127,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     break;
                 case BluetoothLeService.ACTION_GATT_DISCONNECTED:
                     mConnected = false;
-                    updateConnectionState("unconnected");
                     updateConnectionState("unconnected");
                     //TODO automaticly try to connect again.
                     //bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -213,7 +210,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private void clearUI() {
         //bleTerminal_text.setText("");
     }
-
 
     //-------------------------------------------
     //       Get module description file
@@ -607,7 +603,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }).start();
 
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -650,12 +645,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         viewpager.setCurrentItem(tab.getPosition());
     }
-
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
     }
-
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
