@@ -60,6 +60,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 
+import modularelectronics.modularelectronics.DeviceMainFragment.DeviceMainFragment;
+
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -84,6 +86,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     ActionBar actionbar;
     ViewPager viewpager;
     FragmentPageAdapter ft;
+
+    DeviceMainFragment deviceMainFragment;
 
     Intent gattServiceIntent;
 
@@ -115,14 +119,45 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     //-------------------------------------------
     //             Ble functions
     //-------------------------------------------
+    private void initializeBluetoothAdapter() {
+        // Use this check to determine whether BLE is supported on the device.  Then you can
+        // selectively disable BLE-related features.
+        if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
+            Toast.makeText(this,R.string.ble_not_supported,Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+        // Ensures Bluetooth is available on the device and it is enabled. If not,
+        // displays a dialog requesting user permission to enable Bluetooth.
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        //bleTerminal_text = (TextView)findViewById(R.id.ble_terminal_text);
+        //bleTerminal_text.append("Test\n");
+
+        //bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
+
+        gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+            if(deviceMainFragment==null){
+                deviceMainFragment =(DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
+            }
             switch (action) {
                 case BluetoothLeService.ACTION_GATT_CONNECTED:
                     mConnected = true;
                     updateConnectionState("connected");
+                    deviceMainFragment.setBleDeviceIdField(mDeviceAddress);
                     invalidateOptionsMenu();
                     break;
                 case BluetoothLeService.ACTION_GATT_DISCONNECTED:
@@ -130,6 +165,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     updateConnectionState("unconnected");
                     //TODO automaticly try to connect again.
                     //bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+                    deviceMainFragment.noBleDeviceFound();
                     invalidateOptionsMenu();
                     clearUI();
                     break;
@@ -330,13 +366,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //bleTerminal_text.setText("");
         //bleTerminal_text.append(modulesDescriptionFile);
         //bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
-        DeviceMainFragment_setText("");
-        DeviceMainFragment_appendText(modulesDescriptionFile);
-        DeviceMainFragment_appendText("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
-
+        deviceMainFragment.setFrameCounter("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
 
         if (data != null) {
-
             String[] dataSplit = data.split("\n");
             String lastOne = dataSplit[dataSplit.length - 1];
             String[] hexData=lastOne.split(" ");
@@ -351,7 +383,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 try {
                     if (d.get(1) != 68 ) {
                         //bleTerminal_output.setText("");
-                        DeviceMainFragment_setText("");
                         parseReceiveModuleData(d);
                     }
                 }catch(IndexOutOfBoundsException e){}
@@ -471,7 +502,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     protected void graphInit(){
         // initialize graph series data
-        graphDataPoints = new GraphViewSeries(new GraphViewData[] {
+        /*graphDataPoints = new GraphViewSeries(new GraphViewData[] {
                 new GraphViewData(0, 0.0d)
         });
         graphView = new LineGraphView( this, plotVariableName );
@@ -483,9 +514,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         graphView.setViewPort(0,graphDataPointsSize);
         //LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
         //layout.addView(graphView);
+        */
     }
     protected void graphAddPoint(double x, double y){
-        if(graphDataPointX < x) { //x must be greater than previous x
+        /*if(graphDataPointX < x) { //x must be greater than previous x
             graphDataPointsSize++;
             graphDataPointX = x;
             if(graphDataPointsSize-graphStartPoint>1000){
@@ -494,19 +526,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             graphView.setViewPort(graphStartPoint, graphDataPointsSize-graphStartPoint);
             graphDataPoints.appendData(new GraphViewData(x, y), true, 1000);
             graphView.redrawAll();
-        }
-    }
-
-    //-------------------------------------------
-    //      Fragments communication
-    //-------------------------------------------
-    void DeviceMainFragment_setText(String text){
-        DeviceMainFragment tab1 =(DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
-        tab1.setText(text);
-    }
-    void DeviceMainFragment_appendText(String text){
-        DeviceMainFragment tab1 =(DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
-        tab1.appendText(text);
+        }*/
     }
 
     //-------------------------------------------
@@ -567,34 +587,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         graphInit();
 
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
-        if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
-            Toast.makeText(this,R.string.ble_not_supported,Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
         // Initializes Bluetooth adapter.
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        // Ensures Bluetooth is available on the device and it is enabled. If not,
-        // displays a dialog requesting user permission to enable Bluetooth.
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        //bleTerminal_text = (TextView)findViewById(R.id.ble_terminal_text);
-        //bleTerminal_text.append("Test\n");
-
-        //bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
-
-        gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-        //bleTerminal_text.append("onCreate()\n");
+        initializeBluetoothAdapter();
 
         new Thread(new Runnable(){
             public void run(){
@@ -602,6 +596,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
         }).start();
 
+    }
+    @Override
+    protected void onStart(){
+        super.onStart();
     }
     @Override
     protected void onResume() {

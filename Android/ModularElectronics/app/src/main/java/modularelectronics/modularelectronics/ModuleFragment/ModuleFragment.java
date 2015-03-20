@@ -1,4 +1,4 @@
-package modularelectronics.modularelectronics;
+package modularelectronics.modularelectronics.ModuleFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -9,6 +9,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import modularelectronics.modularelectronics.R;
 
 public class ModuleFragment extends ListFragment {
     private List<ListViewItem> mItems;
@@ -25,7 +27,7 @@ public class ModuleFragment extends ListFragment {
         mItems.add(new ListViewItem(getResources().getDrawable(R.drawable.ic_launcher), "Value3", "Description3"));
 
         ListView list = (ListView) V.findViewById(android.R.id.list);
-        setListAdapter(new ListViewModuleInfoAdapter(getActivity(),mItems));
+        setListAdapter(new ListViewModuleInfoAdapter(getActivity(), mItems));
         
         return V;
     }

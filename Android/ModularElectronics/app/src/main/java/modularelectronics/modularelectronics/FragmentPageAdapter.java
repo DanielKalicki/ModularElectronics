@@ -3,6 +3,10 @@ package modularelectronics.modularelectronics;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import modularelectronics.modularelectronics.DeviceMainFragment.DeviceMainFragment;
+import modularelectronics.modularelectronics.ModuleFragment.ModuleFragment;
+
 public class FragmentPageAdapter extends FragmentPagerAdapter {
     public FragmentPageAdapter(FragmentManager fm) {
         super(fm);

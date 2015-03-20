@@ -1,4 +1,4 @@
-package modularelectronics.modularelectronics;
+package modularelectronics.modularelectronics.ModuleFragment;
 
 import android.graphics.drawable.Drawable;
 

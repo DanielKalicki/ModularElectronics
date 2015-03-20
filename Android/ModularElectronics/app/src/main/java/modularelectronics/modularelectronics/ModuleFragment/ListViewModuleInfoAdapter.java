@@ -1,4 +1,4 @@
-package modularelectronics.modularelectronics;
+package modularelectronics.modularelectronics.ModuleFragment;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import modularelectronics.modularelectronics.ModuleFragment.ListViewItem;
+import modularelectronics.modularelectronics.R;
 
 public  class ListViewModuleInfoAdapter extends ArrayAdapter<ListViewItem> {
 
