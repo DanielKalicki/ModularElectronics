@@ -12,6 +12,17 @@
 #include "RTC_.h"
 #include "HM11.h"
 
+#define REGISTER_SIZE 50
+volatile uint8_t registers[REGISTER_SIZE];
+
+enum registerMap{
+	REG_DATA_LENGTH				=0,
+
+	REG_MODULE_ID_1				=1,
+	REG_MODULE_ID_2				=2,
+	REG_MODULE_ID_3				=3,
+};
+
 
 //-------------INIT--------------
 void initOscillators(void){
@@ -31,7 +42,8 @@ volatile int RTC_interrupt=0;
 //-------------RTC--------------
 
 uint32_t slavesList[4];		//binary list of detected i2c addresses
-uint8_t moduleList[10];		//list of i2c addresses connected to the bus
+#define MODULE_LIST_SIZE 10
+uint8_t moduleList[MODULE_LIST_SIZE];		//list of i2c addresses connected to the bus
 uint8_t i_moduleList=0;
 
 void RTC_IRQHandler(void){
@@ -67,7 +79,7 @@ void RTC_IRQHandler(void){
 					if (i*2>=0x10){ //dont add modules with addr less than 0x10
 						moduleList[i_moduleList]=i*2;
 						i_moduleList++;
-						if(i_moduleList==10) i_moduleList=9;
+						if(i_moduleList==MODULE_LIST_SIZE) i_moduleList=9;
 					}
 				}
 			}
@@ -78,6 +90,10 @@ void RTC_IRQHandler(void){
 
 		//send the detected slave list addresses through ble
 		uart_sendChar('|');
+		uart_sendChar(registers[REG_DATA_LENGTH]);
+		uart_sendChar(registers[REG_MODULE_ID_1]);
+		uart_sendChar(registers[REG_MODULE_ID_2]);
+		uart_sendChar(registers[REG_MODULE_ID_3]);
 		for (int i=0;i<4;i++){
 			uart_sendChar((uint8_t)(slavesList[i]));
 			uart_sendChar((uint8_t)(slavesList[i]>>8));
@@ -86,8 +102,7 @@ void RTC_IRQHandler(void){
 		}
 
 		//send module list through ble.
-		uart_sendChar(']');
-		for (int i=0; i<10;i++) uart_sendChar((uint8_t)moduleList[i]);
+		for (int i=0; i<MODULE_LIST_SIZE;i++) uart_sendChar((uint8_t)moduleList[i]);
 		uart_sendChar('|');
 	}
 	//read data from modules
@@ -126,6 +141,11 @@ int main(void)
   for (int i=0;i<4;i++)  slavesList[i]=0;
   for (int i=0;i<10;i++) moduleList[i]=0;
   i_moduleList=0;
+
+  registers[REG_DATA_LENGTH]=30;
+  registers[REG_MODULE_ID_1]=0;
+  registers[REG_MODULE_ID_2]='M';
+  registers[REG_MODULE_ID_3]='C';
 
   initI2C();
   initUART_baud(115200);

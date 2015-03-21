@@ -17,17 +17,14 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.LineGraphView;
-import com.jjoe64.graphview.GraphView.GraphViewData;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,8 +54,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTabHost;
 
 import modularelectronics.modularelectronics.DeviceMainFragment.DeviceMainFragment;
 
@@ -73,16 +68,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private BluetoothGattCharacteristic mWriteCharacteristic;
 
     private String mDeviceAddress="78:A5:04:85:26:65";
-    private boolean mConnected = false;
 
-    //TextView bleTerminal_text;
-    //TextView bleTerminal_output;
-
-    Button   mPlotSelectButton;
-    EditText mPlotVariableName;
     String   plotVariableName="BMP085 temp";
 
-    private FragmentTabHost mTabHost;
     ActionBar actionbar;
     ViewPager viewpager;
     FragmentPageAdapter ft;
@@ -155,13 +143,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
             switch (action) {
                 case BluetoothLeService.ACTION_GATT_CONNECTED:
-                    mConnected = true;
                     updateConnectionState("connected");
                     deviceMainFragment.setBleDeviceIdField(mDeviceAddress);
                     invalidateOptionsMenu();
                     break;
                 case BluetoothLeService.ACTION_GATT_DISCONNECTED:
-                    mConnected = false;
                     updateConnectionState("unconnected");
                     //TODO automaticly try to connect again.
                     //bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -301,7 +287,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
         parseXML(modulesDescriptionFile);
     }
-    public static final boolean CheckInternetConnection(Context context) {
+    public static boolean CheckInternetConnection(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected()) {
@@ -359,13 +345,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private String prevLastOneData;
     ArrayList<Integer> d = new ArrayList<>();
 
+    public class cModule{
+        private Integer id;
+        private String name;
+        private Map<String, Double> rData;
+
+        public void add(Integer mId){
+            id=mId;
+        }
+        public void addName(String mName){
+            name=mName;
+        }
+    };
+
+    ArrayList<cModule> detectedModules = new ArrayList<>(); //ID of modules in the device
+
     private void getDataFromBle(String data) {
 
         //TODO try catch this function
-
-        //bleTerminal_text.setText("");
-        //bleTerminal_text.append(modulesDescriptionFile);
-        //bleTerminal_text.append("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
         deviceMainFragment.setFrameCounter("data frames ok:"+Integer.toString(dataCounter)+" err:"+Integer.toString(dataErrCounter)+"\n");
 
         if (data != null) {
@@ -381,9 +378,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 }
                 dataCounter++;
                 try {
-                    if (d.get(1) != 68 ) {
-                        //bleTerminal_output.setText("");
+                    /*if (d.get(1) != 68 ) {
+                        deviceMainFragment.setReceiveDataField_set("");
                         parseReceiveModuleData(d);
+                    }*/
+                    if (d.get(d.size()-1)==124){ //last received element is 124
+                        for (int i=0;i<d.size()-2;i++){
+                            if (d.get(i)==124 && d.get(i+1)==d.size()-2) {//check if the length of the frame is correct according to d[2]
+                                deviceMainFragment.setReceiveDataField_set("");
+                                parseReceiveModuleData(d,i); //d.subset(i,end)
+                                break;
+                            }
+                        }
                     }
                 }catch(IndexOutOfBoundsException e){}
 
@@ -392,6 +398,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             for (int i=0;i<hexData.length;i++){
                 Integer value = Integer.parseInt(hexData[i], 16);
                 d.add(value);
+                deviceMainFragment.setReceiveDataField_append(Integer.toString(value)+" ");
             }
 
             prevLastOneData=lastOne;
@@ -423,16 +430,49 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }*/
         }
     }
-    private void parseReceiveModuleData(ArrayList<Integer> d) {
+    private void parseReceiveModuleData(ArrayList<Integer> d, Integer startIndex) {
+        //Container with variables names and values
         Map<String,Double> rData = new HashMap<>();
 
+        //initialize MathEval script
         MathEval math=new MathEval();
 
+        //xml parsing
         Document doc = parseXML(modulesDescriptionFile);
-
-        doc.getDocumentElement().normalize();
+        try {
+            doc.getDocumentElement().normalize();
+        }
+        catch (NullPointerException ignored) {return;}
         //Log.e("-","Root element :" + doc.getDocumentElement().getNodeName());
 
+        //Check module id and add it to list of modules if it is not there already
+        Integer moduleId = d.get(2+startIndex)*256*256+d.get(3+startIndex)*256+d.get(4+startIndex);
+        Integer module_index = 0;
+        boolean moduleAlreadyDetected = false;
+        //TODO remove module if it wasnt detected for 30 seconds
+        try {
+            for (int i = 0; i < detectedModules.size(); i++) { //check if this module was detected already.
+                if (moduleId.compareTo(detectedModules.get(i).id)==0) {
+                    moduleAlreadyDetected = true;
+                    module_index=i;
+                    break;
+                }
+            }
+        } catch (NullPointerException ignored) {}
+        if (!moduleAlreadyDetected){
+            detectedModules.add(new cModule());
+            module_index=detectedModules.size()-1;
+            detectedModules.get(module_index).add(moduleId);
+        }
+
+        //update device main fragment for this module with received data frame
+        String frameData="";
+        for (int i=startIndex;i<d.size();i++){
+            frameData += String.format("%03d\t",d.get(i));
+        }
+        deviceMainFragment.updateModuleText(moduleId, frameData);
+
+        //xml read tags
         NodeList nModuleList = doc.getElementsByTagName("Module");
         for (int i = 0; i < nModuleList.getLength(); i++) {
             //--Module---
@@ -440,6 +480,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             if (nModule.getNodeType() == Node.ELEMENT_NODE) {
 
                 Element eModuleDesc = (Element) nModule;
+
+                //Module name
+                if(!moduleAlreadyDetected){
+                    if (moduleId.compareTo(Integer.parseInt(eModuleDesc.getAttribute("id")))==0) {
+                        String nameBuff = eModuleDesc.getAttribute("name");
+                        detectedModules.get(module_index).addName(nameBuff);
+                        deviceMainFragment.addNewModuleToList(moduleId,nameBuff + " [" + Integer.toString(moduleId) + "]");
+                    }
+                }
 
                 //--Variable--
                 NodeList nVariableList = eModuleDesc.getElementsByTagName("Variable");
@@ -451,7 +500,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
                         Element eVariableDesc = (Element) nVariable;
 
-                        Double value=0.0;
+                        Double value;
                         String varEquation = eVariableDesc.getAttribute("equation");
                         String equation = varEquation;
                         Pattern pattern = Pattern.compile("d\\[[0-9]+\\]");
@@ -460,18 +509,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                         {
                             String matchedStr = matcher.group(0);
                             String numbs= matchedStr.replaceAll("[^0-9]", "");
-                            Integer numb = Integer.parseInt(numbs)+1;   //plus one because the first character is start indicator.
+                            Integer numb = Integer.parseInt(numbs)+1+startIndex;   //plus one because the first character is start indicator.
                             try {
                                 String dVal = Integer.toString(d.get(numb));
                                 equation = equation.replace(matchedStr, dVal);
                             }
-                            catch (IndexOutOfBoundsException e){};
+                            catch (IndexOutOfBoundsException ignored){};
                         }
 
                         try {
                             value = math.evaluate(equation);
                             if (eVariableDesc.getAttribute("name").compareTo(plotVariableName)==0){
-                                Log.e("-", eVariableDesc.getAttribute("equation")+"->"+equation+" = "+value);
+                                //Log.e("-", eVariableDesc.getAttribute("equation")+"->"+equation+" = "+value);
                             }
                         }
                         catch(ArithmeticException e) {
@@ -568,22 +617,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             }
         });
-
-
-        //mPlotSelectButton = (Button)findViewById(R.id.plotSelectButton);
-        //mPlotVariableName   = (EditText)findViewById(R.id.plotVariableName);
-
-        /*mPlotSelectButton.setOnClickListener(
-            new View.OnClickListener()
-            {
-                public void onClick(View view)
-                {
-                    graphView.setTitle(mPlotVariableName.getText().toString());
-                    plotVariableName=mPlotVariableName.getText().toString();
-                    graphStartPoint=graphDataPointsSize+1;
-                    graphView.redrawAll();
-                }
-            });*/
 
         graphInit();
 

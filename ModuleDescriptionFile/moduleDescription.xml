@@ -1,5 +1,8 @@
 <Modules>
-    <Module id="0" name="environmental sensor">
+	<Module id="19779" name="bluetooth module">
+		<Variable name="test"      equation="d[10]+d[11]/100"></Variable>
+    </Module>
+    <Module id="4543310" name="environmental sensor">
         <Variable name="humidity"      equation="d[10]+d[11]/100"></Variable>
 		<Variable name="temperature"   equation="d[12]+d[13]/100"></Variable>
 		<Variable name="ambient light" equation="d[14]*256+d[15]"></Variable>

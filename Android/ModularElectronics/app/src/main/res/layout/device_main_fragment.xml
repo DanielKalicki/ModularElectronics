@@ -17,8 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/tvBleDeviceId"
-            android:layout_span="2" />
+            android:id="@+id/tvBleDeviceId" />
 
     </TableRow>
 
@@ -31,7 +30,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tvFrameCounter"
-            android:layout_column="1" />
+            android:layout_column="0" />
 
     </TableRow>
 
@@ -41,21 +40,21 @@
 
         <TextView
             android:layout_width="365dp"
-            android:layout_height="47dp"
+            android:layout_height="100dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tvReceiveData"
-            android:layout_column="1" />
+            android:layout_column="0"
+            android:paddingRight="30dp" />
     </TableRow>
 
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <ListView
+        <ExpandableListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@android:id/list"
-            android:layout_column="1" />
+            android:id="@+id/expListView" />
     </TableRow>
 
 </TableLayout>
