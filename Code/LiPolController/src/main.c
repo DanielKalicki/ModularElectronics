@@ -13,6 +13,40 @@
 #define ADP5063_ADDR 0x14*2
 #define LTC2942_ADDR 0x64*2
 
+uint8_t i2c_registers[100];
+
+#define REG_DATA_LENGTH_VALUE 22
+
+enum registerMap{
+
+	REG_DATA_LENGTH				=0,
+
+	REG_MODULE_ID_1				=1,
+	REG_MODULE_ID_2				=2,
+	REG_MODULE_ID_3				=3,
+
+	REG_I2C_ADDR				=4,
+
+	REG_DEVICES					=5,
+
+	REG_COMMAND_CODE			=7,		//this registers are used to send commands to the module
+	REG_COMMAND_DATA_1			=8,
+	REG_COMMAND_DATA_2			=9,
+
+	REG_BAT_VOLT_1				=10,
+	REG_BAT_VOLT_2				=11,
+	REG_BAT_TEMP_1				=12,
+	REG_BAT_TEMP_2				=13,
+	REG_BAT_CHRG_1				=14,
+	REG_BAT_CHRG_2				=15,
+	REG_BAT_DISCHR_1			=16,
+	REG_BAT_DISCHR_2			=17,
+
+	REG_ADP5063_CHARGER_ST_1	=20,
+	REG_ADP5063_CHARGER_ST_2	=21,
+
+};
+
 uint8_t devices=0;
 //------------LTC2942------------
 /*
@@ -144,7 +178,12 @@ void readStatusADP5063(){
 	uint8_t canStartCharging=0;
 
 	uint8_t val[2];
+	//0x0B -> Charger status 1
+	//0x0C -> Charger status 2
 	i2c_Register_Read_Block(I2C0,ADP5063_ADDR,0x0B,2,val);
+
+	i2c_registers[REG_ADP5063_CHARGER_ST_1]=val[0];
+	i2c_registers[REG_ADP5063_CHARGER_ST_2]=val[1];
 
 #define VIN_OV	 	1<<7
 #define VIN_OK		1<<6
@@ -230,6 +269,9 @@ uint8_t RTC_interrupt_counter=0;
 void RTC_IRQHandler(void){
 	GPIO_PortOutSet(gpioPortB, 0x80);	//indicates how much time this ic spends doing something
 
+	i2c_registers[REG_DEVICES]=devices;
+	//TODO add command to detect i2c device once again
+
 	char buff[30];
 
 	RTC_interrupt_counter++;
@@ -251,6 +293,9 @@ void RTC_IRQHandler(void){
 			uint16_t val16 = ((((uint32_t)val[0])<<8)+val[1]);
 			uint32_t batteryVoltage=(uint32_t)60000*val16/65535;		//battery voltage in 0.1mV
 
+			i2c_registers[REG_BAT_VOLT_1] = val[0];
+			i2c_registers[REG_BAT_VOLT_2] = val[1];
+
 			sprintf(buff,"BAT %ldmV\t",batteryVoltage/10);
 			uart_sendText(buff);
 
@@ -265,6 +310,9 @@ void RTC_IRQHandler(void){
 				i2c_Register_Read_Block(I2C0,LTC2942_ADDR,0x0C,2,val);
 				val16 = ((((uint32_t)val[0])<<8)+val[1]);
 				uint32_t batteryTemp=((uint32_t)6000*val16/65535)-2731;	//batery module temperature in 0.1 C
+
+				i2c_registers[REG_BAT_TEMP_1]=val[0];
+				i2c_registers[REG_BAT_TEMP_2]=val[1];
 
 				sprintf(buff," %ld[0.1C]\n",batteryTemp);
 				uart_sendText(buff);
@@ -286,6 +334,9 @@ void RTC_IRQHandler(void){
 		i2c_Register_Read_Block(I2C0,LTC2942_ADDR,0x02,2,val);
 		uint32_t charge =  ((uint32_t)65535-((((uint32_t)val[0])<<8)+val[1]));
 
+		i2c_registers[REG_BAT_CHRG_1]=val[0];
+		i2c_registers[REG_BAT_CHRG_2]=val[1];
+
 		uint16_t val16 = (uint16_t)charge;
 		chargeHistory[i_chargeHistory]=val16;
 		i_chargeHistory++;
@@ -293,6 +344,8 @@ void RTC_IRQHandler(void){
 		if(chargeHistory[i_chargeHistory]!=0){	//if this==0 that meanse that the table isnt fill yet
 			uint32_t dischargeSpeed = (val16-chargeHistory[i_chargeHistory])*85*2*6/CHARGE_HISTORY_BUFF_SIZE;	//assuming every measurment made in 500ms time steps -> the number 2 stands for it
 			sprintf(buff,"DS:%ld uAh/min\t",dischargeSpeed);
+			i2c_registers[REG_BAT_DISCHR_1] = (uint8_t) (dischargeSpeed>>8);
+			i2c_registers[REG_BAT_DISCHR_2] = (uint8_t) dischargeSpeed;
 			// (val16-ch[i]) * 85 is in 0.1uAh ===> [x]*2 -> is in 0.1uAh/second   ===> [x]*60 ===> 0.1uAh/min  ===> [x]/10 ===> 1uAh/min
 			uart_sendText(buff);
 		}
@@ -349,6 +402,15 @@ int main(void)
   initGPIO();
   initUART();
   initI2C();
+
+  for (int i=0;i<100;i++){
+	  i2c_registers[i]=0;
+  }
+
+  i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+  i2c_registers[REG_MODULE_ID_1]='L';
+  i2c_registers[REG_MODULE_ID_2]='B';
+  i2c_registers[REG_MODULE_ID_3]='C';
 
   detectDevices();
   uart_sendText("\nSTARTUP\n");
