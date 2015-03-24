@@ -13,8 +13,6 @@
 #define ADP5063_ADDR 0x14*2
 #define LTC2942_ADDR 0x64*2
 
-uint8_t i2c_registers[100];
-
 #define REG_DATA_LENGTH_VALUE 22
 
 enum registerMap{
@@ -134,6 +132,18 @@ void resetLTC2942charge(){
 	i_chargeHistory=0;
 }
 
+//----------I2C_SLAVE--------
+void check_slavesList(){
+	if (i2c_slave_address<0x10){ //addreses lower than 0x10 are set as a default at startup for i2c line sniffing
+		if(slavesListCheck[0]>=0xFFFFFFFE && slavesListCheck[1]==0xFFFFFFFF && slavesListCheck[2]==0xFFFFFFFF && slavesListCheck[3]==0xFFFFFFFF){
+			//this code will be reached if i2c list is full
+			i2c_slave_address = 0x10;
+			i2c_registers[REG_I2C_ADDR] = i2c_slave_address;
+		}
+	}
+}
+
+
 //-------------INIT--------------
 void initOscillators(void){
 	CMU_ClockEnable(cmuClock_HFPER, true);
@@ -151,10 +161,10 @@ void initGPIO(void){
 void clockTest();
 void clockTest_short() {
 	long int i=0;
-	for(;i<1201L;++i) {
-	  if(i==1200L)
+	for(;i<121L;++i) {
+	  if(i==120L)
 		  GPIO_PortOutSet(gpioPortF, 0x80);
-	  if(i==600L)
+	  if(i==60L)
 		  GPIO_PortOutClear(gpioPortF, 0x80);
 	}
 }
@@ -269,7 +279,19 @@ uint8_t RTC_interrupt_counter=0;
 void RTC_IRQHandler(void){
 	GPIO_PortOutSet(gpioPortB, 0x80);	//indicates how much time this ic spends doing something
 
-	i2c_registers[REG_DEVICES]=devices;
+	disableI2cSlaveInterrupts();
+	initI2C_Master();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+
+	i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+	i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
+	i2c_registers[REG_DEVICES]	  =devices;
 	//TODO add command to detect i2c device once again
 
 	char buff[30];
@@ -324,7 +346,7 @@ void RTC_IRQHandler(void){
 	}
 
 	if(devices&0x01){
-		uint8_t val=0;
+		//uint8_t val=0;
 		//i2c_RegisterGet(I2C0,ADP5063_ADDR,0x01,&val);
 		//sprintf(buff,"ADP5063: %d\n",val);
 		//uart_sendText(buff);
@@ -359,7 +381,21 @@ void RTC_IRQHandler(void){
 
 	GPIO_PortOutClear(gpioPortB, 0x80);
 
-	clockTest();
+
+	check_slavesList();
+
+	initI2C_Slave();
+	enableI2cSlaveInterrupts();
+
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+	clockTest_short();
+
+	//clockTest();
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
@@ -401,7 +437,8 @@ int main(void)
   initOscillators();
   initGPIO();
   initUART();
-  initI2C();
+
+  i2c_slave_address=0x02;	//change to 0x02
 
   for (int i=0;i<100;i++){
 	  i2c_registers[i]=0;
@@ -412,12 +449,17 @@ int main(void)
   i2c_registers[REG_MODULE_ID_2]='B';
   i2c_registers[REG_MODULE_ID_3]='C';
 
+  initI2C_Master();
+  i2c_Scan(I2C0);
+
   detectDevices();
   uart_sendText("\nSTARTUP\n");
   i2c_Scan(I2C0);
   initDevices();
 
   setupRtc();
+
+  initI2C_Slave();
 
   /* Infinite loop */
   while (1) {

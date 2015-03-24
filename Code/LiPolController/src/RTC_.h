@@ -17,6 +17,8 @@ extern "C" {
 #define RTC_COUNT_BETWEEN_WAKEUP_2    (((LFRCO_FREQUENCY * WAKEUP_INTERVAL_MS_2) / 1000)-1)
 
 void setupRtc(void);
+void disableRtcInterrupts(void);
+void enableRtcInterrupts(void);
 
 #ifdef __cplusplus
 }

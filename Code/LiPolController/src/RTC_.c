@@ -37,3 +37,12 @@ void setupRtc(void)
   /* Initialize the RTC */
   RTC_Init(&rtcInit);
 }
+
+void disableRtcInterrupts(void){
+	 RTC_IntDisable(RTC_IFC_COMP0);
+	 NVIC_DisableIRQ(RTC_IRQn);
+}
+void enableRtcInterrupts(void){
+	 RTC_IntEnable(RTC_IFC_COMP0);
+	 NVIC_EnableIRQ(RTC_IRQn);
+}
