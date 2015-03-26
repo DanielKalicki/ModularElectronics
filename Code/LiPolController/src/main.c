@@ -137,7 +137,7 @@ void check_slavesList(){
 	if (i2c_slave_address<0x10){ //addreses lower than 0x10 are set as a default at startup for i2c line sniffing
 		if(slavesListCheck[0]>=0xFFFFFFFE && slavesListCheck[1]==0xFFFFFFFF && slavesListCheck[2]==0xFFFFFFFF && slavesListCheck[3]==0xFFFFFFFF){
 			//this code will be reached if i2c list is full
-			i2c_slave_address = 0x10;
+			i2c_slave_address = 0x14;
 			i2c_registers[REG_I2C_ADDR] = i2c_slave_address;
 		}
 	}
@@ -161,10 +161,10 @@ void initGPIO(void){
 void clockTest();
 void clockTest_short() {
 	long int i=0;
-	for(;i<121L;++i) {
-	  if(i==120L)
+	for(;i<1201L;++i) {
+	  if(i==1200L)
 		  GPIO_PortOutSet(gpioPortF, 0x80);
-	  if(i==60L)
+	  if(i==600L)
 		  GPIO_PortOutClear(gpioPortF, 0x80);
 	}
 }
@@ -294,6 +294,12 @@ void RTC_IRQHandler(void){
 	i2c_registers[REG_DEVICES]	  =devices;
 	//TODO add command to detect i2c device once again
 
+	static uint8_t counter=0;
+	i2c_registers[REG_COMMAND_CODE]=counter;
+	counter++;
+	if(counter==255) counter=0;
+
+
 	char buff[30];
 
 	RTC_interrupt_counter++;
@@ -379,8 +385,12 @@ void RTC_IRQHandler(void){
 		uart_sendText(buff);
 	}
 
-	GPIO_PortOutClear(gpioPortB, 0x80);
+	for (int i=0;i<REG_DATA_LENGTH_VALUE;i++){
+		sprintf(buff,"%d:%d\t",i,i2c_registers[i]);
+		uart_sendText(buff);
+	}
 
+	GPIO_PortOutClear(gpioPortB, 0x80);
 
 	check_slavesList();
 
@@ -402,7 +412,7 @@ void RTC_IRQHandler(void){
 }
 
 void detectDevices(){
-	devices=0;
+	devices=0xFF;
 
 	//-----ADP5063----
 	if (i2c_Detect(I2C0,ADP5063_ADDR)==1){
@@ -436,9 +446,9 @@ int main(void)
 
   initOscillators();
   initGPIO();
-  initUART();
+  //initUART();
 
-  i2c_slave_address=0x02;	//change to 0x02
+  i2c_slave_address=0x02;
 
   for (int i=0;i<100;i++){
 	  i2c_registers[i]=0;
@@ -448,13 +458,13 @@ int main(void)
   i2c_registers[REG_MODULE_ID_1]='L';
   i2c_registers[REG_MODULE_ID_2]='B';
   i2c_registers[REG_MODULE_ID_3]='C';
+  //id: 4997699
 
   initI2C_Master();
   i2c_Scan(I2C0);
 
   detectDevices();
   uart_sendText("\nSTARTUP\n");
-  i2c_Scan(I2C0);
   initDevices();
 
   setupRtc();
@@ -463,6 +473,11 @@ int main(void)
 
   /* Infinite loop */
   while (1) {
+	  //EMU_EnterEM2(false);
+	  while(i2c_rxInProgress){
+	     EMU_EnterEM1();
+	  }
+	   /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
 	  EMU_EnterEM2(false);
   }
 }

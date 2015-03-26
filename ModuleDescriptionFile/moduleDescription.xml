@@ -1,8 +1,8 @@
 <Modules>
-	<Module id="19779" name="bluetooth module">
+	<Module id="19779" name="Bluetooth module">
 		<Variable name="test"      equation="d[10]+d[11]/100"></Variable>
     </Module>
-    <Module id="4543310" name="environmental sensor">
+    <Module id="4543310" name="Environmental sensor">
         <Variable name="humidity"      equation="d[10]+d[11]/100"></Variable>
 		<Variable name="temperature"   equation="d[12]+d[13]/100"></Variable>
 		<Variable name="ambient light" equation="d[14]*256+d[15]"></Variable>
@@ -19,5 +19,8 @@
 		<Variable name="gyro Z"        equation="d[38]*256+d[39]"></Variable>
 		<Variable name="pedoC"         equation="d[44]*16777216+d[45]*65536+d[46]*256+d[47]"></Variable>
 		<Variable name="pedoT"         equation="d[52]*16777216+d[53]*65536+d[54]*256+d[55]"></Variable>
+    </Module>
+	<Module id="4997699" name="LiPol controller">
+		<Variable name="test"      equation="d[10]+d[11]/100"></Variable>
     </Module>
 </Modules>

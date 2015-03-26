@@ -23,7 +23,7 @@ void initI2C_Master(void)
   /* but in case some slower devices are added on */
   /* prototype board, we use standard mode. */
   //I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRFast};
-  I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRStandard};
+  I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_STANDARD_MAX, i2cClockHLRStandard};
 
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_I2C0, true);
@@ -350,7 +350,7 @@ void i2c_Scan (I2C_TypeDef *i2c){
 int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
 {
   I2C_TransferSeq_TypeDef    seq;
-  I2C_TransferReturn_TypeDef ret;
+  //I2C_TransferReturn_TypeDef ret;
   uint8_t i2c_write_data[1];
   /* Unused parameter */
   (void) i2c;
@@ -375,9 +375,9 @@ int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t
 
   if(timeout==(uint32_t)(-1))
   	  uart_sendText("I2C_set_timeout\n");
-  if (ret != i2cTransferDone)
+  if (I2C_Status != i2cTransferDone)
   {
-    return((int) ret);
+    return((int) I2C_Status);
   }
 
   return((int) length);
