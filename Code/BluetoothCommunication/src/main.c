@@ -37,14 +37,38 @@ void testWait(){
 	}
 }
 
-volatile int RTC_interrupt=0;
-
 //-------------RTC--------------
 
 uint32_t slavesList[4];		//binary list of detected i2c addresses
 #define MODULE_LIST_SIZE 10
 uint8_t moduleList[MODULE_LIST_SIZE];		//list of i2c addresses connected to the bus
+uint8_t moduleList_len[MODULE_LIST_SIZE];	//list of i2c modules data lengths
 uint8_t i_moduleList=0;
+
+void scanI2cSlaves(uint8_t scanStart){
+	for (uint8_t i=scanStart;i<scanStart+4;i++){
+		if (i2c_Detect(I2C0,(i*2))==1){
+			slavesList[i>>5]|=(1<<(i&0x1F));		//i&0x1F - i%32
+			uint8_t existsInList=0;
+			for (int iM=0;iM<i_moduleList;iM++){
+				if (moduleList[iM]==i*2){
+					existsInList=1;
+					break;
+				}
+			}
+			if (existsInList==0){
+				if (i*2>=0x10){ //dont add modules with addr less than 0x10
+					moduleList[i_moduleList]=i*2;
+					i_moduleList++;
+					if(i_moduleList==MODULE_LIST_SIZE) i_moduleList=9;
+				}
+			}
+		}
+		else slavesList[i>>5]&=~(1<<(i&0x1F));
+	}
+}
+
+volatile int RTC_interrupt=0;
 
 void RTC_IRQHandler(void){
 
@@ -61,30 +85,11 @@ void RTC_IRQHandler(void){
 		}
 	}
 	//i2c scan from the master
-	else if(RTC_interrupt==6){
+	else if(RTC_interrupt==9){
 
 		//every RTC interrupt the ic is scanning 4 i2c addresses and adding an address to a moduleList if it exists.
 		static uint8_t scanStart=0;
-		for (uint8_t i=scanStart;i<scanStart+4;i++){
-			if (i2c_Detect(I2C0,(i*2))==1){
-				slavesList[i>>5]|=(1<<(i&0x1F));		//i&0x1F - i%32
-				uint8_t existsInList=0;
-				for (int iM=0;iM<i_moduleList;iM++){
-					if (moduleList[iM]==i*2){
-						existsInList=1;
-						break;
-					}
-				}
-				if (existsInList==0){
-					if (i*2>=0x10){ //dont add modules with addr less than 0x10
-						moduleList[i_moduleList]=i*2;
-						i_moduleList++;
-						if(i_moduleList==MODULE_LIST_SIZE) i_moduleList=9;
-					}
-				}
-			}
-			else slavesList[i>>5]&=~(1<<(i&0x1F));
-		}
+		scanI2cSlaves(scanStart);
 		if (scanStart<124) scanStart+=4;
 		else scanStart=0;
 
@@ -106,22 +111,23 @@ void RTC_IRQHandler(void){
 		uart_sendChar('|');
 	}
 	//read data from modules
-	else if (RTC_interrupt==2){
+	else if (RTC_interrupt==2 || RTC_interrupt==5 || RTC_interrupt==8){
 
-		if(moduleList[0]>=0x10){
-			static uint8_t len=10;
+		uint8_t mod_numb = (RTC_interrupt-2)/3;
+
+		if(moduleList[mod_numb]>=0x10){
 			uart_sendChar('|');
 
 			uint8_t reg_vals[200];
-			i2c_Register_Read_Block(I2C0,moduleList[0],0x00,len,reg_vals);
+			i2c_Register_Read_Block(I2C0,moduleList[mod_numb],0x00,moduleList_len[mod_numb],reg_vals);
 
-			for(int i=0;i<len;i++)
+			for(int i=0;i<moduleList_len[mod_numb];i++)
 				uart_sendChar(reg_vals[i]);
 
 			uart_sendChar('|');
 
-			len=reg_vals[0];
-			if(len==0) len=10;
+			moduleList_len[mod_numb]=reg_vals[0];
+			if(moduleList_len[mod_numb]==0) moduleList_len[mod_numb]=10;
 		}
 	}
 
@@ -139,7 +145,8 @@ int main(void)
   initOscillators();
 
   for (int i=0;i<4;i++)  slavesList[i]=0;
-  for (int i=0;i<10;i++) moduleList[i]=0;
+  for (int i=0;i<MODULE_LIST_SIZE;i++) moduleList[i]=0;
+  for (int i=0;i<MODULE_LIST_SIZE;i++) moduleList_len[i]=10;
   i_moduleList=0;
 
   registers[REG_DATA_LENGTH]=30;
@@ -154,6 +161,11 @@ int main(void)
   while(initHM11_fail){
 	  initHM11_fail=initHM11();
 	  testWait();
+  }
+
+  //scan every i2c address
+  for (uint8_t scanStart=0;scanStart<124;scanStart+=4){
+	  scanI2cSlaves(scanStart);
   }
 
   /* Setting up rtc */

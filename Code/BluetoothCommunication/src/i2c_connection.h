@@ -15,7 +15,7 @@ extern "C" {
 #define I2CDRV_SDA_PORT 		gpioPortC
 #define I2CDRV_SDA_PIN  		0
 #define I2CDRV_PORT_LOCATION 	4
-#define I2CDRV_TRANSFER_TIMEOUT 300000
+#define I2CDRV_TRANSFER_TIMEOUT 3000
 
 I2C_TransferReturn_TypeDef I2C_Status;	//Global variable
 

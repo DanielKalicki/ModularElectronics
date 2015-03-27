@@ -47,60 +47,6 @@ enum registerMap{
 
 uint8_t devices=0;
 //------------LTC2942------------
-/*
-int i2c_SMB_write(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg){
-	I2C_TransferSeq_TypeDef seq;
-	uint8_t i2c_write_data[1];
-
-	seq.addr = addr;
-	seq.flags = I2C_FLAG_WRITE;
-	i2c_write_data[0] = reg;
-	seq.buf[0].data = i2c_write_data;
-	seq.buf[0].len = 1;
-
-	I2C_Status = I2C_TransferInit(i2c, &seq);
-	uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	while (I2C_Status == i2cTransferInProgress && timeout--)
-	{
-		I2C_Status = I2C_Transfer(I2C0);
-	}
-	if(timeout==(uint32_t)(-1)){
-		uart_sendText("\nERROR: I2C_get_timeout\n");
-		return -1;
-	}
-	if (I2C_Status != i2cTransferDone)
-	{
-	   return((int)I2C_Status);
-	}
-	return 1;
-}
-int i2c_SMB_read(I2C_TypeDef *i2c, uint8_t addr, uint8_t *val){
-	I2C_TransferSeq_TypeDef seq;
-
-	seq.addr = addr;
-	seq.flags = I2C_FLAG_READ;
-	seq.buf[0].data = val;
-	seq.buf[0].len = 1;
-
-	I2C_Status = I2C_TransferInit(i2c, &seq);
-	uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	while (I2C_Status == i2cTransferInProgress && timeout--)
-	{
-		 I2C_Status = I2C_Transfer(I2C0);
-	}
-	if(timeout==(uint32_t)(-1)){
-	  	  uart_sendText("\nERROR: I2C_get_timeout\n");
-	  	  return -1;
-	}
-	if (I2C_Status != i2cTransferDone)
-	{
-		   return((int)I2C_Status);
-	}
-
-	return 1;
-}
-*/
-
 void setupLTC2942(){
 	uint8_t val=0;
 	i2c_RegisterGet(I2C0,LTC2942_ADDR,0x01,&val);
@@ -153,18 +99,15 @@ void initGPIO(void){
 	//UART
 	GPIO_PinModeSet(COM_PORT, TX_PIN, gpioModePushPull, 1); // set TX pin to push-pull output, initialize high (otherwise glitches can occur)
 	GPIO_PinModeSet(COM_PORT, RX_PIN, gpioModeInput, 0);    // set RX pin as input (no filter)
-
-	//Time doing something indicator
-	GPIO_PinModeSet(gpioPortF, 7, gpioModePushPull, 1);
 }
 
 void clockTest();
 void clockTest_short() {
 	long int i=0;
-	for(;i<1201L;++i) {
-	  if(i==1200L)
+	for(;i<121L;++i) {
+	  if(i==120L)
 		  GPIO_PortOutSet(gpioPortF, 0x80);
-	  if(i==600L)
+	  if(i==60L)
 		  GPIO_PortOutClear(gpioPortF, 0x80);
 	}
 }
@@ -259,7 +202,6 @@ void readStatusADP5063(){
 	}
 }
 
-
 void initDevices(){
 	//-----ADP5063----
 	if(devices&0x01){
@@ -277,17 +219,9 @@ uint8_t RTC_interrupt_counter=0;
 #define LTC2942_READ_TEMP
 
 void RTC_IRQHandler(void){
-	GPIO_PortOutSet(gpioPortB, 0x80);	//indicates how much time this ic spends doing something
 
 	disableI2cSlaveInterrupts();
 	initI2C_Master();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
 
 	i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
 	i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
@@ -298,7 +232,6 @@ void RTC_IRQHandler(void){
 	i2c_registers[REG_COMMAND_CODE]=counter;
 	counter++;
 	if(counter==255) counter=0;
-
 
 	char buff[30];
 
@@ -351,12 +284,6 @@ void RTC_IRQHandler(void){
 		}
 	}
 
-	if(devices&0x01){
-		//uint8_t val=0;
-		//i2c_RegisterGet(I2C0,ADP5063_ADDR,0x01,&val);
-		//sprintf(buff,"ADP5063: %d\n",val);
-		//uart_sendText(buff);
-	}
 	if(devices&0x02){
 		uint8_t val[2];
 		i2c_Register_Read_Block(I2C0,LTC2942_ADDR,0x02,2,val);
@@ -390,22 +317,10 @@ void RTC_IRQHandler(void){
 		uart_sendText(buff);
 	}
 
-	GPIO_PortOutClear(gpioPortB, 0x80);
-
 	check_slavesList();
 
 	initI2C_Slave();
 	enableI2cSlaveInterrupts();
-
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-
-	//clockTest();
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
@@ -427,16 +342,6 @@ void detectDevices(){
 		devices |= 0x02;
 	}
 	else uart_sendText("\t---\tLTC2942 NOT DETECTED\t---\t\n");
-}
-
-void clockTest() {
-	long int i=0;
-	for(;i<120001L;++i) {
-	  if(i==120000L)
-		  GPIO_PortOutSet(gpioPortF, 0x80);
-	  if(i==60000L)
-		  GPIO_PortOutClear(gpioPortF, 0x80);
-	}
 }
 
 //-------------MAIN-------------

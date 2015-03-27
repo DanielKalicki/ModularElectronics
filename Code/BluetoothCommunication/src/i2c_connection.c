@@ -213,9 +213,9 @@ int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t
 
   if(timeout==(uint32_t)(-1))
   	  uart_sendText("I2C_set_timeout\n");
-  if (ret != i2cTransferDone)
+  if (I2C_Status != i2cTransferDone)
   {
-    return((int) ret);
+    return((int) I2C_Status);
   }
 
   return((int) length);
