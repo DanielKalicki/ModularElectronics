@@ -2,6 +2,7 @@ package modularelectronics.modularelectronics.DeviceMainFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ public class DeviceMainFragment extends Fragment { //ListFragment
 
         //setListAdapter(listAdapter);
 
+        Log.e("-","Fragment creted");
+
         return V;
     }
     @Override
@@ -53,6 +56,8 @@ public class DeviceMainFragment extends Fragment { //ListFragment
         listAdapter = new ExpandableListAdapter(groups, children);
         lv.setAdapter(listAdapter);
         lv.setGroupIndicator(null);
+
+        Log.e("-","Fragment View creted");
     }
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -163,23 +168,33 @@ public class DeviceMainFragment extends Fragment { //ListFragment
         }
     }
     public void noBleDeviceFound(){
-        TextView textView = (TextView) (getView().findViewById(R.id.tvBleDeviceId));
-        textView.setText("No bluetooth device present");
+        try {
+            TextView textView = (TextView) (V.findViewById(R.id.tvBleDeviceId));
+            textView.setText("No bluetooth device present");
+        }catch (NullPointerException ignored){}
     }
     public void setBleDeviceIdField(String text){
-        TextView textView = (TextView) (getView().findViewById(R.id.tvBleDeviceId));
-        textView.setText("Bluetooth module id: "+text);
+        try{
+            TextView textView = (TextView) (V.findViewById(R.id.tvBleDeviceId));
+            textView.setText("Bluetooth module id: "+text);
+        }catch (NullPointerException ignored){}
     }
     public void setFrameCounter(String text){
-        TextView textView = (TextView) (getView().findViewById(R.id.tvFrameCounter));
-        textView.setText(text);
+        try {
+            TextView textView = (TextView) (V.findViewById(R.id.tvFrameCounter));
+            textView.setText(text);
+        }catch (NullPointerException ignored){}
     }
     public void setReceiveDataField_set(String text){
-        TextView textView = (TextView) (getView().findViewById(R.id.tvReceiveData));
-        textView.setText(text);
+        try{
+            TextView textView = (TextView) (V.findViewById(R.id.tvReceiveData));
+            textView.setText(text);
+        }catch (NullPointerException ignored){}
     }
     public void setReceiveDataField_append(String text){
-        TextView textView = (TextView) (getView().findViewById(R.id.tvReceiveData));
-        textView.append(text);
+        try {
+            TextView textView = (TextView) (V.findViewById(R.id.tvReceiveData));
+            textView.append(text);
+        }catch (NullPointerException ignored){}
     }
 }

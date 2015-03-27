@@ -14,6 +14,7 @@ import modularelectronics.modularelectronics.R;
 
 public class ModuleFragment extends ListFragment {
     private List<ListViewItem> mItems;
+    ListViewModuleInfoAdapter listAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -21,15 +22,22 @@ public class ModuleFragment extends ListFragment {
         // Inflate the layout for this fragment
         View V = inflater.inflate(R.layout.module_fragment, container, false);
 
-        mItems = new ArrayList<ListViewItem>();
-        mItems.add(new ListViewItem(getResources().getDrawable(R.drawable.ic_launcher), "Value1", "Description1"));
-        mItems.add(new ListViewItem(getResources().getDrawable(R.drawable.ic_launcher), "Value2", "Description2"));
-        mItems.add(new ListViewItem(getResources().getDrawable(R.drawable.ic_launcher), "Value3", "Description3"));
+        mItems = new ArrayList<>();
 
         ListView list = (ListView) V.findViewById(android.R.id.list);
-        setListAdapter(new ListViewModuleInfoAdapter(getActivity(), mItems));
+        listAdapter = new ListViewModuleInfoAdapter(getActivity(), mItems);
+        setListAdapter(listAdapter);
         
         return V;
+    }
+
+    public void addVariable(String varName){
+        mItems.add(new ListViewItem(getResources().getDrawable(R.drawable.ic_launcher), varName, "---"));
+        listAdapter.notifyDataSetChanged();
+    }
+
+    public void setVariable(String varName, String valueText){
+
     }
 }
 

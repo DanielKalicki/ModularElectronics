@@ -8,26 +8,31 @@ import modularelectronics.modularelectronics.DeviceMainFragment.DeviceMainFragme
 import modularelectronics.modularelectronics.ModuleFragment.ModuleFragment;
 
 public class FragmentPageAdapter extends FragmentPagerAdapter {
+    int count;
+
     public FragmentPageAdapter(FragmentManager fm) {
         super(fm);
     }
+
     @Override
     public Fragment getItem(int arg0) {
-        // TODO Auto-generated method stub
-        switch (arg0) {
-            case 0:
-                return new DeviceMainFragment();
-            case 1:
-                return new ModuleFragment();
-            default:
-                break;
+        if (arg0==0){
+            return new DeviceMainFragment();
+        }
+        if (arg0>0 && arg0<100){
+            return new ModuleFragment();
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
-        return 2;
+        return 100;
+    }
+    public int getRealCount() {
+        return count;
+    }
+    public void setCount(int countNumb){
+        count = countNumb;
     }
 }

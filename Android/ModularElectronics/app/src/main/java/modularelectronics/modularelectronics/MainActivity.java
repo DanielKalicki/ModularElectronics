@@ -56,6 +56,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import modularelectronics.modularelectronics.DeviceMainFragment.DeviceMainFragment;
+import modularelectronics.modularelectronics.ModuleFragment.ModuleFragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 
@@ -76,6 +77,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     FragmentPageAdapter ft;
 
     DeviceMainFragment deviceMainFragment;
+    ArrayList<ModuleFragment> moduleFragment;
 
     Intent gattServiceIntent;
 
@@ -139,7 +141,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if(deviceMainFragment==null){
-                deviceMainFragment =(DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
+                deviceMainFragment = (DeviceMainFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
             }
             switch (action) {
                 case BluetoothLeService.ACTION_GATT_CONNECTED:
@@ -487,6 +489,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                         String nameBuff = eModuleDesc.getAttribute("name");
                         detectedModules.get(module_index).addName(nameBuff);
                         deviceMainFragment.addNewModuleToList(moduleId,nameBuff + " [" + Integer.toString(moduleId) + "]");
+                        int countNumber = ft.getRealCount();
+                        ft.setCount(countNumber+1);
+                        actionbar.addTab(getActionBar().newTab().setText(nameBuff).setTabListener(this));
                     }
                 }
 
@@ -594,12 +599,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         viewpager = (ViewPager)findViewById(R.id.pager);
 
         ft = new FragmentPageAdapter(getSupportFragmentManager());
+        ft.setCount(1);
         viewpager.setAdapter(ft);
+        viewpager.setOffscreenPageLimit(100);
         actionbar= getActionBar();
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionbar.addTab(actionbar.newTab().setText("Tab1").setTabListener(this));
-        actionbar.addTab(actionbar.newTab().setText("Tab2").setTabListener(this));
-        actionbar.addTab(actionbar.newTab().setText("Tab3").setTabListener(this));
+        actionbar.addTab(actionbar.newTab().setText("Device").setTabListener(this));
 
         viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -609,7 +614,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
-                actionbar.setSelectedNavigationItem(position);
+                if (position < ft.getRealCount()) {
+                    actionbar.setSelectedNavigationItem(position);
+                }
+                else {
+                    viewpager.setCurrentItem(ft.getRealCount()-1);
+                }
             }
 
             @Override
