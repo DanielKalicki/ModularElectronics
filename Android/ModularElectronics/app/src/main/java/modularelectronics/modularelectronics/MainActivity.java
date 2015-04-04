@@ -77,7 +77,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     FragmentPageAdapter ft;
 
     DeviceMainFragment deviceMainFragment;
-    ArrayList<ModuleFragment> moduleFragment;
+
+    public class cModule{
+        private Integer id;
+        private String name;
+        private Map<String, Double> rData;
+        private ModuleFragment moduleFragment;
+
+        public void add(Integer mId){
+            id=mId;
+        }
+        public void addName(String mName){
+            name=mName;
+        }
+        public void setModuleFragment(ModuleFragment mModuleFragment) {moduleFragment=mModuleFragment;}
+    };
+
 
     Intent gattServiceIntent;
 
@@ -347,19 +362,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private String prevLastOneData;
     ArrayList<Integer> d = new ArrayList<>();
 
-    public class cModule{
-        private Integer id;
-        private String name;
-        private Map<String, Double> rData;
-
-        public void add(Integer mId){
-            id=mId;
-        }
-        public void addName(String mName){
-            name=mName;
-        }
-    };
-
     ArrayList<cModule> detectedModules = new ArrayList<>(); //ID of modules in the device
 
     private void getDataFromBle(String data) {
@@ -473,6 +475,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             frameData += String.format("%03d\t",d.get(i));
         }
         deviceMainFragment.updateModuleText(moduleId, frameData);
+        if(detectedModules.get(module_index).moduleFragment==null){
+            try{ModuleFragment moduleFragmentBuff = (ModuleFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + module_index+1);
+                detectedModules.get(module_index).setModuleFragment(moduleFragmentBuff);
+                moduleFragmentBuff.addVariable("fdafa");
+            }catch (NullPointerException ignored){}
+        }
 
         //xml read tags
         NodeList nModuleList = doc.getElementsByTagName("Module");
@@ -489,6 +497,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                         String nameBuff = eModuleDesc.getAttribute("name");
                         detectedModules.get(module_index).addName(nameBuff);
                         deviceMainFragment.addNewModuleToList(moduleId,nameBuff + " [" + Integer.toString(moduleId) + "]");
+
                         int countNumber = ft.getRealCount();
                         ft.setCount(countNumber+1);
                         actionbar.addTab(getActionBar().newTab().setText(nameBuff).setTabListener(this));
@@ -507,6 +516,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
                         Double value;
                         String varEquation = eVariableDesc.getAttribute("equation");
+                        String varName = eVariableDesc.getAttribute("name");
                         String equation = varEquation;
                         Pattern pattern = Pattern.compile("d\\[[0-9]+\\]");
                         Matcher matcher = pattern.matcher(varEquation);
@@ -524,14 +534,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
                         try {
                             value = math.evaluate(equation);
-                            if (eVariableDesc.getAttribute("name").compareTo(plotVariableName)==0){
+                            if (varName.compareTo(plotVariableName)==0){
                                 //Log.e("-", eVariableDesc.getAttribute("equation")+"->"+equation+" = "+value);
                             }
                         }
                         catch(ArithmeticException e) {
                             value = 0.0d/0.0;
                         }
-                        rData.put(eVariableDesc.getAttribute("name"),value);
+                        rData.put(varName,value);
+                        Log.e("-",module_index.toString());
+                        detectedModules.get(module_index).moduleFragment.addVariable(varName);
                     }
                 }
             }
