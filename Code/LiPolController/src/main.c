@@ -149,7 +149,7 @@ void readStatusADP5063(){
 	if(val[0]&VIN_OK){ 		uart_sendText("Voltage at VINx exceeds V_VIN_OK_RISE and V_VIN_OK_FALL\n");	}
 	if(val[0]&V_ILIM){		uart_sendText("Current into VINx is limited by the high voltage blocking FET and the charger is not running at the full programmed I_CHG\n"); }
 	if(val[0]&THER_LIM){	uart_sendText("Charger is not running at the full programmed I_CHG but is limited by the die temperature\n"); }
-	if(val[0]&CHDONE){		uart_sendText("End of a charge cycle has been reached. This bit latches on, in that it doesn not reset to low when the V_RCH threshold is breached\n"); }
+	if(val[0]&CHDONE){		uart_sendText("End of a charge cycle has been reached. This bit latches on, in that it does not reset to low when the V_RCH threshold is breached\n"); }
 	if(val[0]&CHARG_STAT){
 		if((val[0]&CHARG_STAT)==1) { 		uart_sendText("Charger is in trickle charge state\n"); }
 		else if((val[0]&CHARG_STAT)==2) { 	uart_sendText("Charger is in fast charge mode (CC mode)\n"); }
