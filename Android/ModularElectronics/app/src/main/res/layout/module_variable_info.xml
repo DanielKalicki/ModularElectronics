@@ -14,7 +14,7 @@
         android:src="@drawable/ic_launcher" />
 
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvDescription"
         android:layout_width="fill_parent"
         android:layout_height="26dip"
         android:layout_alignParentBottom="true"
@@ -22,11 +22,10 @@
         android:layout_toRightOf="@id/ivIcon"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:text="Description"
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/tvDescription"
+        android:id="@+id/tvTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/tvTitle"
@@ -35,7 +34,6 @@
         android:layout_alignWithParentIfMissing="true"
         android:layout_toRightOf="@id/ivIcon"
         android:gravity="center_vertical"
-        android:text="Example application"
         android:textSize="16sp" />
 
 </RelativeLayout>

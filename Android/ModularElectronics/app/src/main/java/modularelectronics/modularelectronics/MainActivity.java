@@ -476,9 +476,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
         deviceMainFragment.updateModuleText(moduleId, frameData);
         if(detectedModules.get(module_index).moduleFragment==null){
-            try{ModuleFragment moduleFragmentBuff = (ModuleFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + module_index+1);
+            try{ModuleFragment moduleFragmentBuff = (ModuleFragment)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + Integer.toString(module_index + 1));
                 detectedModules.get(module_index).setModuleFragment(moduleFragmentBuff);
-                moduleFragmentBuff.addVariable("fdafa");
             }catch (NullPointerException ignored){}
         }
 
@@ -499,7 +498,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                         deviceMainFragment.addNewModuleToList(moduleId,nameBuff + " [" + Integer.toString(moduleId) + "]");
 
                         int countNumber = ft.getRealCount();
-                        ft.setCount(countNumber+1);
+                        ft.setCount(countNumber + 1);
                         actionbar.addTab(getActionBar().newTab().setText(nameBuff).setTabListener(this));
                     }
                 }
@@ -542,8 +541,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             value = 0.0d/0.0;
                         }
                         rData.put(varName,value);
-                        Log.e("-",module_index.toString());
-                        detectedModules.get(module_index).moduleFragment.addVariable(varName);
+                        try {
+                            if (moduleId.compareTo(Integer.parseInt(eModuleDesc.getAttribute("id")))==0) {
+                                detectedModules.get(module_index).moduleFragment.setVariable(varName, Double.toString(value));
+                            }
+                        }catch (NullPointerException ignored){}
                     }
                 }
             }
