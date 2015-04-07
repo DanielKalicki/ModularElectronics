@@ -3,24 +3,28 @@
 		<Variable name="test"      equation="d[10]+d[11]/100"></Variable>
     </Module>
     <Module id="4543310" name="Environmental sensor">
-        <Variable name="humidity"      equation="d[10]+d[11]/100"></Variable>
-		<Variable name="temperature"   equation="d[12]+d[13]/100"></Variable>
-		<Variable name="ambient light" equation="d[14]*256+d[15]"></Variable>
-		<Variable name="pressure"      equation="d[19]*1000+d[20]*10+d[21]/10"></Variable>
-		<Variable name="BMP085 temp"   equation="d[17]+d[18]/10"></Variable>
-		<Variable name="compass X"     equation="d[22]*256+d[23]"></Variable>
-		<Variable name="compass Y"     equation="d[24]*256+d[25]"></Variable>
-		<Variable name="compass Z"     equation="d[26]*256+d[27]"></Variable>
-		<Variable name="accel X"       equation="d[28]*256+d[29]"></Variable>
-		<Variable name="accel Y"       equation="d[30]*256+d[31]"></Variable>
-		<Variable name="accel Z"       equation="d[32]*256+d[33]"></Variable>
-		<Variable name="gyro X"        equation="d[34]*256+d[35]"></Variable>
-		<Variable name="gyro Y"        equation="d[36]*256+d[37]"></Variable>
-		<Variable name="gyro Z"        equation="d[38]*256+d[39]"></Variable>
-		<Variable name="pedoC"         equation="d[44]*16777216+d[45]*65536+d[46]*256+d[47]"></Variable>
-		<Variable name="pedoT"         equation="d[52]*16777216+d[53]*65536+d[54]*256+d[55]"></Variable>
+        <Variable name="Humidity"        equation="d[10]+d[11]/100"></Variable>
+		<Variable name="Temperature"     equation="d[12]+d[13]/100"></Variable>
+		<Variable name="Ambient light"   equation="d[14]*256+d[15]"></Variable>
+		<Variable name="Pressure"        equation="d[19]*1000+d[20]*10+d[21]/10"></Variable>
+		<Variable name="BMP085 temp"     equation="d[17]+d[18]/10"></Variable>
+		<Variable name="Compass X"       equation="d[22]*256+d[23]"></Variable>
+		<Variable name="Compass Y"       equation="d[24]*256+d[25]"></Variable>
+		<Variable name="Compass Z"       equation="d[26]*256+d[27]"></Variable>
+		<Variable name="Accel X"         equation="d[28]*256+d[29]"></Variable>
+		<Variable name="Accel Y"         equation="d[30]*256+d[31]"></Variable>
+		<Variable name="Accel Z"         equation="d[32]*256+d[33]"></Variable>
+		<Variable name="Gyro X"          equation="d[34]*256+d[35]"></Variable>
+		<Variable name="Gyro Y"          equation="d[36]*256+d[37]"></Variable>
+		<Variable name="Gyro Z"          equation="d[38]*256+d[39]"></Variable>
+		<Variable name="Pedometer count" equation="d[44]*16777216+d[45]*65536+d[46]*256+d[47]"></Variable>
+		<Variable name="Pedometer time"  equation="d[52]*16777216+d[53]*65536+d[54]*256+d[55]"></Variable>
     </Module>
 	<Module id="4997699" name="LiPol controller">
-		<Variable name="test"      equation="d[10]+d[11]/100"></Variable>
+		<Variable name="Battery voltage"        equation="(d[10]*256+d[11])/65535*6"></Variable>
+		<Variable name="Battery temperature"    equation="(d[12]*256+d[13])/65535*600-273.15"></Variable>
+		<Variable name="Battery charger"        equation="(65535-(d[14]*256+d[15]))*85/10"></Variable>
+		<Variable name="Battery discharge rate" equation="d[16]*256+d[17]"></Variable>
+		<Variable name="refresh test" equation="d[7]"></Variable>
     </Module>
 </Modules>
