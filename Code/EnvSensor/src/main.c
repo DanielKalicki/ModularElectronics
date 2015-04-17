@@ -231,6 +231,8 @@ void initSensors(){
 		uart_sendText(" SI7013");
 	}
 	if(sensors & SI1142_SENS){
+		i2c_RegisterSet(I2C0, SI1142_ADDR,0x07,0x17);
+
 		//turn on ALS_VIS measurment
 		i2c_RegisterSet(I2C0, SI1142_ADDR,0x17,0x10);	//write to PARAM reg
 		i2c_RegisterSet(I2C0, SI1142_ADDR,0x18,0xA1);	//write to COMAND reg
