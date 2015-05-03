@@ -143,11 +143,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             finish();
         }
 
-        //bleTerminal_text = (TextView)findViewById(R.id.ble_terminal_text);
-        //bleTerminal_text.append("Test\n");
-
-        //bleTerminal_output=(TextView)findViewById(R.id.BluetoothTerminal_output);
-
         gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -664,7 +659,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-            //bleTerminal_text.append("- Connect request result=" + result);
         }
     }
     @Override
