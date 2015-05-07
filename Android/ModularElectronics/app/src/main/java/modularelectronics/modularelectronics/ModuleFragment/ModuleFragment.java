@@ -1,5 +1,6 @@
 package modularelectronics.modularelectronics.ModuleFragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -30,7 +31,29 @@ public class ModuleFragment extends ListFragment {
     }
 
     public void addVariable(String varName, String varText){
-        mItems.add(new ListViewItem(getResources().getDrawable(R.drawable.ic_launcher),varName,varText));
+        Drawable icon;
+        if (varName.equals("Humidity"))         icon = getResources().getDrawable(R.drawable.hum);
+        else if (varName.equals("Temperature")) icon = getResources().getDrawable(R.drawable.temp);
+        else if (varName.equals("Ambient light")) icon = getResources().getDrawable(R.drawable.light);
+        else if (varName.equals("Pressure")) icon = getResources().getDrawable(R.drawable.baro);
+        else if (varName.equals("BMP085 temp")) icon = getResources().getDrawable(R.drawable.temp);
+        else if (varName.equals("Compass X")) icon = getResources().getDrawable(R.drawable.comp_x);
+        else if (varName.equals("Compass Y")) icon = getResources().getDrawable(R.drawable.comp_y);
+        else if (varName.equals("Compass Z")) icon = getResources().getDrawable(R.drawable.comp_z);
+        else if (varName.equals("Accel X")) icon = getResources().getDrawable(R.drawable.accel_x);
+        else if (varName.equals("Accel Y")) icon = getResources().getDrawable(R.drawable.accel_y);
+        else if (varName.equals("Accel Z")) icon = getResources().getDrawable(R.drawable.accel_z);
+        else if (varName.equals("Gyro X")) icon = getResources().getDrawable(R.drawable.gyro_x);
+        else if (varName.equals("Gyro Y")) icon = getResources().getDrawable(R.drawable.gyro_y);
+        else if (varName.equals("Gyro Z")) icon = getResources().getDrawable(R.drawable.gyro_z);
+
+        else if (varName.equals("Battery voltage")) icon = getResources().getDrawable(R.drawable.bat_V);
+        else if (varName.equals("Battery temperature")) icon = getResources().getDrawable(R.drawable.bat_temp);
+        else if (varName.equals("Battery charge")) icon = getResources().getDrawable(R.drawable.bat_uAh);
+        else if (varName.equals("Battery discharge rate")) icon = getResources().getDrawable(R.drawable.bat_dischRate);
+        else icon =getResources().getDrawable(R.drawable.ic_launcher);
+
+        mItems.add(new ListViewItem(icon,varName,varText));
     }
 
     public void setVariable(String varName, String valueText){

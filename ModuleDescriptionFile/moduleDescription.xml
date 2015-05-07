@@ -23,7 +23,7 @@
 	<Module id="4997699" name="LiPol controller">
 		<Variable name="Battery voltage"        equation="(d[10]*256+d[11])/65535*6"></Variable>
 		<Variable name="Battery temperature"    equation="(d[12]*256+d[13])/65535*600-273.15"></Variable>
-		<Variable name="Battery charger"        equation="(65535-(d[14]*256+d[15]))*85/10"></Variable>
+		<Variable name="Battery charge"         equation="(65535-(d[14]*256+d[15]))*85/10"></Variable>
 		<Variable name="Battery discharge rate" equation="d[16]*256+d[17]"></Variable>
 		<Variable name="refresh test" equation="d[7]"></Variable>
     </Module>
