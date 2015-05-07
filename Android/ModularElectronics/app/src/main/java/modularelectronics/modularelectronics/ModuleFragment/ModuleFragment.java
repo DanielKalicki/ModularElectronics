@@ -47,10 +47,10 @@ public class ModuleFragment extends ListFragment {
         else if (varName.equals("Gyro Y")) icon = getResources().getDrawable(R.drawable.gyro_y);
         else if (varName.equals("Gyro Z")) icon = getResources().getDrawable(R.drawable.gyro_z);
 
-        else if (varName.equals("Battery voltage")) icon = getResources().getDrawable(R.drawable.bat_V);
+        else if (varName.equals("Battery voltage")) icon = getResources().getDrawable(R.drawable.bat_v);
         else if (varName.equals("Battery temperature")) icon = getResources().getDrawable(R.drawable.bat_temp);
-        else if (varName.equals("Battery charge")) icon = getResources().getDrawable(R.drawable.bat_uAh);
-        else if (varName.equals("Battery discharge rate")) icon = getResources().getDrawable(R.drawable.bat_dischRate);
+        else if (varName.equals("Battery charge")) icon = getResources().getDrawable(R.drawable.bat_uah);
+        else if (varName.equals("Battery discharge rate")) icon = getResources().getDrawable(R.drawable.bat_disch_rate);
         else icon =getResources().getDrawable(R.drawable.ic_launcher);
 
         mItems.add(new ListViewItem(icon,varName,varText));
