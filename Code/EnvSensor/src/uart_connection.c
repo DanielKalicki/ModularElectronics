@@ -27,7 +27,7 @@ void initUART(void){
 	    .prsRxCh = usartPrsRxCh0,   // doesn't matter what channel we select
 	 };
 	 USART_InitAsync(USART1, &uartInit);      // apply configuration to USART1
-	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | USART_ROUTE_LOCATION_LOC0; // clear buffers, enable transmitter and receiver pins
+	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | USART_ROUTE_LOCATION_LOC2; // clear buffers, enable transmitter and receiver pins
 
 	 USART_IntClear(USART1, _USART_IF_MASK);  // clear all USART interrupt flags
 	 NVIC_ClearPendingIRQ(USART1_RX_IRQn);    // clear pending RX interrupt flag in NVIC
@@ -36,15 +36,15 @@ void initUART(void){
 	 USART_Enable(USART1, usartEnable);       // enable transmitter and receiver
 }
 void uart_sendChar(char c){
-	//while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
-	//USART1->TXDATA = c; 			       // send character
+	while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
+	USART1->TXDATA = c; 			       // send character
 }
 void uart_sendText(char * text){
-	/*int i=0;
+	int i=0;
 	uint8_t len=150;
 	for (;i<len;++i){
 		if(text[i]==0) break;
 		while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 		USART1->TXDATA = text[i];       // send character
-	}*/
+	}
 }

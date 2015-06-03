@@ -319,7 +319,7 @@ void RTC_IRQHandler(void){
 
 	check_slavesList();
 
-	initI2C_Slave();
+	//initI2C_Slave();
 	enableI2cSlaveInterrupts();
 
 	/* Clear interrupt source */
@@ -351,7 +351,7 @@ int main(void)
 
   initOscillators();
   initGPIO();
-  //initUART();
+  initUART();
 
   i2c_slave_address=0x02;
 
@@ -374,7 +374,7 @@ int main(void)
 
   setupRtc();
 
-  initI2C_Slave();
+  //initI2C_Slave();
 
   /* Infinite loop */
   while (1) {

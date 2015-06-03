@@ -29,15 +29,15 @@ void initUART(void){
 	 USART_Enable(USART1, usartEnable);       // enable transmitter and receiver
 }
 void uart_sendChar(char c){
-	//while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
-	//USART1->TXDATA = c; 			       // send character
+	while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
+	USART1->TXDATA = c; 			       // send character
 }
 void uart_sendText(char * text){
-	/*int i=0;
+	int i=0;
 	uint8_t len=150;
 	for (;i<len;++i){
 		if(text[i]==0) break;
 		while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 		USART1->TXDATA = text[i];       // send character
-	}*/
+	}
 }

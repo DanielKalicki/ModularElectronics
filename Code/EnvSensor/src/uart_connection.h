@@ -8,9 +8,9 @@
 extern "C" {
 #endif
 
-#define COM_PORT gpioPortC
-#define TX_PIN   0
-#define RX_PIN   1
+#define COM_PORT gpioPortD
+#define TX_PIN   7
+#define RX_PIN   6
 
 void initUART(void);
 void uart_sendChar(char c);

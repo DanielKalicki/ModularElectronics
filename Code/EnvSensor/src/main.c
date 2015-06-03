@@ -196,7 +196,7 @@ void detectSensors(){
 		sensors |= 0x04;
 	}
 	else
-		uart_sendText("---\t!!!\tAS3935 NOT DETECTED\t!!!\t---\n");
+		uart_sendText("---\t\tAS3935 NOT DETECTED\t\t---\n");
 
 	//-----------BMP085---------
 	if (i2c_Detect(I2C0, BMP085_ADDR)) {
@@ -664,7 +664,7 @@ void RTC_IRQHandler(void)
 
 	check_slavesList();
 
-	initI2C_Slave();
+	//initI2C_Slave();
 	enableI2cSlaveInterrupts();
 
 	clockTest_short();
@@ -727,7 +727,7 @@ int main(void) {
   /* Setting up rtc */
   setupRtc();
 
-  initI2C_Slave();
+  //initI2C_Slave();
 
   /* Infinite loop */
   while (1) {
