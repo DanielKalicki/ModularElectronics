@@ -60,6 +60,9 @@ void setupLTC2942(){
 		sprintf(buff,"Control regiser is set to 0x%02x\n",val);
 		uart_sendText (buff);
 	}
+
+	//reset the LTC2942 charge accumulated setting TODO delete this in the future
+	//resetLTC2942charge();
 }
 
 #define CHARGE_HISTORY_BUFF_SIZE	200
@@ -312,22 +315,25 @@ void RTC_IRQHandler(void){
 		uart_sendText(buff);
 	}
 
-	for (int i=0;i<REG_DATA_LENGTH_VALUE;i++){
+	/*for (int i=0;i<REG_DATA_LENGTH_VALUE;i++){
 		sprintf(buff,"%d:%d\t",i,i2c_registers[i]);
 		uart_sendText(buff);
-	}
+	}*/
 
 	check_slavesList();
 
+	clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();
+
 	//initI2C_Slave();
-	enableI2cSlaveInterrupts();
+	//enableI2cSlaveInterrupts();
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
 }
 
 void detectDevices(){
-	devices=0xFF;
+
+	devices = 0xFF; //this allows disconnection of the battery when the module is working.
 
 	//-----ADP5063----
 	if (i2c_Detect(I2C0,ADP5063_ADDR)==1){
