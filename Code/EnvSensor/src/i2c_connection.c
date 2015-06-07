@@ -60,7 +60,7 @@ void initI2C_Master(void)
 void initI2C_Slave(void)
 {
   // Using default settings
-  I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRStandard};
+  I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_STANDARD_MAX, i2cClockHLRStandard};
 
   /* Using PD6 (SDA) and PD7 (SCL) */
   GPIO_PinModeSet(I2CDRV_SCL_PORT_SLAVE, I2CDRV_SCL_PIN_SLAVE, gpioModeInputPullFilter, 1);

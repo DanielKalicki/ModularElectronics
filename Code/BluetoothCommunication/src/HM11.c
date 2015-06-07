@@ -215,8 +215,9 @@ uint8_t setBaudRate(enum BAUD_RATE value){
 		return 1;
 	}
 	sprintf(request,"AT+BAUD%c",cValue);
+	uart_sendText(request);
 
-	initUART_9600();
+	/*initUART_9600();
 	while (counter<100000){counter++;};
 	uart_sendText(request);
 
@@ -227,20 +228,20 @@ uint8_t setBaudRate(enum BAUD_RATE value){
 
 	initUART_9600();
 	while (counter<100000){counter++;};
-	uart_sendText(request);
+	uart_sendText(request);*/
 
 	return 0;
 }
 
 uint8_t initHM11(){
 
-	//if(setBaudRate(BAUD_9600)==1){
+	//if(setBaudRate(BAUD_115200)==1){
 	//	return 1;
 	//}
 
-	if (testHM11()==1){
-		return 1;	//test failed.
-	}
+	//if (testHM11()==1){
+	//	return 1;	//test failed.
+	//}
 
 	//if(setAdvertisingInterval(ADV_INT_1022_5ms)==1){
 	//	return 1;//ERROR

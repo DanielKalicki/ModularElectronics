@@ -68,7 +68,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =  new ArrayList<>();
     private BluetoothGattCharacteristic mWriteCharacteristic;
 
-    private String mDeviceAddress="78:A5:04:85:26:65";
+    private String mDeviceAddress="78:A5:04:3E:EA:33";//"78:A5:04:85:26:65";
 
     String   plotVariableName="BMP085 temp";
 

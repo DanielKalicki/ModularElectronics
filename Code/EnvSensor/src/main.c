@@ -224,6 +224,7 @@ void detectSensors(){
 }
 
 void initSensors(){
+
 	uart_sendText("\nINITIALIZATION: ");
 
 	if(sensors & SI7013_SENS){
@@ -243,7 +244,7 @@ void initSensors(){
 	}
 	if(sensors & AS3935_SENS){
 		//initialization need to be implemented
-		AS3935_init();
+		//AS3935_init();
 		uart_sendText(" AS3935");
 	}
 	if(sensors & BMP085_SENS){
@@ -499,7 +500,7 @@ void RTC_IRQHandler(void)
 	clockTest_short();
 
 	parse_received_message();
-	i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+	//i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
 	i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
 
 	if(RTC_interrupt_type==0){
@@ -664,7 +665,7 @@ void RTC_IRQHandler(void)
 
 	check_slavesList();
 
-	//initI2C_Slave();
+	initI2C_Slave();
 	enableI2cSlaveInterrupts();
 
 	clockTest_short();
@@ -678,8 +679,8 @@ void RTC_IRQHandler(void)
 	RTC_IntClear(RTC_IFC_COMP0);
 }
 
-void GPIO_ODD_IRQHandler(void) {
-	 /* Clear flag for Push Button 0 (pin C15) interrupt */
+/*void GPIO_ODD_IRQHandler(void) {
+	 // Clear flag for Push Button 0 (pin C15) interrupt
 	 GPIO_IntClear(0x8000);
 
 	 if (AS3935_read_Interrupt()&0x08){
@@ -690,18 +691,18 @@ void GPIO_ODD_IRQHandler(void) {
 	 counter++;
 	 if (counter==255) counter=0;
 	 i2c_registers[REG_AS3935_lIGH_DIST_4]=counter;
- }
+ }*/
 
 int main(void) {
   /* Chip errata */
   CHIP_Init();
   initOscillators();
   initGPIO();
-  initUART();
+  //initUART();
 
   uart_sendText("\nSTARTUP\n");
 
-  i2c_slave_address=0x02;	//change to 0x02
+  i2c_slave_address=0x10;	//change to 0x02
 
   //clear TxBuffer
   for (int i=0;i<I2C_REG_BUFFER_SIZE;i++){
@@ -727,7 +728,7 @@ int main(void) {
   /* Setting up rtc */
   setupRtc();
 
-  //initI2C_Slave();
+  initI2C_Slave();
 
   /* Infinite loop */
   while (1) {

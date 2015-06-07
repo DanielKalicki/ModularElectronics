@@ -324,8 +324,8 @@ void RTC_IRQHandler(void){
 
 	clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();
 
-	//initI2C_Slave();
-	//enableI2cSlaveInterrupts();
+	initI2C_Slave();
+	enableI2cSlaveInterrupts();
 
 	/* Clear interrupt source */
 	RTC_IntClear(RTC_IFC_COMP0);
@@ -357,9 +357,13 @@ int main(void)
 
   initOscillators();
   initGPIO();
-  initUART();
+  //initUART();
 
-  i2c_slave_address=0x02;
+  for (int i=0;i<500;i++){	//wait for the voltage to stabilize
+	  clockTest_short();
+  }
+
+  i2c_slave_address=0x14;	//0x02
 
   for (int i=0;i<100;i++){
 	  i2c_registers[i]=0;
@@ -380,7 +384,7 @@ int main(void)
 
   setupRtc();
 
-  //initI2C_Slave();
+  initI2C_Slave();
 
   /* Infinite loop */
   while (1) {

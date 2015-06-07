@@ -155,6 +155,7 @@ int main(void)
   registers[REG_MODULE_ID_3]='C';
 
   initI2C();
+  //initUART_baud(9600)
   initUART_baud(115200);
 
   uint8_t initHM11_fail=1;
