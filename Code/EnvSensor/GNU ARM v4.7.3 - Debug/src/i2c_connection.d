@@ -1,4 +1,5 @@
 src/i2c_connection.o: ../src/i2c_connection.c ../src/i2c_connection.h \
+ ../src/main.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg110f32.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include/arm_math.h \
@@ -47,11 +48,14 @@ src/i2c_connection.o: ../src/i2c_connection.c ../src/i2c_connection.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_gpio.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_int.h \
  ../src/uart_connection.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
  ../src/RTC_.h
 
 ../src/i2c_connection.h:
+
+../src/main.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -148,6 +152,8 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_gpio.h:
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h:
+
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_int.h:
 
 ../src/uart_connection.h:
 

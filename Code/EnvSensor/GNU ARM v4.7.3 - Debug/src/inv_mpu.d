@@ -1,4 +1,5 @@
 src/inv_mpu.o: ../src/inv_mpu.c ../src/inv_mpu.h ../src/i2c_connection.h \
+ ../src/main.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg110f32.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include/arm_math.h \
@@ -49,6 +50,8 @@ src/inv_mpu.o: ../src/inv_mpu.c ../src/inv_mpu.h ../src/i2c_connection.h \
 ../src/inv_mpu.h:
 
 ../src/i2c_connection.h:
+
+../src/main.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 

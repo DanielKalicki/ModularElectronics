@@ -1,4 +1,4 @@
-src/main.o: ../src/main.c \
+src/main.o: ../src/main.c ../src/main.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg110f32.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include/arm_math.h \
@@ -53,6 +53,8 @@ src/main.o: ../src/main.c \
  ../src/i2c_connection.h ../src/RTC_.h ../src/uart_connection.h \
  ../src/HMC5883L.h ../src/MPU6050.h ../src/inv_mpu.h \
  ../src/inv_mpu_dmp_motion_driver.h ../src/AS3935.h
+
+../src/main.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 

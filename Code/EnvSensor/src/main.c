@@ -1,3 +1,5 @@
+#include "main.h"
+
 #include "em_device.h"
 #include "em_system.h"
 #include "em_chip.h"
@@ -8,6 +10,7 @@
 #include "em_i2c.h"
 #include "em_emu.h"
 #include <stdio.h>
+
 #include "i2c_connection.h"
 #include "RTC_.h"
 #include "uart_connection.h"
@@ -144,6 +147,7 @@ void initOscillators(void){
 void initGPIO(void){
 
 }
+
 //------------I2C----------------
 #define SI7013_ADDR 	0x40*2
 #define BMP085_ADDR 	0x77*2
@@ -456,40 +460,10 @@ void readPressureBMP085(uint32_t *pressure){
 	*pressure = bmp085GetPressure(up);
 }
 
-
-//------------I2C SLAVE--------------
-void parse_received_message(){
-	if (i2c_rxInProgress==false){
-		//TODO block write
-		if(i2c_rxBufferIndex>1){
-			i2c_registers[i2c_rxBuffer[0]]=i2c_rxBuffer[1];
-			if(i2c_rxBuffer[0]==REG_MPU6050_CONFIG){
-				MPU6050_config_register();
-			}
-		}
-		//clean the buffer
-		for (int i=0;i<i2c_rxBufferIndex;i++){
-			i2c_rxBuffer[i]=0;
-		}
-		i2c_rxBufferIndex=0;
-	}
-}
-
-void check_slavesList(){
-	if (i2c_slave_address<0x10){ //addreses lower than 0x10 are set as a default at startup for i2c line sniffing
-		if(slavesListCheck[0]>=0xFFFFFFFE && slavesListCheck[1]==0xFFFFFFFF && slavesListCheck[2]==0xFFFFFFFF && slavesListCheck[3]==0xFFFFFFFF){
-			//this code will be reached if i2c list is full
-			i2c_slave_address = 0x10;
-			i2c_registers[REG_I2C_ADDR] = i2c_slave_address;
-		}
-	}
-}
-
 //------------RTC----------------
 uint8_t RTC_interrupt_type=0;
 void RTC_IRQHandler(void)
 {
-	disableI2cSlaveInterrupts();
 	initI2C_Master();
 	clockTest_short();
 	clockTest_short();
@@ -499,9 +473,7 @@ void RTC_IRQHandler(void)
 	clockTest_short();
 	clockTest_short();
 
-	parse_received_message();
 	//i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
-	i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
 
 	if(RTC_interrupt_type==0){
 
@@ -663,11 +635,6 @@ void RTC_IRQHandler(void)
 		RTC_interrupt_type=0;
 	}
 
-	check_slavesList();
-
-	initI2C_Slave();
-	enableI2cSlaveInterrupts();
-
 	clockTest_short();
 	clockTest_short();
 	clockTest_short();
@@ -698,26 +665,19 @@ int main(void) {
   CHIP_Init();
   initOscillators();
   initGPIO();
-  //initUART();
+  initUART();
 
   uart_sendText("\nSTARTUP\n");
-
-  i2c_slave_address=0x10;	//change to 0x02
 
   //clear TxBuffer
   for (int i=0;i<I2C_REG_BUFFER_SIZE;i++){
 	  i2c_registers[i]=0;
   }
 
-  for (int i=0;i<4;i++){
-	  slavesList[i]=0;
-  }
-
   i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
   i2c_registers[REG_MODULE_ID_1]='E';
   i2c_registers[REG_MODULE_ID_2]='S';
   i2c_registers[REG_MODULE_ID_3]='N';
-  i2c_registers[REG_I2C_ADDR]   =i2c_slave_address;
 
   initI2C_Master();
   i2c_Scan(I2C0);
@@ -728,13 +688,8 @@ int main(void) {
   /* Setting up rtc */
   setupRtc();
 
-  initI2C_Slave();
-
   /* Infinite loop */
   while (1) {
-	  while(i2c_rxInProgress){
-	      EMU_EnterEM1();
-	  }
 	  /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
 	  EMU_EnterEM2(false);
   }

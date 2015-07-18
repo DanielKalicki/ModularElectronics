@@ -109,12 +109,12 @@ void MPU6050_init(){
 
 void MPU6050_config_register(){
 	//enter low-power accel-only mode
-	if (i2c_registers[REG_MPU6050_CONFIG_NUMBER]&0x01){
+	/*if (i2c_registers[REG_MPU6050_CONFIG_NUMBER]&0x01){
 		mpu_lp_accel_mode(20);
 	}
 	else {
 		mpu_lp_accel_mode(0); // set to 0 to disabled this mode
 		mpu_set_sensors(INV_XYZ_GYRO | INV_XYZ_ACCEL);
 		mpu_configure_fifo(INV_XYZ_GYRO | INV_XYZ_ACCEL);
-	}
+	}*/
 }
