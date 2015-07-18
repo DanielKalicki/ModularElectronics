@@ -4,12 +4,13 @@
 #include "em_cmu.h"
 #include "em_gpio.h"
 #include "em_emu.h"
+#include "em_i2c.h"
 #include "em_int.h"
-#include "uart_connection.h"	//for i2c_Scan
+//#include "uart_connection.h"	//for i2c_Scan
 #include <stdio.h>
-#include "RTC_.h"
+//#include "RTC_.h"
 
-void initI2C_Master(void)
+void initI2C_Master(struct I2C_Settings i2cSettings)
 {
   CMU_ClockEnable(cmuClock_I2C0,true);
 
@@ -29,8 +30,8 @@ void initI2C_Master(void)
 
   /* Output value must be set to 1 to not drive lines low. Set */
     /* SCL first, to ensure it is high before changing SDA. */
-  GPIO_PinModeSet(I2C_SCL_PORT, I2C_SCL_PIN, gpioModeWiredAndPullUp, 1);
-  GPIO_PinModeSet(I2C_SDA_PORT, I2C_SDA_PIN, gpioModeWiredAndPullUp, 1);
+  GPIO_PinModeSet(i2cSettings.i2c_SCL_port, i2cSettings.i2c_SCL_pin, gpioModeWiredAndPullUp, 1);
+  GPIO_PinModeSet(i2cSettings.i2c_SDA_port, i2cSettings.i2c_SDA_pin, gpioModeWiredAndPullUp, 1);
 
   /* In some situations (after a reset during an I2C transfer), the slave */
   /* device may be left in an unknown state. Send 9 clock pulses just in case. */
@@ -42,14 +43,14 @@ void initI2C_Master(void)
        * but DK only has fast mode devices. Need however to add some time
        * measurement in order to not be dependable on frequency and code executed.
        */
-    GPIO_PinOutSet(I2C_SCL_PORT, I2C_SCL_PIN);
-    GPIO_PinOutClear(I2C_SCL_PORT, I2C_SCL_PIN);
+    GPIO_PinOutSet(i2cSettings.i2c_SCL_port, i2cSettings.i2c_SCL_pin);
+    GPIO_PinOutClear(i2cSettings.i2c_SDA_port, i2cSettings.i2c_SDA_pin);
   }
 
     /* Enable pins at config location (3 is default which is the location used on the DK) */
   I2C0->ROUTE = I2C_ROUTE_SDAPEN |
                 I2C_ROUTE_SCLPEN |
-                (I2C_PORT_LOCATION << _I2C_ROUTE_LOCATION_SHIFT);
+                (i2cSettings.i2c_port_location << _I2C_ROUTE_LOCATION_SHIFT);
 
   I2C_Init(I2C0, &i2cInit);
 
@@ -87,7 +88,7 @@ int i2c_RegisterGet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *val)
 
 #ifdef DEBUG
   if(timeout==(uint32_t)(-1)){
-  	  uart_sendText("\nERROR: I2C_get_timeout\n");
+  	  //uart_sendText("\nERROR: I2C_get_timeout\n");
   }
 #endif
 
@@ -132,8 +133,9 @@ int i2c_RegisterSet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t  val)
   }
 
 #ifdef DEBUG
-  if(timeout==0)
-	  uart_sendText("I2C_set_timeout\n");
+  if(timeout==0){
+	  //uart_sendText("I2C_set_timeout\n");
+  }
 #endif
 
   return(I2C_Status);
@@ -161,8 +163,9 @@ int i2c_Register_Write_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_
   }
 
 #ifdef DEBUG
-  if(timeout==0)
-	  uart_sendText("I2C_set_timeout\n");
+  if(timeout==0){
+	  //uart_sendText("I2C_set_timeout\n");
+  }
 #endif
 
   return(I2C_Status);
@@ -194,8 +197,9 @@ int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t
   }
 
 #ifdef DEBUG
-  if(timeout==(uint32_t)(-1))
-  	  uart_sendText("I2C_set_timeout\n");
+  if(timeout==(uint32_t)(-1)){
+  	  //uart_sendText("I2C_set_timeout\n");
+  }
 #endif
 
   if (I2C_Status != i2cTransferDone)
@@ -252,7 +256,7 @@ void i2c_Scan (I2C_TypeDef *i2c){
 		if (i2c_Detect(i2c,i*2)==1){
 			char buff[30];
 			sprintf(buff,"Detected I2C device: %d %02x\n",i*2,i);
-			uart_sendText(buff);
+			//uart_sendText(buff);
 		}
 	}
 }

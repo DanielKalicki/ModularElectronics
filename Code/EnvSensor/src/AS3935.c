@@ -1,5 +1,5 @@
 #include "AS3935.h"
-#include "i2c_connection.h"
+#include "ucPeriperalDrivers\i2c_connection.h"
 #include "em_gpio.h"
 
 void AS3935_init(void){

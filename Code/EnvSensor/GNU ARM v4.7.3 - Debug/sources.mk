@@ -14,6 +14,7 @@ EXECUTABLES :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+src/ucPeriperalDrivers \
 src \
 emlib \
 CMSIS/efm32zg \

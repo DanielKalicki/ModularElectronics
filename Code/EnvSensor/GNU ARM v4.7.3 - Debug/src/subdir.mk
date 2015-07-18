@@ -8,7 +8,6 @@ C_SRCS += \
 ../src/HMC5883L.c \
 ../src/MPU6050.c \
 ../src/RTC_.c \
-../src/i2c_connection.c \
 ../src/inv_mpu.c \
 ../src/inv_mpu_dmp_motion_driver.c \
 ../src/main.c \
@@ -19,7 +18,6 @@ OBJS += \
 ./src/HMC5883L.o \
 ./src/MPU6050.o \
 ./src/RTC_.o \
-./src/i2c_connection.o \
 ./src/inv_mpu.o \
 ./src/inv_mpu_dmp_motion_driver.o \
 ./src/main.o \
@@ -30,7 +28,6 @@ C_DEPS += \
 ./src/HMC5883L.d \
 ./src/MPU6050.d \
 ./src/RTC_.d \
-./src/i2c_connection.d \
 ./src/inv_mpu.d \
 ./src/inv_mpu_dmp_motion_driver.d \
 ./src/main.d \
@@ -63,13 +60,6 @@ src/RTC_.o: ../src/RTC_.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GNU ARM C Compiler'
 	arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -Os -Wall -c -fmessage-length=0 -mno-sched-prolog -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/RTC_.d" -MT"src/RTC_.o" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
-
-src/i2c_connection.o: ../src/i2c_connection.c
-	@echo 'Building file: $<'
-	@echo 'Invoking: GNU ARM C Compiler'
-	arm-none-eabi-gcc -g -gdwarf-2 -mcpu=cortex-m0plus -mthumb '-DEFM32ZG110F32=1' '-DDEBUG=1' -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/CMSIS/Include" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/bsp" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/kits/common/drivers" -I"D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include" -Os -Wall -c -fmessage-length=0 -mno-sched-prolog -fno-builtin -ffunction-sections -fdata-sections -std=c99 -MMD -MP -MF"src/i2c_connection.d" -MT"src/i2c_connection.o" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

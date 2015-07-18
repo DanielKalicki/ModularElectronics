@@ -1,5 +1,5 @@
 #include "HMC5883L.h"
-#include "i2c_connection.h"
+#include "ucPeriperalDrivers\i2c_connection.h"
 #include "uart_connection.h"
 
 

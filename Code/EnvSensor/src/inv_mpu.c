@@ -151,7 +151,7 @@ static inline int reg_int_cb(struct int_param_s *int_param)
 /* #warning "No compass = less profit for Invensense. Lame." */
 #endif
 
-#include "i2c_connection.h"
+#include "ucPeriperalDrivers\i2c_connection.h"
 #include "uart_connection.h"
 int i2c_write(unsigned char slave_addr, unsigned char reg_addr, unsigned char length, unsigned char *data){
 	if(length==1){

@@ -1,5 +1,5 @@
 #include "MPU6050.h"
-#include "i2c_connection.h"
+#include "ucPeriperalDrivers\i2c_connection.h"
 #include "uart_connection.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"

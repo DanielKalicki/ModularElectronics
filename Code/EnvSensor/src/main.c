@@ -1,5 +1,3 @@
-#include "main.h"
-
 #include "em_device.h"
 #include "em_system.h"
 #include "em_chip.h"
@@ -11,7 +9,7 @@
 #include "em_emu.h"
 #include <stdio.h>
 
-#include "i2c_connection.h"
+#include "ucPeriperalDrivers\i2c_connection.h"
 #include "RTC_.h"
 #include "uart_connection.h"
 
@@ -464,7 +462,6 @@ void readPressureBMP085(uint32_t *pressure){
 uint8_t RTC_interrupt_type=0;
 void RTC_IRQHandler(void)
 {
-	initI2C_Master();
 	clockTest_short();
 	clockTest_short();
 	clockTest_short();
@@ -679,7 +676,14 @@ int main(void) {
   i2c_registers[REG_MODULE_ID_2]='S';
   i2c_registers[REG_MODULE_ID_3]='N';
 
-  initI2C_Master();
+  struct I2C_Settings i2cSettings;
+  i2cSettings.i2c_SCL_port = gpioPortE;
+  i2cSettings.i2c_SCL_pin =  13;
+  i2cSettings.i2c_SDA_port = gpioPortE;
+  i2cSettings.i2c_SDA_pin =  12;
+  i2cSettings.i2c_port_location =  6;
+
+  initI2C_Master(i2cSettings);
   i2c_Scan(I2C0);
 
   detectSensors();
