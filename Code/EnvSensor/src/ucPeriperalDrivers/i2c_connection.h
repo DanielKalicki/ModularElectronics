@@ -16,10 +16,6 @@ extern "C" {
 
 volatile I2C_TransferReturn_TypeDef I2C_Status;	//Global variable
 
-//TODO remove later
-#define I2C_REG_BUFFER_SIZE       	100
-volatile uint8_t i2c_registers[I2C_REG_BUFFER_SIZE];
-
 struct I2C_Settings{
 	GPIO_Port_TypeDef i2c_SCL_port;
 	unsigned int i2c_SCL_pin;
@@ -28,7 +24,7 @@ struct I2C_Settings{
 	uint8_t i2c_port_location;
 };
 
-void initI2C_Master(struct I2C_Settings i2cSettings);
+void i2c_masterInit(struct I2C_Settings i2cSettings);
 int i2c_RegisterGet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *val);
 int i2c_RegisterSet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t  val);
 int i2c_Register_Write_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data);

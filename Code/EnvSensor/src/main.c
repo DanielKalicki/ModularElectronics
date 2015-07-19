@@ -10,21 +10,28 @@
 #include <stdio.h>
 
 #include "ucPeriperalDrivers\i2c_connection.h"
-#include "RTC_.h"
-#include "uart_connection.h"
+#include "ucPeriperalDrivers\RTC_.h"
+#include "ucPeriperalDrivers\uart_connection.h"
 
-#include "HMC5883L.h"
-#include "MPU6050.h"
-#include "inv_mpu.h"
-#include "inv_mpu_dmp_motion_driver.h"
-#include "AS3935.h"
+#include "sensorsDrivers\HMC5883L.h"
+#include "sensorsDrivers\MPU6050.h"
+#include "sensorsDrivers\inv_mpu.h"
+#include "sensorsDrivers\inv_mpu_dmp_motion_driver.h"
+//#include "sensorsDrivers\AS3935.h"
+#include "sensorsDrivers\BMP180.h"
+#include "sensorsDrivers\Si7013.h"
+#include "sensorsDrivers\Si114x.h"
 
-#define sensors i2c_registers[5]		//5 - REG_SENSORS
+//This register contains information from the module
+#define DEV_INT_REG_BUFFER_SIZE       	100
+volatile uint8_t devInternalRegisters[DEV_INT_REG_BUFFER_SIZE];
+
+#define sensors devInternalRegisters[5]		//5 - REG_SENSORS
 
 #define SI7013_SENS		0x01
-#define SI1142_SENS		0x02
-#define AS3935_SENS		0x04
-#define BMP085_SENS		0x08
+#define SI114x_SENS		0x02
+//#define AS3935_SENS		0x04
+#define BMP180_SENS		0x08
 #define HMC5883L_SENS	0x10
 #define MPU6050_SENS	0x20
 
@@ -34,8 +41,8 @@
  * [12:13] - Si7013 temperature ->	e.g. temp=25.23*C [12]=25 [13]=23
  * [14:15] - Si1142 ambient light ->  [14] -> ambient light High byte  [15] -> ambient light Low byte
  * [16]    - AS3935 number of lighting detection
- * [17:18] - BMP085 temperature if it is measured, else it should be zero ->	e.g. temp=25.23*C [17]=25 [18]=23
- * [19:21] - BMP085 pressure  -> e.g. pressure=101399.8 [19]=101 [20]=39 [21]=98
+ * [17:18] - BMP180 temperature if it is measured, else it should be zero ->	e.g. temp=25.23*C [17]=25 [18]=23
+ * [19:21] - BMP180 pressure  -> e.g. pressure=101399.8 [19]=101 [20]=39 [21]=98
  * [22:27] - HMC5883L [22:23] - X data, [24:25] - Y data [26:27] - Z data
  * [28:33] - MPU6050 accel  [28:29] - X accel data [30:31] - Y accel data [32:33] - Z accel data
  * [34:39] - MPU6050 gyro   [34:35] - X gyro data  [36:37] - Y gyro data  [38:39] - Z gyro data
@@ -67,17 +74,17 @@ enum registerMap{
 	REG_SI7013_TEMP_HIGH		=12,
 	REG_SI7013_TEMP_LOW			=13,
 
-	REG_SI1142_ALS_HIGH			=14,
-	REG_SI1142_ALS_LOW			=15,
+	REG_SI114x_ALS_HIGH			=14,
+	REG_SI114x_ALS_LOW			=15,
 
 	REG_AS3935_LIGHT_DET_NUM	=16,
 
-	REG_BMP085_TEMP_HIGH		=17,
-	REG_BMP085_TEMP_LOW			=18,
+	REG_BMP180_TEMP_HIGH		=17,
+	REG_BMP180_TEMP_LOW			=18,
 
-	REG_BMP085_PRESS_XHIGH		=19,
-	REG_BMP085_PRESS_HIGH		=20,
-	REG_BMP085_PRESS_LOW		=21,
+	REG_BMP180_PRESS_XHIGH		=19,
+	REG_BMP180_PRESS_HIGH		=20,
+	REG_BMP180_PRESS_LOW		=21,
 
 	REG_HMC5883L_X_HIGH			=22,
 	REG_HMC5883L_X_LOW			=23,
@@ -146,11 +153,6 @@ void initGPIO(void){
 
 }
 
-//------------I2C----------------
-#define SI7013_ADDR 	0x40*2
-#define BMP085_ADDR 	0x77*2
-#define SI1142_ADDR 	0x5A*2
-
 //------------TEST---------------
 void clockTest() {
 	long int i=0;
@@ -177,7 +179,7 @@ void detectSensors(){
 	sensors = 0;
 
 	//-----------SI7013---------
-	if (i2c_Detect(I2C0, SI7013_ADDR)){
+	if (Si7013_detect()){
 		uart_sendText("\t\tSi7013 detected\n");
 		sensors |= 0x01;
 	}
@@ -185,31 +187,23 @@ void detectSensors(){
 		uart_sendText("---\t\tSi7013 NOT DETECTED\t\t---\n");
 
 	//-----------SI1142---------
-	if (i2c_Detect(I2C0, SI1142_ADDR)){
+	if (Si114x_detect()){
 		uart_sendText("\t\tSi1142 detected\n");
 		sensors |= 0x02;
 	}
 	else
 		uart_sendText("---\t\tSi1142 NOT DETECTED\t\t---\n");
 
-	//-----------AS3935---------
-	if (i2c_Detect(I2C0, AS3935_ADDR)){
-		uart_sendText("\t\tAS3935 detected\n");
-		sensors |= 0x04;
-	}
-	else
-		uart_sendText("---\t\tAS3935 NOT DETECTED\t\t---\n");
-
-	//-----------BMP085---------
-	if (i2c_Detect(I2C0, BMP085_ADDR)) {
-		uart_sendText("\t\tBMP085 detected\n");
+	//-----------BMP180---------
+	if (BMP180_detect()) {
+		uart_sendText("\t\tBMP180 detected\n");
 		sensors |= 0x08;
 	}
 	else
-		uart_sendText("---\t\tBMP085 NOT DETECTED\t\t---\n");
+		uart_sendText("---\t\tBMP180 NOT DETECTED\t\t---\n");
 
 	//-----------HMC5883L---------
-	if (i2c_Detect(I2C0, HMC5883L_ADDR)) {
+	if (HMC5883L_detect()) {
 		uart_sendText("\t\tHMC5883L detected\n");
 		sensors |= 0x10;
 	}
@@ -217,7 +211,7 @@ void detectSensors(){
 		uart_sendText("---\t\tHMC5883L NOT DETECTED\t\t---\n");
 
 	//-----------MPU6050---------
-	if (i2c_Detect(I2C0, MPU6050_ADDR)) {
+	if (MPU6050_detect()) {
 		uart_sendText("\t\tMPU6050 detected\n");
 		sensors |= 0x20;
 	}
@@ -225,344 +219,203 @@ void detectSensors(){
 		uart_sendText("---\t\tMPU6050 NOT DETECTED\t\t---\n");
 }
 
-void initSensors(){
-
+void initSensors()
+{
 	uart_sendText("\nINITIALIZATION: ");
 
-	if(sensors & SI7013_SENS){
-		//initialization not required
+	if(sensors & SI7013_SENS)
+	{
+		Si7013_init();
 		uart_sendText(" SI7013");
 	}
-	if(sensors & SI1142_SENS){
-		i2c_RegisterSet(I2C0, SI1142_ADDR,0x07,0x17);
-
-		//turn on ALS_VIS measurment
-		i2c_RegisterSet(I2C0, SI1142_ADDR,0x17,0x10);	//write to PARAM reg
-		i2c_RegisterSet(I2C0, SI1142_ADDR,0x18,0xA1);	//write to COMAND reg
-
-		//ALS_VIS_ADC_GAIN is set to 1 by default
-		//ALS_VIS_ADC_MISC is set to Normal Signal Range by default
+	if(sensors & SI114x_SENS)
+	{
+		Si114x_init();
 		uart_sendText(" SI1142");
 	}
-	if(sensors & AS3935_SENS){
-		//initialization need to be implemented
-		//AS3935_init();
-		uart_sendText(" AS3935");
+	if(sensors & BMP180_SENS)
+	{
+		BMP180_init();
+		uart_sendText(" BMP180");
 	}
-	if(sensors & BMP085_SENS){
-		//initialization not required
-		uart_sendText(" BMP085");
-	}
-	if(sensors & HMC5883L_SENS){
+	if(sensors & HMC5883L_SENS)
+	{
 		HMC5883L_init();
 		uart_sendText(" HMC5883L");
 	}
-	if(sensors & MPU6050_SENS){
+	if(sensors & MPU6050_SENS)
+	{
 		MPU6050_init();
-
 		uart_sendText(" MPU6050");
 	}
 	uart_sendChar('\n');
 }
 
-//-----------DEVICES------------
-static int Si7013_ReadTemperature(I2C_TypeDef *i2c, uint8_t addr, uint32_t *data,
-                          	  	  uint8_t command){
-	I2C_TransferSeq_TypeDef    seq;
-	uint8_t                    i2c_read_data[2];
-	uint8_t                    i2c_write_data[1];
-
-	seq.addr  = addr;
-	seq.flags = I2C_FLAG_WRITE_READ;
-	/* Select command to issue */
-	i2c_write_data[0] = command;
-	seq.buf[0].data   = i2c_write_data;
-	seq.buf[0].len    = 1;
-	/* Select location/length of data to be read */
-	seq.buf[1].data = i2c_read_data;
-	seq.buf[1].len  = 2;
-
-	I2C_Status = I2C_TransferInit(i2c, &seq);
-	uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	while (I2C_Status == i2cTransferInProgress && timeout--) {
-		I2C_Status = I2C_Transfer(I2C0);
-	}
-	if(timeout==(uint32_t)(-1)){
-		uart_sendText("\nERROR: I2C_get_timeout\n");
-	}
-
-	if (I2C_Status != i2cTransferDone)
-	{
-	  *data = 0;
-	  return((int) I2C_Status);
-	}
-
-	*data = ((uint32_t) i2c_read_data[0] << 8) + (i2c_read_data[1] & 0xfc);
-
-	return((int) 2);
-}
-
-void forceRhMeasurment(){
-	I2C_TransferSeq_TypeDef    seq;
-	uint8_t                    i2c_write_data[1];
-
-	seq.addr  = SI7013_ADDR;
-	seq.flags = I2C_FLAG_WRITE;
-	/* Select command to issue */
-	i2c_write_data[0] = 0xE5;			//Measure Relative Humidity, No Hold Master Mode
-	seq.buf[0].data   = i2c_write_data;
-	seq.buf[0].len    = 1;
-
-	I2C_Status = I2C_TransferInit(I2C0, &seq);
-	uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	while (I2C_Status == i2cTransferInProgress && timeout--) {
-		I2C_Status = I2C_Transfer(I2C0);
-	}
-	if(timeout==(uint32_t)(-1)){
-		uart_sendText("\nERROR: I2C_get_timeout\n");
-	}
-}
-int readHumidityAndTemperature(uint32_t *rhData, int32_t *tData){
-	 I2C_TransferSeq_TypeDef seq;
-	 uint8_t data[2];
-
-	 seq.addr = SI7013_ADDR;
-	 seq.flags = I2C_FLAG_READ;
-
-	 seq.buf[0].data = data;
-	 seq.buf[0].len  = 2;
-
-	 I2C_Status = I2C_TransferInit(I2C0, &seq);
-	 uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	 while (I2C_Status == i2cTransferInProgress && timeout--)
-	 {
-	    //EMU_EnterEM1();
-		I2C_Status = I2C_Transfer(I2C0);
-	 }
-	 if(timeout==(uint32_t)(-1)){
-		 uart_sendText("\nERROR: I2C_get_timeout\n");
-	 }
-
-	 if (I2C_Status != i2cTransferDone)
-	 {
-	    return((int)I2C_Status);
-	 }
-
-	 *rhData = ((((((uint16_t)data[0])<<8)+data[1]) * 15625L) >> 13) - 6000;
-
-	 Si7013_ReadTemperature(I2C0,SI7013_ADDR,tData,0xE0);
-	 *tData = (((*tData) * 21965L) >> 13) - 46850; /* convert to milli-degC */
-
-	 return ((int) 1);
-}
-
-void forceAmbientLightMeasurment(){
-	//Force a single ALS measurment
-	i2c_RegisterSet(I2C0,SI1142_ADDR,0x18,0x06);	//write to COMAND reg
-}
-int readAmbientLight(uint16_t *ambientLight){
-	uint8_t response=0;
-	i2c_RegisterGet(I2C0, SI1142_ADDR, 0x20, &response);
-
-	if((response&0xF0) != 0){
-		//----there were an error----
-		char buff[30];
-		sprintf(buff,"SI1142 Error=%d\n",response);
-		uart_sendText(buff);
-
-		i2c_RegisterSet(I2C0,SI1142_ADDR,0x18,0x01);//send to the sequencer RESET cmd
-		return -1;
-	}
-	else{
-		//----no error occured----
-		uint8_t ALS_VIS_l=0;
-		i2c_RegisterGet(I2C0, SI1142_ADDR,0x22, &ALS_VIS_l);	//TODO read block using i2c
-		uint8_t ALS_VIS_h=12;
-		i2c_RegisterGet(I2C0, SI1142_ADDR,0x23, &ALS_VIS_h);
-
-		*ambientLight=(((uint16_t)ALS_VIS_h)<<8) + ALS_VIS_l;
-	}
-	return 0;
-}
-
-//TODO read this on start of the device
-short AC1=0x1C45;	short AC2=0xFC32;	short AC3=0xC795;
-unsigned short AC4=0x81BF;				unsigned short AC5=0x606F;
-unsigned short AC6=0x5CAF;				short B1=0x157A;
-short B2=0x0031;	short MB=0x8000;	short MC=0xD4BD;	short MD=0x0980;
-long b5;			const unsigned char OSS = 0;
-
-short bmp085GetTemperature(unsigned int ut)
-{
-	long x1, x2;
-
-	x1 = (((long)ut - (long)AC6)*(long)AC5) >> 15;
-	x2 = ((long)MC << 11)/(x1 + MD);
-	b5 = x1 + x2;
-
-	return ((b5 + 8)>>4);
-}
-long bmp085GetPressure(unsigned long up)
-{
-	long x1, x2, x3, b3, b6, p;
-	unsigned long b4, b7;
-
-	b6 = b5 - 4000;
-	// Calculate B3
-	x1 = (B2 * (b6 * b6)>>12)>>11;
-	x2 = (AC2 * b6)>>11;
-	x3 = x1 + x2;
-	b3 = (((((long)AC1)*4 + x3)<<OSS) + 2)>>2;
-
-	// Calculate B4
-	x1 = (AC3 * b6)>>13;
-	x2 = (B1 * ((b6 * b6)>>12))>>16;
-	x3 = ((x1 + x2) + 2)>>2;
-	b4 = (AC4 * (unsigned long)(x3 + 32768))>>15;
-
-	b7 = ((unsigned long)(up - b3) * (50000>>OSS));
-	if (b7 < 0x80000000)
-	p = (b7<<1)/b4;
-	else
-	p = (b7/b4)<<1;
-
-	x1 = (p>>8) * (p>>8);
-	x1 = (x1 * 3038)>>16;
-	x2 = (-7357 * p)>>16;
-	p += (x1 + x2 + 3791)>>4;
-
-	return p;
-}
-void forceTemperatureMesurementBMP085(){
-	i2c_RegisterSet(I2C0,BMP085_ADDR,0xF4,0x2E);
-}
-void readTemperatureBMP085(short *temp){
-	uint8_t ut_H = 0;
-	i2c_RegisterGet(I2C0,BMP085_ADDR,0xF6,&ut_H);
-	uint8_t ut_L = 0;
-	i2c_RegisterGet(I2C0,BMP085_ADDR,0xF7,&ut_L);
-
-	unsigned int ut=(((unsigned int)ut_H)<<8)+ut_L;
-	*temp=bmp085GetTemperature(ut);
-}
-void forcePressureMeasurmentBMP085(){
-	i2c_RegisterSet(I2C0,BMP085_ADDR,0xF4,0x34);	//do the simples pressure measurment
-}
-void readPressureBMP085(uint32_t *pressure){
-	uint8_t press_H=0;
-	i2c_RegisterGet(I2C0, BMP085_ADDR,0xF6, &press_H);	//TODO read block using i2c
-	uint8_t press_L=0;
-	i2c_RegisterGet(I2C0, BMP085_ADDR,0xF7, &press_L);
-
-	unsigned long up= (((unsigned long)press_H)<<8)+press_L;
-	*pressure = bmp085GetPressure(up);
-}
-
 //------------RTC----------------
-uint8_t RTC_interrupt_type=0;
+
+#ifdef DEBUG
+void printResults(void)
+{
+	char buff[30];
+
+	uint32_t pressure=(uint32_t)devInternalRegisters[REG_BMP180_PRESS_XHIGH]*1000+(uint32_t)devInternalRegisters[REG_BMP180_PRESS_HIGH]*10+(uint32_t)devInternalRegisters[REG_BMP180_PRESS_LOW];
+	sprintf(buff,"\nPress:%ld ",pressure);
+	uart_sendText(buff);
+
+	uint32_t rhData = (uint32_t)devInternalRegisters[REG_SI7013_HUM_HIGH] * 100 + (uint32_t)devInternalRegisters[REG_SI7013_HUM_LOW];
+	int32_t   tData = (int32_t)devInternalRegisters[REG_SI7013_TEMP_HIGH] * 100 + (uint32_t)devInternalRegisters[REG_SI7013_TEMP_LOW];
+	sprintf(buff,"Hum:%ld Temp:%ld ",rhData,tData);
+	uart_sendText(buff);
+
+	uint16_t ambientLight = (((uint16_t)devInternalRegisters[REG_SI114x_ALS_HIGH])<<8) + (uint16_t)devInternalRegisters[REG_SI114x_ALS_LOW];
+	sprintf(buff,"ALS:%d ",ambientLight);
+	uart_sendText(buff);
+
+	short temp=(short)devInternalRegisters[REG_BMP180_TEMP_HIGH]*10+(short)devInternalRegisters[REG_BMP180_TEMP_LOW];
+	sprintf(buff,"Temp:%d ",temp);
+	uart_sendText(buff);
+
+	int16_t compass_x=((int16_t)devInternalRegisters[REG_HMC5883L_X_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_X_LOW];
+	int16_t compass_y=((int16_t)devInternalRegisters[REG_HMC5883L_Y_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_Y_LOW];
+	int16_t compass_z=((int16_t)devInternalRegisters[REG_HMC5883L_Z_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_Z_LOW];
+	uart_sendChar('\n');
+	sprintf(buff,"Compass: X[%d] Y[%d] Z[%d]\n",compass_x,compass_y,compass_z);
+	uart_sendText(buff);
+
+	int16_t accel[3];
+	accel[0]=((int16_t)devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_X_ACCEL_LOW];
+	accel[1]=((int16_t)devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW];
+	accel[2]=((int16_t)devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW];
+	sprintf(buff,"Acc: X[%d] Y[%d] Z[%d]",accel[0],accel[1],accel[2]);
+	uart_sendText(buff);
+
+	int16_t gyro[3];
+	gyro[0]=((int16_t)devInternalRegisters[REG_MPU6050_X_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_X_GYRO_LOW];
+	gyro[1]=((int16_t)devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Y_GYRO_LOW];
+	gyro[2]=((int16_t)devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Z_GYRO_LOW];
+	sprintf(buff,"\tGyro: X[%d] Y[%d] Z[%d]\n",gyro[0],gyro[1],gyro[2]);
+	uart_sendText(buff);
+
+	unsigned long pedometer_count=((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1]<<24UL) +
+								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2]<<16UL) +
+								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3]<<8UL) +
+								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4]);
+	sprintf(buff,"\t\tPedometer count: %ld",pedometer_count);
+	uart_sendText(buff);
+
+	unsigned long pedometer_time=((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1]<<24UL) +
+							     ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2]<<16UL) +
+								 ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3]<<8UL) +
+								 ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4]);
+	sprintf(buff,"\t\tPedometer time: %ld",pedometer_time);
+	uart_sendText(buff);
+}
+#endif
+
+uint8_t time_interrupt_type=0;
 void RTC_IRQHandler(void)
 {
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
+	clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();
 
-	//i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+	devInternalRegisters[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
 
-	if(RTC_interrupt_type==0){
+	if(time_interrupt_type==0)
+	{
+		if(sensors & SI114x_SENS)
+		{
+			Si114x_forceAmbientLightMeasurment();
+		}
+		if(sensors & BMP180_SENS)
+		{
+			BMP180_forceTemperatureMesurement();
+		}
+		if(sensors & SI7013_SENS) 	//this must be least to read
+		{
+			Si7013_forceRhMeasurment();
+		}
 
-		if(sensors & SI1142_SENS){		forceAmbientLightMeasurment();			}
-		if(sensors & BMP085_SENS){		forceTemperatureMesurementBMP085();		}
-		if(sensors & SI7013_SENS){		forceRhMeasurment();					}	//this must be least to read
-
-		//change RTC time to 100ms
-		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_2);
-		RTC_interrupt_type=1;
+		RTC_setTime(100);	//change RTC time to 100ms
+		time_interrupt_type=1;
 
 	}
-	else if(RTC_interrupt_type==1){
-		char buff[30];
-		if(sensors & SI7013_SENS){ 	//this detector must be executed first
+	else if(time_interrupt_type==1)
+	{
+		if(sensors & SI7013_SENS)	//this sensor must be executed first
+		{
 			uint32_t rhData=0;
 			int32_t   tData=0;
-			if (readHumidityAndTemperature(&rhData,&tData)!=-1){
-				char buff[30];
-				sprintf(buff,"Hum:%ld Temp:%ld ",rhData,tData);
-				uart_sendText(buff);
-
-				i2c_registers[REG_SI7013_HUM_HIGH]  = rhData/100;
-				i2c_registers[REG_SI7013_HUM_LOW]   = rhData%100;
-				i2c_registers[REG_SI7013_TEMP_HIGH] = tData/100;
-				i2c_registers[REG_SI7013_TEMP_LOW]  = tData%100;
+			if (Si7013_readHumidityAndTemperature(&rhData,&tData)!=-1){
+				devInternalRegisters[REG_SI7013_HUM_HIGH]  = rhData/100;
+				devInternalRegisters[REG_SI7013_HUM_LOW]   = rhData%100;
+				devInternalRegisters[REG_SI7013_TEMP_HIGH] = tData/100;
+				devInternalRegisters[REG_SI7013_TEMP_LOW]  = tData%100;
 			}
+#ifdef DEBUG
 			else {
 				uart_sendText("Error measuring temperature and humidity\n");
 			}
+#endif
 		}
-		if(sensors & SI1142_SENS){
+
+		/* Read Si114x ambient light */
+		if(sensors & SI114x_SENS)
+		{
 			uint16_t ambientLight=0;
 
-			if (readAmbientLight(&ambientLight)!=-1) {
-				sprintf(buff,"ALS:%d ",ambientLight);
-				uart_sendText(buff);
-
-				i2c_registers[REG_SI1142_ALS_HIGH]  = ambientLight>>8;
-				i2c_registers[REG_SI1142_ALS_LOW]   = (uint8_t)ambientLight;
+			if (Si114x_readAmbientLight(&ambientLight)!=-1)
+			{
+				devInternalRegisters[REG_SI114x_ALS_HIGH]  = ambientLight>>8;
+				devInternalRegisters[REG_SI114x_ALS_LOW]   = (uint8_t)ambientLight;
 			}
 		}
-		if(sensors & BMP085_SENS){
+
+		/* Read temperature from BMP180 */
+		if(sensors & BMP180_SENS)
+		{
 			short temp=0;
-			readTemperatureBMP085(&temp);
-			sprintf(buff,"Temp:%d ",temp);
-			uart_sendText(buff);
+			BMP180_readTemperature(&temp);
 
-			i2c_registers[REG_BMP085_TEMP_HIGH]  = temp/10;
-			i2c_registers[REG_BMP085_TEMP_LOW]   = temp%10;
+			devInternalRegisters[REG_BMP180_TEMP_HIGH]  = temp/10;
+			devInternalRegisters[REG_BMP180_TEMP_LOW]   = temp%10;
 
-			forcePressureMeasurmentBMP085();
+			BMP180_forcePressureMeasurment();
 		}
+
+		/* Read magnetometer data */
 		if(sensors & HMC5883L_SENS){
 			int16_t X; 		int16_t Y;			int16_t Z;
 			HMC5883L_getCompassData(&X,&Y,&Z);
-			uart_sendChar('\n');
-			sprintf(buff,"Compass: X[%d] Y[%d] Z[%d]\n",X,Y,Z);
-			uart_sendText(buff);
 
-			i2c_registers[REG_HMC5883L_X_HIGH]=      X>>8;
-			i2c_registers[REG_HMC5883L_X_LOW] =(uint8_t)X;
-			i2c_registers[REG_HMC5883L_Y_HIGH]=      Y>>8;
-			i2c_registers[REG_HMC5883L_Y_LOW] =(uint8_t)Y;
-			i2c_registers[REG_HMC5883L_Z_HIGH]=      Z>>8;
-			i2c_registers[REG_HMC5883L_Z_LOW] =(uint8_t)Z;
+			devInternalRegisters[REG_HMC5883L_X_HIGH]=      X>>8;
+			devInternalRegisters[REG_HMC5883L_X_LOW] =(uint8_t)X;
+			devInternalRegisters[REG_HMC5883L_Y_HIGH]=      Y>>8;
+			devInternalRegisters[REG_HMC5883L_Y_LOW] =(uint8_t)Y;
+			devInternalRegisters[REG_HMC5883L_Z_HIGH]=      Z>>8;
+			devInternalRegisters[REG_HMC5883L_Z_LOW] =(uint8_t)Z;
 		}
+
+		/* Read accel and gyro data */
 		if(sensors & MPU6050_SENS){
 			int16_t accel[3];
 			int16_t gyro[3];
 
 			// read accelerometer data
 			mpu_get_accel_reg(accel,0);
-			sprintf(buff,"Acc: X[%d] Y[%d] Z[%d]",accel[0],accel[1],accel[2]);
-			uart_sendText(buff);
-			i2c_registers[REG_MPU6050_X_ACCEL_HIGH]=      accel[0]>>8;
-			i2c_registers[REG_MPU6050_X_ACCEL_LOW] =(uint8_t)accel[0];
-			i2c_registers[REG_MPU6050_Y_ACCEL_HIGH]=      accel[1]>>8;
-			i2c_registers[REG_MPU6050_Y_ACCEL_LOW] =(uint8_t)accel[1];
-			i2c_registers[REG_MPU6050_Z_ACCEL_HIGH]=      accel[2]>>8;
-			i2c_registers[REG_MPU6050_Z_ACCEL_LOW] =(uint8_t)accel[2];
+			devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH]=      accel[0]>>8;
+			devInternalRegisters[REG_MPU6050_X_ACCEL_LOW] =(uint8_t)accel[0];
+			devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH]=      accel[1]>>8;
+			devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW] =(uint8_t)accel[1];
+			devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH]=      accel[2]>>8;
+			devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW] =(uint8_t)accel[2];
 
 			// read gyroscope data
 			mpu_get_gyro_reg(gyro,0);
-			sprintf(buff,"\tGyro: X[%d] Y[%d] Z[%d]\n",gyro[0],gyro[1],gyro[2]);
-			uart_sendText(buff);
-			i2c_registers[REG_MPU6050_X_GYRO_HIGH]=      gyro[0]>>8;
-			i2c_registers[REG_MPU6050_X_GYRO_LOW] =(uint8_t)gyro[0];
-			i2c_registers[REG_MPU6050_Y_GYRO_HIGH]=      gyro[1]>>8;
-			i2c_registers[REG_MPU6050_Y_GYRO_LOW] =(uint8_t)gyro[1];
-			i2c_registers[REG_MPU6050_Z_GYRO_HIGH]=      gyro[2]>>8;
-			i2c_registers[REG_MPU6050_Z_GYRO_LOW] =(uint8_t)gyro[2];
+			devInternalRegisters[REG_MPU6050_X_GYRO_HIGH]=      gyro[0]>>8;
+			devInternalRegisters[REG_MPU6050_X_GYRO_LOW] =(uint8_t)gyro[0];
+			devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH]=      gyro[1]>>8;
+			devInternalRegisters[REG_MPU6050_Y_GYRO_LOW] =(uint8_t)gyro[1];
+			devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH]=      gyro[2]>>8;
+			devInternalRegisters[REG_MPU6050_Z_GYRO_LOW] =(uint8_t)gyro[2];
 
 			short sensors_mpu;
 			long quat[4];
@@ -573,10 +426,10 @@ void RTC_IRQHandler(void)
 
 			for (int i=0;i<10;i++){
 				if(i<i_tapData){
-					i2c_registers[REG_MPU6050_X_TAP_EVENT_1+i]=tapData[i];
+					devInternalRegisters[REG_MPU6050_X_TAP_EVENT_1+i]=tapData[i];
 				}
 				else {
-					i2c_registers[REG_MPU6050_X_TAP_EVENT_1+i]=0;
+					devInternalRegisters[REG_MPU6050_X_TAP_EVENT_1+i]=0;
 				}
 			}
 			i_tapData=0;
@@ -584,113 +437,93 @@ void RTC_IRQHandler(void)
 			// read pedometer data
 			unsigned long pedometer_count=0;
 			dmp_get_pedometer_step_count(&pedometer_count);
-			sprintf(buff,"\t\tPedometer count: %ld",pedometer_count);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_1]=(uint8_t)(pedometer_count>>24);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_2]=(uint8_t)(pedometer_count>>16);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_3]=(uint8_t)(pedometer_count>>8);
-			i2c_registers[REG_MPU6050_X_PEDO_COUNT_4]=(uint8_t)(pedometer_count);
-			uart_sendText(buff);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1]=(uint8_t)(pedometer_count>>24);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2]=(uint8_t)(pedometer_count>>16);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3]=(uint8_t)(pedometer_count>>8);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4]=(uint8_t)(pedometer_count);
 
 			unsigned long pedometer_time=0;
 			dmp_get_pedometer_walk_time(&pedometer_time);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_1]=(uint8_t)(pedometer_time>>24);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_2]=(uint8_t)(pedometer_time>>16);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_3]=(uint8_t)(pedometer_time>>8);
-			i2c_registers[REG_MPU6050_X_PEDO_TIME_4]=(uint8_t)(pedometer_time);
-			sprintf(buff,"  Pedometer time: %ld \n",pedometer_time);
-
-			uart_sendText(buff);
-		}
-		if(sensors & AS3935_SENS){
-			i2c_registers[REG_AS3935_lIGH_DIST_2]=111;
-
-			uint8_t intValue = AS3935_read_Interrupt();
-			//for test show only last non zero value read from interrupt register
-			if (intValue)
-				i2c_registers[REG_AS3935_lIGH_DIST_3]=intValue;
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1]=(uint8_t)(pedometer_time>>24);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2]=(uint8_t)(pedometer_time>>16);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3]=(uint8_t)(pedometer_time>>8);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4]=(uint8_t)(pedometer_time);
 		}
 
 		//dont change the RTC setting
-		RTC_interrupt_type++;
+		time_interrupt_type++;
 	}
-	else if(RTC_interrupt_type==2){
-		char buff[30];
-		if(sensors & BMP085_SENS){
+	else if(time_interrupt_type==2){
+		/* Read pressure */
+		if(sensors & BMP180_SENS){
 			uint32_t pressure=0;
-			readPressureBMP085(&pressure);
-			sprintf(buff,"Press:%ld ",pressure);
-			uart_sendText(buff);
+			BMP180_readPressure(&pressure);
 
-			i2c_registers[REG_BMP085_PRESS_XHIGH]=pressure/1000;
-			i2c_registers[REG_BMP085_PRESS_HIGH] =(pressure%1000)/10;
-			i2c_registers[REG_BMP085_PRESS_LOW]  =pressure%10000;
+			devInternalRegisters[REG_BMP180_PRESS_XHIGH]=pressure/1000;
+			devInternalRegisters[REG_BMP180_PRESS_HIGH] =(pressure%1000)/10;
+			devInternalRegisters[REG_BMP180_PRESS_LOW]  =pressure%10000;
 		}
-		uart_sendChar('\n');
 
 		//change RTC time to 400ms
-		RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_1);
-		RTC_interrupt_type=0;
+		RTC_setTime(400);
+		time_interrupt_type=0;
+
+		//after getting all the data print it
+		printResults();
 	}
 
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
-	clockTest_short();
+	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();
 
-	RTC_IntClear(RTC_IFC_COMP0);
+	RTC_clearInt();
 }
 
-/*void GPIO_ODD_IRQHandler(void) {
-	 // Clear flag for Push Button 0 (pin C15) interrupt
-	 GPIO_IntClear(0x8000);
+void initInterfaces(){
+	//uart initialization
+	struct UART_Settings uartSettings;
+	uartSettings.uart_com_port=gpioPortD;
+	uartSettings.uart_tx_pin=7;
+	uartSettings.uart_rx_pin=6;
+	uartSettings.uart_port_location=2;
+	uartSettings.uart_speed=115200;
+	uart_init(uartSettings);
+	uart_sendText("\nSTARTUP\n");
 
-	 if (AS3935_read_Interrupt()&0x08){
-		 i2c_registers[REG_AS3935_lIGH_DIST_1]=AS3935_read_Distance();
-	 }
-
-	 static uint8_t counter=0;
-	 counter++;
-	 if (counter==255) counter=0;
-	 i2c_registers[REG_AS3935_lIGH_DIST_4]=counter;
- }*/
+	//i2c initialization
+	struct I2C_Settings i2cSettings;
+	i2cSettings.i2c_SCL_port = gpioPortE;
+	i2cSettings.i2c_SCL_pin =  13;
+	i2cSettings.i2c_SDA_port = gpioPortE;
+	i2cSettings.i2c_SDA_pin =  12;
+	i2cSettings.i2c_port_location =  6;
+	i2c_masterInit(i2cSettings);
+	i2c_Scan(I2C0);
+}
 
 int main(void) {
-  /* Chip errata */
+
   CHIP_Init();
   initOscillators();
   initGPIO();
-  initUART();
 
-  uart_sendText("\nSTARTUP\n");
+  initInterfaces();
 
-  //clear TxBuffer
-  for (int i=0;i<I2C_REG_BUFFER_SIZE;i++){
-	  i2c_registers[i]=0;
+  //TODO remove this later
+  for (int i=0;i<DEV_INT_REG_BUFFER_SIZE;i++){
+	  devInternalRegisters[i]=0;
   }
+  devInternalRegisters[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+  devInternalRegisters[REG_MODULE_ID_1]='E';
+  devInternalRegisters[REG_MODULE_ID_2]='S';
+  devInternalRegisters[REG_MODULE_ID_3]='N';
 
-  i2c_registers[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
-  i2c_registers[REG_MODULE_ID_1]='E';
-  i2c_registers[REG_MODULE_ID_2]='S';
-  i2c_registers[REG_MODULE_ID_3]='N';
-
-  struct I2C_Settings i2cSettings;
-  i2cSettings.i2c_SCL_port = gpioPortE;
-  i2cSettings.i2c_SCL_pin =  13;
-  i2cSettings.i2c_SDA_port = gpioPortE;
-  i2cSettings.i2c_SDA_pin =  12;
-  i2cSettings.i2c_port_location =  6;
-
-  initI2C_Master(i2cSettings);
-  i2c_Scan(I2C0);
-
+  //sensors initalization
   detectSensors();
   initSensors();
 
-  /* Setting up rtc */
-  setupRtc();
+  //RTC initialization
+  RTC_init();
+  RTC_setTime(500);
+  RTC_enableInt();
 
   /* Infinite loop */
   while (1) {

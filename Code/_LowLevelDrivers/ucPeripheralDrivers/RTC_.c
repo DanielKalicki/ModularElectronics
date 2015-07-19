@@ -16,7 +16,7 @@ void startLfxoForRtc(void)
   /* Enabling clock to the interface of the low energy modules */
   CMU_ClockEnable(cmuClock_CORELE, true);
 }
-void setupRtc(void)
+void RTC_init(void)
 {
   /* Configuring clocks in the Clock Management Unit (CMU) */
   startLfxoForRtc();
@@ -27,22 +27,24 @@ void setupRtc(void)
   rtcInit.comp0Top = true;      /* Clear counter on compare match */
   rtcInit.debugRun = false;     /* Counter shall keep running during debug halt. */
 
-  /* Setting the compare value of the RTC */
-  RTC_CompareSet(0, RTC_COUNT_BETWEEN_WAKEUP_1);
-
-  /* Enabling Interrupt from RTC */
-  RTC_IntEnable(RTC_IFC_COMP0);
-  NVIC_EnableIRQ(RTC_IRQn);
-
   /* Initialize the RTC */
   RTC_Init(&rtcInit);
 }
 
-void disableRtcInterrupts(void){
+void RTC_setTime(uint32_t time_ms){
+	/* Setting the compare value of the RTC */
+	RTC_CompareSet(0, (((LFRCO_FREQUENCY * time_ms) / 1000)-1));
+}
+
+void RTC_disableInt(void){
 	 RTC_IntDisable(RTC_IFC_COMP0);
 	 NVIC_DisableIRQ(RTC_IRQn);
 }
-void enableRtcInterrupts(void){
+void RTC_enableInt(void){
 	 RTC_IntEnable(RTC_IFC_COMP0);
 	 NVIC_EnableIRQ(RTC_IRQn);
+}
+
+void RTC_clearInt(void){
+	RTC_IntClear(RTC_IFC_COMP0);
 }
