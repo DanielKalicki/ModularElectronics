@@ -50,9 +50,14 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_rtc.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h \
- ../src/ucPeriperalDrivers\i2c_connection.h ../src/RTC_.h \
- ../src/uart_connection.h ../src/HMC5883L.h ../src/MPU6050.h \
- ../src/inv_mpu.h ../src/inv_mpu_dmp_motion_driver.h ../src/AS3935.h
+ ../src/ucPeriperalDrivers\i2c_connection.h \
+ ../src/ucPeriperalDrivers\RTC_.h \
+ ../src/ucPeriperalDrivers\uart_connection.h \
+ ../src/sensorsDrivers\HMC5883L.h ../src/sensorsDrivers\MPU6050.h \
+ ../src/sensorsDrivers\inv_mpu.h \
+ ../src/sensorsDrivers\inv_mpu_dmp_motion_driver.h \
+ ../src/sensorsDrivers\BMP180.h ../src/sensorsDrivers\Si7013.h \
+ ../src/sensorsDrivers\Si114x.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -158,16 +163,20 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h:
 
 ../src/ucPeriperalDrivers\i2c_connection.h:
 
-../src/RTC_.h:
+../src/ucPeriperalDrivers\RTC_.h:
 
-../src/uart_connection.h:
+../src/ucPeriperalDrivers\uart_connection.h:
 
-../src/HMC5883L.h:
+../src/sensorsDrivers\HMC5883L.h:
 
-../src/MPU6050.h:
+../src/sensorsDrivers\MPU6050.h:
 
-../src/inv_mpu.h:
+../src/sensorsDrivers\inv_mpu.h:
 
-../src/inv_mpu_dmp_motion_driver.h:
+../src/sensorsDrivers\inv_mpu_dmp_motion_driver.h:
 
-../src/AS3935.h:
+../src/sensorsDrivers\BMP180.h:
+
+../src/sensorsDrivers\Si7013.h:
+
+../src/sensorsDrivers\Si114x.h:
