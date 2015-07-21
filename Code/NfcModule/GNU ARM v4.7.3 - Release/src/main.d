@@ -47,7 +47,8 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_gpio.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
- ../src/uart_connection.h ../src/spi.h
+ ../src/ucPeripheralDrivers\uart_connection.h \
+ ../src/ucPeripheralDrivers\spi.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -145,6 +146,6 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
 
-../src/uart_connection.h:
+../src/ucPeripheralDrivers\uart_connection.h:
 
-../src/spi.h:
+../src/ucPeripheralDrivers\spi.h:

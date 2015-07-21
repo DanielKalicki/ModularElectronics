@@ -3,9 +3,12 @@
 #include "em_chip.h"
 #include "em_cmu.h"
 #include "em_gpio.h"
-#include "em_usart.h"
-#include "uart_connection.h"
-#include "spi.h"
+
+#include "ucPeripheralDrivers\uart_connection.h"
+#include "ucPeripheralDrivers\spi_connection.h"
+
+#include "sensorsDrivers\AS3953.h"
+
 #include <stdio.h>
 
 #define SPI_PORTC     gpioPortC // USART1 (location #0) MISO and MOSI are on PORTD
@@ -14,10 +17,6 @@
 #define SPI_MOSI_PIN  0  // PC0
 #define SPI_CS_PIN    8  // PB8
 #define SPI_SCLK_PIN  7  // PB7
-
-/* SPI functions */
-void CS_pin_clr(void);
-void CS_pin_set(void);
 
 void clockTest() {
 	long int i=0;
@@ -129,13 +128,31 @@ uint8_t as3953_eeprom_read(uint8_t addr, uint8_t* data, uint8_t len){
 	return 0;
 }
 
-USART_InitSync_TypeDef spi_init;
+void init_uart_interface(void){
+	/* UART interface initialization */
+	struct UART_Settings uartSettings;
+	uartSettings.uart_com_port=gpioPortD;
+	uartSettings.uart_tx_pin=7;
+	uartSettings.uart_rx_pin=6;
+	uartSettings.uart_port_location=2;
+	uartSettings.uart_speed=115200;
+	uart_init(uartSettings);
+}
 
-void enable_SPI(){
-	USART_IntClear(USART1, 0x1FF9);                // clear interrupt flags (optional)
-	USART_InitSync(USART1, &spi_init);              // apply configuration to USART1
-	USART1->ROUTE = (0 << 8) | ( 1 << 3)| (3 << 0); // use location #3, enable TX/RX/CLK pins
-	USART_Enable(USART1, usartEnable);
+void init_spi_interface(void){
+	/* SPI interface initialization */
+	struct SPI_Settings spiSettings;
+	spiSettings.spi_miso_port=gpioPortC;
+	spiSettings.spi_miso_pin= 1;
+	spiSettings.spi_mosi_port=gpioPortC;
+	spiSettings.spi_mosi_pin= 0;
+	spiSettings.spi_sclk_port=gpioPortB;
+	spiSettings.spi_sclk_pin= 7;
+	spiSettings.spi_cs_port=  gpioPortB;
+	spiSettings.spi_cs_pin =  8;
+	spiSettings.spi_location=0;
+
+	spi_init(spiSettings);
 }
 
 void as3953_init(void){
@@ -217,7 +234,7 @@ void as3953_init(void){
 	}
 
 	for(int i=0;i<2;i++) clockTest();
-	initUART();
+	init_uart_interface();
 	char buff[30];
 
 	if (counter==0) {
@@ -274,25 +291,8 @@ int main () {
 
 	  CMU_ClockEnable(cmuClock_HFPER, true);
 	  CMU_ClockEnable(cmuClock_GPIO, true);                    // enable GPIO peripheral clock
-	  CMU_ClockEnable(cmuClock_USART1, true);                  // enable USART1 peripheral clock
 
-	  /* Configure GPIO */
-	  GPIO_PinModeSet(SPI_PORTC, SPI_MISO_PIN, gpioModeInput, 1);      // configure MISO pin as input, no filter
-	  GPIO_PinModeSet(SPI_PORTC, SPI_MOSI_PIN, gpioModePushPull, 1);    // configure MOSI pin as output, initialize high
-	  GPIO_PinModeSet(SPI_PORTB, SPI_CS_PIN, gpioModePushPull, 1);      // configure CS pin as output, initialize high
-	  GPIO_PinModeSet(SPI_PORTB, SPI_SCLK_PIN, gpioModePushPull, 0);    // configure SCLK pin as output, initialize low
-
-	  /* Configure SPI Port (USART1 in sync mode) */
-	  spi_init.enable = usartEnable;        // enable bidirectional data (TX and RX)
-	  spi_init.refFreq = 0;                // measure source clock
-	  spi_init.baudrate = 100000;        // 12Mbps is max data rate with 24MHz clock source
-	  spi_init.databits = usartDatabits8;  // 8 data bits per frame
-	  spi_init.master = true;              // configure as SPI master
-	  spi_init.msbf = true;                // transmit msb first
-	  spi_init.clockMode = usartClockMode1; // clock idles low, data setup on rising edge, sampled on falling edge
-
-	  enable_SPI();
-	  CS_pin_set(); for(int i=0;i<10;i++) clockTest();
+	  init_spi_interface();
 
 	  as3953_init();
 
@@ -338,14 +338,4 @@ int main () {
 		  uart_sendChar('\n'); uart_sendChar('\n');
 		  for(int i=0;i<10;i++) clockTest();*/
 	  }
-}
-
-// This function drives the CS pin low
-void CS_pin_clr(void) {
-  GPIO_PinOutClear(SPI_PORTB, SPI_CS_PIN);
-}
-
-// This function drives the CS pin high
-void CS_pin_set(void) {
-  GPIO_PinOutSet(SPI_PORTB, SPI_CS_PIN);
 }
