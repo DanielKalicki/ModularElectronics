@@ -1,5 +1,5 @@
 #include "HMC5883L.h"
-#include "..\ucPeriperalDrivers\i2c_connection.h"
+#include "..\ucPeripheralDrivers\i2c_connection.h"
 
 #define HMC5883L_ADDR 	0x1E*2
 

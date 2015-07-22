@@ -1,6 +1,6 @@
 #include "Si7013.h"
-#include "..\ucPeriperalDrivers\i2c_connection.h"
-#include "..\ucPeriperalDrivers\uart_connection.h"
+#include "..\ucPeripheralDrivers\i2c_connection.h"
+#include "..\ucPeripheralDrivers\uart_connection.h"
 
 #define SI7013_ADDR 	0x40*2
 

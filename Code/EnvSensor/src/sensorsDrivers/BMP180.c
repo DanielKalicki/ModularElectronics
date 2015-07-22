@@ -1,5 +1,5 @@
 #include "BMP180.h"
-#include "..\ucPeriperalDrivers\i2c_connection.h"
+#include "..\ucPeripheralDrivers\i2c_connection.h"
 
 #define BMP180_ADDR 	0x77*2
 

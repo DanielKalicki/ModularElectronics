@@ -6,7 +6,7 @@
  */
 
 #include "Si114x.h"
-#include "..\ucPeriperalDrivers\i2c_connection.h"
+#include "..\ucPeripheralDrivers\i2c_connection.h"
 
 #define SI114x_ADDR 	0x5A*2
 

@@ -9,9 +9,9 @@
 #include "em_emu.h"
 #include <stdio.h>
 
-#include "ucPeriperalDrivers\i2c_connection.h"
-#include "ucPeriperalDrivers\RTC_.h"
-#include "ucPeriperalDrivers\uart_connection.h"
+#include "ucPeripheralDrivers\i2c_connection.h"
+#include "ucPeripheralDrivers\RTC_.h"
+#include "ucPeripheralDrivers\uart_connection.h"
 
 #include "sensorsDrivers\HMC5883L.h"
 #include "sensorsDrivers\MPU6050.h"
