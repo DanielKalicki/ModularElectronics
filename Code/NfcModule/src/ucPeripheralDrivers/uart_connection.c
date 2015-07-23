@@ -47,6 +47,7 @@ void uart_sendText(char * text){
 		while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 		USART1->TXDATA = text[i];       // send character
 	}
+	while(!(USART1->STATUS & (1 << 6)));
 }
 
 //void USART1_RX_IRQHandler(void) {
