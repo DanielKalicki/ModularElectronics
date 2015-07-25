@@ -1,0 +1,343 @@
+/*
+ * AS3953.c
+ *
+ *  Created on: 20-07-2015
+ *      Author: terg
+ */
+#include "AS3953.h"
+#include "..\ucPeripheralDrivers\spi_connection.h"
+
+//TODO V remove those files are temporary
+#include "em_usart.h"
+#include "..\ucPeripheralDrivers\spi.h"
+#include "em_gpio.h"
+
+static GPIO_Port_TypeDef cs_port;
+static unsigned int cs_pin;
+
+// This function drives the CS pin low
+static void cs_clr(void)
+{
+  GPIO_PinOutClear(cs_port, cs_pin);
+}
+
+// This function drives the CS pin high
+static void cs_set(void)
+{
+  GPIO_PinOutSet(cs_port, cs_pin);
+}
+
+static void clockTest_short()
+{
+	long int i=0;
+	for(;i<121L;++i)
+	{
+	  if(i==120L)
+		  GPIO_PortOutSet(gpioPortF, 0x4);
+	  if(i==60L)
+		  GPIO_PortOutClear(gpioPortF, 0x4);
+	}
+}
+
+void AS3953_Init(AS3953_Setting_t AS3953_Setting)
+{
+	uint8_t conf[4];
+
+	GPIO_PinModeSet(AS3953_Setting.spi_cs_port, AS3953_Setting.spi_cs_pin, gpioModePushPull, 1);      // configure CS pin as output, initialize high
+
+	cs_port = AS3953_Setting.spi_cs_port;
+	cs_pin =  AS3953_Setting.spi_cs_pin;
+
+	cs_set(); for (int i=0;i<20;i++) { clockTest_short(); }	//TODO delete this delay
+
+	AS3953_Read_Conf(conf);
+
+	if (	AS3953_Setting.conf_word[0]!=conf[0] ||
+			AS3953_Setting.conf_word[1]!=conf[1] ||
+			AS3953_Setting.conf_word[2]!=conf[2] ||
+			AS3953_Setting.conf_word[3]!=conf[3]
+		)
+	{
+		cs_clr(); clockTest_short();
+		AS3953_EEPROM_Write(2, AS3953_Setting.conf_word, 4);
+		cs_set(); clockTest_short();
+
+		AS3953_Read_Conf(conf);
+	}
+}
+
+void AS3953_Read_UID(uint8_t* uid)
+{
+	cs_clr(); clockTest_short();
+	AS3953_EEPROM_Read(0,uid,4);
+	cs_set();
+}
+
+void AS3953_Read_Lock(uint8_t* lock)
+{
+	cs_clr(); clockTest_short();
+	AS3953_EEPROM_Read(3,lock,4);
+	cs_set();
+}
+
+void AS3953_Read_Conf(uint8_t* conf)
+{
+	cs_clr(); clockTest_short();
+	AS3953_EEPROM_Read(2,conf,4);
+	cs_set();
+}
+
+void AS3953_Write_Register(uint8_t reg, uint8_t data){
+
+	cs_clr();
+	//send reg address
+	USART_SpiTransfer(USART1, reg&0x1F);
+	//send data
+	USART_SpiTransfer(USART1, data);
+	cs_set();
+
+	/*uint8_t dataTx[2];
+	dataTx[0]=reg&0x1F;
+	dataTx[1]=data;*/
+}
+
+uint8_t AS3953_Read_Register(uint8_t reg){
+
+	uint8_t rxData[2];
+
+	cs_clr();
+	rxData[0] = USART_SpiTransfer(USART1, (reg&0x1F)+0x20);
+	rxData[1] = USART_SpiTransfer(USART1, 0x00);
+	cs_set();
+
+	/*uint8_t dataRx[1];
+	uint8_t dataTx[1];
+	dataTx[0]=(reg&0x1F)+0x20;
+	spi_WriteBlock(1, dataTx);
+	spi_ReadBlock(1,dataRx);
+	return dataRx[0];*/
+
+	return rxData[1];
+}
+
+void AS3953_Command(uint8_t cmd){
+	USART_SpiTransfer(USART1,0xC0|cmd);
+
+	/*spi_WriteBlock(1, &cmd);*/
+}
+
+/*void AS3953_FIFO_Init(uint16_t bits){
+	bits=bits&0x1FFF;
+	if(bits & 0x07) bits+=8;
+
+	spi_cs_clr(); clockTest_short();
+		as3953_command(0xC4);	//clear fifo command
+	spi_cs_set(); clockTest_short();
+
+	spi_cs_clr(); clockTest_short();
+		send_NfcController(0x10,(bits>>8)&0xFF);
+	spi_cs_set();
+
+	spi_cs_clr(); clockTest_short();
+		send_NfcController(0x11,bits&0xFF);	//mask it TODO
+	spi_cs_set();
+
+}*/
+
+void AS3953_FIFO_Write(uint8_t* data, uint8_t len){
+	USART_SpiTransfer(USART1, 0x80);	//mask it fifo write
+
+	for (int i=0;i<len;i++){
+		USART_SpiTransfer(USART1, data[i]);
+	}
+
+	/*uint8_t initData[1];
+	initData[0]=0x80;
+	spi_WriteBlock(1,initData);
+	spi_WriteBlock(len,data);*/
+}
+
+void AS3953_FIFO_Read(uint8_t* data, uint8_t len){
+	USART_SpiTransfer(USART1, 0xBF);
+	for (int i=0;i<len;i++){
+		data[i]=USART_SpiTransfer(USART1,0x00);
+	}
+
+	/*uint8_t initData[1];
+	initData[0]=0xBF;
+	spi_WriteBlock(1,initData);
+	spi_ReadBlock(len, data);*/
+}
+
+void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len){
+
+	//TODO protect agains writting to lock bits.
+
+	USART_SpiTransfer(USART1, 0x40);//mask it eeprom write
+	USART_SpiTransfer(USART1, ((word & 0x1F) << 1));
+
+	for (int i=0;i<len;i++){
+		USART_SpiTransfer(USART1, data[i]);
+	}
+
+	/*uint8_t initData[2];
+	initData[0]=0x40;
+	initData[1]=((word & 0x1F) << 1);
+	spi_WriteBlock(2,initData);
+	spi_WriteBlock(len,data);*/
+}
+
+uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len){
+	if(addr>0x1F) 			return 1;
+	//if (!len || len % 4) 	return 1;
+
+	USART_SpiTransfer(USART1, 0x7F);	//mask it
+	USART_SpiTransfer(USART1, addr<<1);
+
+	for (int i=0;i<len;i++){
+		data[i] = USART_SpiTransfer(USART1, 0x00);
+	}
+
+
+	/*uint8_t initData[2];
+	initData[0]=0x7F;
+	initData[1]=addr<<1;
+	spi_WriteBlock(2,initData);
+	spi_ReadBlock(len, data);*/
+
+	return 0;
+}
+
+#define _IO_CONF_PICC_AFE_STAT_MASK		0x01
+#define _IO_CONF_PICC_AFE_STAT_SHIFT	7
+#define _IO_CONF_PICC_POWER_STAT_MASK	0x07
+#define _IO_CONF_PICC_POWER_STAT_SHIFT	4
+void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t* status)
+{
+	uint8_t regVal = AS3953_Read_Register(AS3953_IO_CONF_REG_ADDR);
+
+	switch((regVal >> _IO_CONF_PICC_AFE_STAT_SHIFT) & _IO_CONF_PICC_AFE_STAT_MASK)
+	{
+	case 0:
+		*power = PICC_AFE_OFF;
+		break;
+	case 1:
+		*power = PICC_AFE_ON;
+		break;
+	}
+
+	switch ((regVal >> _IO_CONF_PICC_POWER_STAT_SHIFT) & _IO_CONF_PICC_POWER_STAT_MASK)
+	{
+	case 0:
+		*status = POWER_OFF;
+		break;
+	case 1:
+		*status = IDLE;
+		break;
+	case 2:
+		*status = READY;
+		break;
+	case 3:
+		*status = ACTIVE;
+		break;
+	case 5:
+		*status = HALT;
+		break;
+	case 6:
+		*status = READYX;
+		break;
+	case 7:
+		*status = ACTIVEX;
+		break;
+	case 4:
+		*status = L4;
+		break;
+	default:
+		*status=POWER_OFF; //there is no error status
+		break;
+	}
+}
+
+#define _FIFO_RX_STAT_MASK		0x3F
+uint8_t AS3953_FifoRxStatus()
+{
+	uint8_t regVal = AS3953_Read_Register(AS3953_FIFO_STAT_1_REG_ADDR);
+	return (regVal & _FIFO_STAT_1_MASK);
+}
+
+#define _FIFO_TX_STAT_MASK					0x03
+#define _FIFO_TX_STAT_SHIFT					1
+#define _FIFO_TX_PARITY_BIT_MISSING_MASK	0x01
+#define _FIFO_TX_LAST_FIFO_NOTCOMPLETE_MASK	0x10
+#define _FIFO_TX_OVERFLOW_MASK				0x20
+#define _FIFO_TX_UNDERFLOW_MASK				0x40
+uint8_t AS3953_FifoTxStatus(AS3953_FifoErrors_t* errors)
+{
+	uint8_t regVal = AS3953_Read_Register(AS3953_FIFO_STAT_2_REG_ADDR);
+
+	/* Framing error (Parity bit is missing in last byte) */
+	if (regVal & _FIFO_TX_PARITY_BIT_MISSING_MASK)
+	{
+		errors->ParityBitMissing = 1;
+	}
+	else
+	{
+		errors->ParityBitMissing = 0;
+	}
+
+	/* Last Fifo not complete error */
+	if (regVal & _FIFO_TX_LAST_FIFO_NOTCOMPLETE_MASK)
+	{
+		errors->Last_Fifo_NotComplete = 1;
+	}
+	else
+	{
+		errors->Last_Fifo_NotComplete = 0;
+	}
+
+	/* Overflow error */
+	if (regVal & _FIFO_TX_OVERFLOW_MASK)
+	{
+		errors->Fifo_Overflow = 1;
+	}
+	else
+	{
+		errors->Fifo_Overflow = 0;
+	}
+
+	/* Underflow error */
+	if (regVal & _FIFO_TX_UNDERFLOW_MASK)
+	{
+		errors->Fifo_Underflow = 1;
+	}
+	else
+	{
+		errors->Fifo_Underflow = 0;
+	}
+
+	return ((regVal >> _FIFO_TX_STAT_SHIFT) & _FIFO_TX_STAT_MASK);
+}
+
+#define _TX_BYTE_NUMBER_MSB_MASK	0x1F
+#define _TX_BYTE_NUMBER_MSB_SHIFT	3
+#define _TX_BYTE_NUMBER_LSB_MASK	0xE0
+#define _TX_BYTE_NUMBER_LSB_SHIFT	5
+uint8_t AS3953_TxBytesNumber()
+{
+	uint8_t regVal1 = AS3953_Read_Register(AS3953_NUM_TX_BYTE_1_REG_ADDR);
+	uint8_t regVal2 = AS3953_Read_Register(AS3953_NUM_TX_BYTE_1_REG_ADDR);
+	return (((regVal1 & _TX_BYTE_NUMBER_MSB_MASK) << _TX_BYTE_NUMBER_MSB_SHIFT )
+		   + (regVal2 & _TX_BYTE_NUMBER_LSB_MASK) >> _TX_BYTE_NUMBER_LSB_SHIFT);
+}
+
+#define _RATS_CID_FSDI_BIT_MASK		0xF0
+#define _RATS_CID_FSDI_BIT_SHIFT	0x04
+#define _RATS_CID_CID_BIT_MASK		0x0F
+#define _RATS_CID_CID_BIT_SHIFT		0x01
+void AS3953_RATS(uint8_t* RATS_FSDI_BitNumber, uint8_t* RATS_CID_BitNumber)
+{
+	uint8_t regVal = AS3953_Read_Register(AS3953_RATS_REG_ADDR);
+	*RATS_FSDI_BitNumber = (regVal & _RATS_CID_FSDI_BIT_MASK) >> _RATS_CID_FSDI_BIT_SHIFT;
+	*RATS_CID_BitNumber  = (regVal & _RATS_CID_CID_BIT_MASK)  >> _RATS_CID_CID_BIT_SHIFT;
+}
+

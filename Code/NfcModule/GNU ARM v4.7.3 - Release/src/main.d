@@ -46,9 +46,13 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_bitband.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_gpio.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h \
  ../src/ucPeripheralDrivers\uart_connection.h \
- ../src/ucPeripheralDrivers\spi.h
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
+ ../src/ucPeripheralDrivers\spi_connection.h \
+ ../src/ucPeripheralDrivers\RTC_.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
+ ../src/sensorsDrivers\AS3953.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -144,8 +148,16 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_gpio.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h:
 
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h:
 
 ../src/ucPeripheralDrivers\uart_connection.h:
 
-../src/ucPeripheralDrivers\spi.h:
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
+
+../src/ucPeripheralDrivers\spi_connection.h:
+
+../src/ucPeripheralDrivers\RTC_.h:
+
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h:
+
+../src/sensorsDrivers\AS3953.h:

@@ -3,9 +3,13 @@
 #include "em_chip.h"
 #include "em_cmu.h"
 #include "em_gpio.h"
+#include "em_emu.h"
+
+#define DEBUG
 
 #include "ucPeripheralDrivers\uart_connection.h"
 #include "ucPeripheralDrivers\spi_connection.h"
+#include "ucPeripheralDrivers\RTC_.h"
 
 #include "sensorsDrivers\AS3953.h"
 
@@ -73,132 +77,7 @@ void init_spi_interface(void){
 	spi_init(spiSettings);
 }
 
-void as3953_init(void){
-
-	static uint8_t counter=0;
-
-	init_spi_interface();
-
-	uint8_t uid[4];
-	uint8_t conf[4];
-	uint8_t lock[4];
-	uint8_t eepromWrite=0;
-	uint8_t modeReg;
-
-	if(counter==0){
-
-		uint8_t conf_word[] = { 0x26, 0x7E, 0x8f, 0x80 }; //{ 0x20, 0x7E, 0xE7, 0x80 } 14443-4
-
-		spi_cs_clr(); clockTest_short();
-			as3953_eeprom_read(0,uid,4);
-		spi_cs_set();
-
-		spi_cs_clr(); clockTest_short();
-			as3953_eeprom_read(3,lock,4);
-		spi_cs_set();
-
-		spi_cs_clr(); clockTest_short();
-			as3953_eeprom_read(2,conf,4);
-		spi_cs_set();
-
-		if(conf[0]!=conf_word[0] || conf[1]!=conf_word[1] || conf[2]!=conf_word[2] || conf[3]!=conf_word[3]){
-			spi_cs_clr(); clockTest_short();
-				as3953_eeprom_write(2, conf_word, 4);
-			spi_cs_set(); clockTest_short();
-
-			spi_cs_clr(); clockTest_short();
-				as3953_eeprom_read(2, conf, 4);
-			spi_cs_set();
-
-			eepromWrite=1;
-		}
-
-		/*spi_cs_clr(); clockTest_short();
-			send_NfcController(0x01,0x1F);
-		spi_cs_set();*/
-
-		spi_cs_clr(); clockTest_short();
-			modeReg = read_NfcController(0x01);
-		spi_cs_set();
-
-	}
-
-	//---------------
-	//write fifo
-	/*as3953_fifo_init(8<<3);
-
-	uint8_t fifo[9] = {0xd1,0x01,0x05,0x54,0x74,0x65,0x73,0x74,0x31};
-
-	spi_cs_clr(); clockTest_short();
-		  as3953_fifo_write(fifo,9);
-	spi_cs_set();
-
-	spi_cs_clr(); clockTest_short();
-		as3953_command(0xC8);	//transmit
-	spi_cs_set();*/
-	//-------------------
-	//read fifo
-	uint8_t fifoRead[32];
-	spi_cs_clr(); clockTest_short();
-		as3953_fifo_read(fifoRead, 32);
-	spi_cs_set();
-	//-------------------
-
-	uint8_t regValues[0x12];
-	for (int i=0;i<0x12;i++){
-		spi_cs_clr(); clockTest_short();
-			regValues[i] = read_NfcController(i);
-		spi_cs_set();
-	}
-
-	for(int i=0;i<2;i++) clockTest();
-	init_uart_interface();
-	char buff[30];
-
-	if (counter==0) {
-		sprintf(buff,"UID: 0x%02x 0x%02x 0x%02x 0x%02x\n",uid[0],uid[1],uid[2],uid[3]);
-		uart_sendText(buff);
-		for(int i=0;i<2;i++) clockTest();
-
-		sprintf(buff,"Conf: 0x%02x 0x%02x 0x%02x 0x%02x\n",conf[0],conf[1],conf[2],conf[3]);
-		uart_sendText(buff);
-		for(int i=0;i<2;i++) clockTest();
-
-		sprintf(buff,"Lock: 0x%02x 0x%02x 0x%02x 0x%02x\n",lock[0],lock[1],lock[2],lock[3]);
-		uart_sendText(buff);
-		for(int i=0;i<2;i++) clockTest();
-
-		if(eepromWrite==1){
-			uart_sendText("data wrote to EEPROM\n");
-			for(int i=0;i<2;i++) clockTest();
-		}
-
-		sprintf(buff,"ModeR:0x%02x\n",modeReg);
-		uart_sendText(buff);
-		for(int i=0;i<2;i++) clockTest();
-
-		counter++;
-	}
-	for (int i=0;i<0x12;i++){
-		if(regValues[i]!=0){
-			sprintf(buff,"[0x%02x] 0x%02x\t",i,regValues[i]);
-		}
-		else{
-			sprintf(buff,"[0x%02x] ____\t",i);
-		}
-		uart_sendText(buff);
-	}
-
-	uart_sendChar('\n');
-	for (int i=0;i<32;i++){
-		sprintf(buff,"0x%02x ",fifoRead[i]);
-		uart_sendText(buff);
-	}
-
-	uart_sendChar('\n'); uart_sendChar('\n');
-	for(int i=0;i<20;i++) clockTest();
-}
-
+/* Debug functions for AS3953 */
 void Test_AS3953()
 {
 	uint8_t uid[4];
@@ -223,6 +102,140 @@ void Test_AS3953()
 
 		init_spi_interface();
 	}
+}
+void Print_AS3953_Registers()
+{
+	uint8_t reg[0x12];
+	for (int i=0;i<0x12;i++)
+	{
+		reg[i]=AS3953_Read_Register(i);
+		clockTest_short();
+	}
+
+	init_uart_interface();
+
+	uart_sendChar('\n'); uart_sendChar('\n'); uart_sendChar('\n');
+
+	char buff[30];
+	for (int i=0;i<0x12;i++)
+	{
+		sprintf(buff,"[0x%02x]:0x%02x\t",i,reg[i]);
+		uart_sendText(buff);
+		//wait for the UART transmition to finished
+	}
+	for (int i=0;i<20;i++) { clockTest_short(); }
+
+	init_spi_interface();
+}
+void AS3953_PrintStatus(AS3953_PICC_AFE_PowerStatus_t AS3953_PiccAfe_PowerStatus, AS3953_Status_t AS3953Status)
+{
+	uart_sendText("\nAFE state: \t");
+	switch(AS3953_PiccAfe_PowerStatus)
+	{
+	case PICC_AFE_OFF:
+		uart_sendText("PICC_AFE_OFF");
+		break;
+	case PICC_AFE_ON:
+		uart_sendText("PICC_AFE_ON");
+		break;
+	}
+
+	uart_sendText("\nPICC Logic state: \t");
+	switch(AS3953Status)
+	{
+	case POWER_OFF:
+		uart_sendText("POWER_OFF\n");
+		break;
+	case IDLE:
+		uart_sendText("IDLE\n");
+		break;
+	case READY:
+		uart_sendText("READY\n");
+		break;
+	case ACTIVE:
+		uart_sendText("ACTIVE\n");
+		break;
+	case HALT:
+		uart_sendText("HALLT\n");
+		break;
+	case READYX:
+		uart_sendText("READYX\n");
+		break;
+	case ACTIVEX:
+		uart_sendText("ACTIVEX\n");
+		break;
+	case L4:
+		uart_sendText("L4\n");
+		break;
+	}
+}
+void AS3953_PrintFifoStatus(uint8_t RxNumber, uint8_t TxNumber, AS3953_FifoErrors_t AS3953_FifoError)
+{
+	char buff[30];
+	sprintf(buff, "Rx: %d, Tx: %d\t", RxNumber, TxNumber);
+	uart_sendText(buff);
+
+	if (AS3953_FifoError.Fifo_Underflow == 1)
+	{
+		uart_sendText("Underflow\t");
+	}
+	if (AS3953_FifoError.Fifo_Overflow == 1)
+	{
+		uart_sendText("Overflow\t");
+	}
+	if (AS3953_FifoError.Last_Fifo_NotComplete == 1)
+	{
+		uart_sendText("Last_Fifo_NotComplete\t");
+	}
+	if (AS3953_FifoError.ParityBitMissing == 1)
+	{
+		uart_sendText("ParityBitMissing\t");
+	}
+
+	uart_sendChar('\n');
+}
+void AS3953_PrintRATS(uint8_t RATS_FSDI_BitNumber, uint8_t RATS_CID_BitNumber)
+{
+	char buff[30];
+	sprintf(buff,"RATS: \tFSDI %d\tCID %d\n",RATS_FSDI_BitNumber,RATS_CID_BitNumber);
+	uart_sendText(buff);
+}
+
+void RTC_IRQHandler(void)
+{
+#ifdef DEBUG
+	/*Read and print registers values */
+	Print_AS3953_Registers();
+#endif
+
+	/*--------------------------------------------------*/
+	/* 				Read AS3953 information 			*/
+	/*--------------------------------------------------*/
+	AS3953_Status_t AS3953Status;
+	AS3953_PICC_AFE_PowerStatus_t AS3953_PiccAfe_PowerStatus;
+	AS3953_Status(&AS3953_PiccAfe_PowerStatus, &AS3953Status);
+
+	uint8_t RxNumber = AS3953_FifoRxStatus();
+	AS3953_FifoErrors_t AS3953_FifoError;
+	uint8_t TxNumber = AS3953_FifoTxStatus(&AS3953_FifoError);
+
+	uint8_t RATS_FSDI_BitNumber;
+	uint8_t RATS_CID_BitNumber;
+	AS3953_RATS(&RATS_FSDI_BitNumber, &RATS_CID_BitNumber);
+
+	/*--------------------------------------------------*/
+	/* 				Print AS3953 information 			*/
+	/*--------------------------------------------------*/
+	init_uart_interface();
+
+	AS3953_PrintStatus(AS3953_PiccAfe_PowerStatus, AS3953Status);
+	AS3953_PrintFifoStatus(RxNumber, TxNumber, AS3953_FifoError);
+	AS3953_PrintRATS(RATS_FSDI_BitNumber, RATS_CID_BitNumber);
+
+	init_spi_interface();
+
+	/* Clear RTC interrupts */
+	RTC_clearInt();
 }
 
 int main ()
@@ -252,46 +265,12 @@ int main ()
 
 	  Test_AS3953();
 
+	  //RTC initialization
+	  RTC_init();
+	  RTC_setTime(500);
+	  RTC_enableInt();
+
 	  while(1){
-
-		  //as3953_init();
-
-		  //for(int i=0;i<10;i++) clockTest();
-
-		  /*if(counter==0){
-			  uint8_t fifo[4]={0xAA,0x42,0xFF,0xC2};
-
-			  //as3953_fifo_init(32);
-
-			  //spi_cs_clr(); clockTest_short();
-			  //	  as3953_fifo_write(fifo,4);
-			  //spi_cs_set(); clockTest_short();
-
-			  //spi_cs_clr(); clockTest_short();
-			  //	as3953_command(0xC8);	//clear fifo command
-			  //spi_cs_set();
-
-			  //spi_cs_clr(); clockTest_short();
-			  //	  send_NfcController(0x08, 194);
-			  //spi_cs_set(); clockTest_short();
-		  }*/
-
-		  /*enable_SPI();
-
-		  uint8_t regValues[0x12];
-		  for (int i=0;i<0x12;i++){
-		  		spi_cs_clr(); clockTest_short();
-		  			regValues[i] = read_NfcController(i);
-		  		spi_cs_set();
-		  }
-
-		  initUART();
-		  char buff[30];
-		  for (int i=0;i<0x12;i++){
-			  sprintf(buff,"R%d=%d\t",i,regValues[i]);
-			  uart_sendText(buff);
-		  }
-		  uart_sendChar('\n'); uart_sendChar('\n');
-		  for(int i=0;i<10;i++) clockTest();*/
+		  EMU_EnterEM2(false);
 	  }
 }
