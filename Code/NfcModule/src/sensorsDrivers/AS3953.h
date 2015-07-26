@@ -64,7 +64,7 @@ typedef enum
 	HALT = 5,
 	READYX = 6,
 	ACTIVEX = 7
-}AS3953_Status_t;
+} AS3953_Status_t;
 void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t* status);
 
 uint8_t AS3953_FifoRxStatus();
@@ -79,5 +79,30 @@ typedef struct
 uint8_t AS3953_FifoTxStatus(AS3953_FifoErrors_t *errors);
 
 void AS3953_RATS(uint8_t* RATS_FSDI_BitNumber, uint8_t* RATS_CID_BitNumber);
+
+typedef struct
+{
+	uint8_t PowerUp_IRQ;
+	uint8_t Active_State_Enter_IRQ;
+	uint8_t WakeUp_Command_Send_IRQ;
+	uint8_t Receive_Start_IRQ;
+	uint8_t Receive_End_IRQ;
+	uint8_t Transmition_End_IRQ;
+	uint8_t Fifo_Water_Level_IRQ;
+} AS3953_MainInterrupts_t;
+void AS3953_Read_MainInterrupts(AS3953_MainInterrupts_t* Main_Interrupts);
+
+typedef struct
+{
+	uint8_t Deselect_Command_Reception_IRQ;
+	uint8_t Framing_Error_IRQ;
+	uint8_t Parity_Error_IRQ;
+	uint8_t CRC_Error_IRQ;
+	uint8_t FIFO_Error_IRQ;
+	uint8_t EEPROM_Successful_Termination;
+	uint8_t EEPROM_Programming_Error_IRQ;
+	uint8_t EEPROM_Access_Due_To_PICC_Activation;
+} AS3953_AuxInterrupts_t;
+void AS3953_Read_AuxInterrupts(AS3953_AuxInterrupts_t* Aux_Interrupts);
 
 #endif /* AS3953_H_ */

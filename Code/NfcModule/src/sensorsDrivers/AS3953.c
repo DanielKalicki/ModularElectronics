@@ -262,7 +262,7 @@ void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t* status
 uint8_t AS3953_FifoRxStatus()
 {
 	uint8_t regVal = AS3953_Read_Register(AS3953_FIFO_STAT_1_REG_ADDR);
-	return (regVal & _FIFO_STAT_1_MASK);
+	return (regVal & _FIFO_RX_STAT_MASK);
 }
 
 #define _FIFO_TX_STAT_MASK					0x03
@@ -327,7 +327,7 @@ uint8_t AS3953_TxBytesNumber()
 	uint8_t regVal1 = AS3953_Read_Register(AS3953_NUM_TX_BYTE_1_REG_ADDR);
 	uint8_t regVal2 = AS3953_Read_Register(AS3953_NUM_TX_BYTE_1_REG_ADDR);
 	return (((regVal1 & _TX_BYTE_NUMBER_MSB_MASK) << _TX_BYTE_NUMBER_MSB_SHIFT )
-		   + (regVal2 & _TX_BYTE_NUMBER_LSB_MASK) >> _TX_BYTE_NUMBER_LSB_SHIFT);
+		   + ((regVal2 & _TX_BYTE_NUMBER_LSB_MASK) >> _TX_BYTE_NUMBER_LSB_SHIFT));
 }
 
 #define _RATS_CID_FSDI_BIT_MASK		0xF0
@@ -341,3 +341,163 @@ void AS3953_RATS(uint8_t* RATS_FSDI_BitNumber, uint8_t* RATS_CID_BitNumber)
 	*RATS_CID_BitNumber  = (regVal & _RATS_CID_CID_BIT_MASK)  >> _RATS_CID_CID_BIT_SHIFT;
 }
 
+#define _IRQ_POWER_UP_MASK				0x80
+#define _IRQ_ACTIVE_STATE_ENTER_MASK	0x40
+#define _IRQ_WAKEUP_COMMAND_SEND_MASK	0x20
+#define _IRQ_RECEIVE_START_MASK			0x10
+#define _IRQ_RECEIVE_END_MASK			0x08
+#define _IRQ_TRANSMITION_END_MASK		0x04
+#define _IRQ_FIFO_WATER_LEVEL_MASK		0x02
+void AS3953_Read_MainInterrupts(AS3953_MainInterrupts_t* Main_Interrupts)
+{
+	uint8_t regVal = AS3953_Read_Register(AS3953_MAIN_INT_REG_ADDR);
+
+	if (regVal & _IRQ_POWER_UP_MASK)
+	{
+		Main_Interrupts->PowerUp_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->PowerUp_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_ACTIVE_STATE_ENTER_MASK)
+	{
+		Main_Interrupts->Active_State_Enter_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->Active_State_Enter_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_WAKEUP_COMMAND_SEND_MASK)
+	{
+		Main_Interrupts->WakeUp_Command_Send_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->WakeUp_Command_Send_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_RECEIVE_START_MASK)
+	{
+		Main_Interrupts->Receive_Start_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->Receive_Start_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_RECEIVE_END_MASK)
+	{
+		Main_Interrupts->Receive_End_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->Receive_End_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_TRANSMITION_END_MASK)
+	{
+		Main_Interrupts->Transmition_End_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->Transmition_End_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_FIFO_WATER_LEVEL_MASK)
+	{
+		Main_Interrupts->Fifo_Water_Level_IRQ = 1;
+	}
+	else
+	{
+		Main_Interrupts->Fifo_Water_Level_IRQ = 0;
+	}
+}
+
+
+#define _IRQ_DESELECT_RECEPTION_MASK				0x80
+#define _IRQ_FRAMING_ERROR_MASK						0x40
+#define _IRQ_PARITY_ERROR_MASK						0x20
+#define _IRQ_CRC_ERROR_MASK							0x10
+#define _IRQ_FIFO_ERROR_MASK						0x08
+#define _IRQ_SUCCESSFUL_EEPROM_TERMINATION_MASK		0x04
+#define _IRQ_EEPROM_PROGRAMMING_ERROR_MASK			0x02
+#define _IRQ_EEPROM_ACCESS_DUE_TO_PICC_ACTIVATION	0X01
+void AS3953_Read_AuxInterrupts(AS3953_AuxInterrupts_t* Aux_Interrupts)
+{
+	uint8_t regVal = AS3953_Read_Register(AS3953_AUX_INT_REG_ADDR);
+
+	if (regVal & _IRQ_DESELECT_RECEPTION_MASK)
+	{
+		Aux_Interrupts->Deselect_Command_Reception_IRQ = 1;
+	}
+	else
+	{
+		Aux_Interrupts->Deselect_Command_Reception_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_FRAMING_ERROR_MASK)
+	{
+		Aux_Interrupts->Framing_Error_IRQ = 1;
+	}
+	else
+	{
+		Aux_Interrupts->Framing_Error_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_PARITY_ERROR_MASK)
+	{
+		Aux_Interrupts->Parity_Error_IRQ = 1;
+	}
+	else
+	{
+		Aux_Interrupts->Parity_Error_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_CRC_ERROR_MASK)
+	{
+		Aux_Interrupts->CRC_Error_IRQ = 1;
+	}
+	else
+	{
+		Aux_Interrupts->CRC_Error_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_FIFO_ERROR_MASK)
+	{
+		Aux_Interrupts->FIFO_Error_IRQ = 1;
+	}
+	else
+	{
+		Aux_Interrupts->FIFO_Error_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_SUCCESSFUL_EEPROM_TERMINATION_MASK)
+	{
+		Aux_Interrupts->EEPROM_Successful_Termination = 1;
+	}
+	else
+	{
+		Aux_Interrupts->EEPROM_Successful_Termination = 0;
+	}
+
+	if (regVal & _IRQ_EEPROM_PROGRAMMING_ERROR_MASK)
+	{
+		Aux_Interrupts->EEPROM_Programming_Error_IRQ = 1;
+	}
+	else
+	{
+		Aux_Interrupts->EEPROM_Programming_Error_IRQ = 0;
+	}
+
+	if (regVal & _IRQ_EEPROM_ACCESS_DUE_TO_PICC_ACTIVATION)
+	{
+		Aux_Interrupts->EEPROM_Access_Due_To_PICC_Activation = 1;
+	}
+	else
+	{
+		Aux_Interrupts->EEPROM_Access_Due_To_PICC_Activation = 0;
+	}
+}

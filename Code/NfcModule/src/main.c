@@ -103,7 +103,7 @@ void Test_AS3953()
 		init_spi_interface();
 	}
 }
-void Print_AS3953_Registers()
+void AS3953_Print_Registers()
 {
 	uint8_t reg[0x12];
 	for (int i=0;i<0x12;i++)
@@ -127,7 +127,7 @@ void Print_AS3953_Registers()
 
 	init_spi_interface();
 }
-void AS3953_PrintStatus(AS3953_PICC_AFE_PowerStatus_t AS3953_PiccAfe_PowerStatus, AS3953_Status_t AS3953Status)
+void AS3953_Print_Status(AS3953_PICC_AFE_PowerStatus_t AS3953_PiccAfe_PowerStatus, AS3953_Status_t AS3953Status)
 {
 	uart_sendText("\nAFE state: \t");
 	switch(AS3953_PiccAfe_PowerStatus)
@@ -169,7 +169,7 @@ void AS3953_PrintStatus(AS3953_PICC_AFE_PowerStatus_t AS3953_PiccAfe_PowerStatus
 		break;
 	}
 }
-void AS3953_PrintFifoStatus(uint8_t RxNumber, uint8_t TxNumber, AS3953_FifoErrors_t AS3953_FifoError)
+void AS3953_Print_FifoStatus(uint8_t RxNumber, uint8_t TxNumber, AS3953_FifoErrors_t AS3953_FifoError)
 {
 	char buff[30];
 	sprintf(buff, "Rx: %d, Tx: %d\t", RxNumber, TxNumber);
@@ -194,18 +194,91 @@ void AS3953_PrintFifoStatus(uint8_t RxNumber, uint8_t TxNumber, AS3953_FifoError
 
 	uart_sendChar('\n');
 }
-void AS3953_PrintRATS(uint8_t RATS_FSDI_BitNumber, uint8_t RATS_CID_BitNumber)
+void AS3953_Print_RATS(uint8_t RATS_FSDI_BitNumber, uint8_t RATS_CID_BitNumber)
 {
 	char buff[30];
 	sprintf(buff,"RATS: \tFSDI %d\tCID %d\n",RATS_FSDI_BitNumber,RATS_CID_BitNumber);
 	uart_sendText(buff);
+}
+void AS3953_Print_MainInterrupts(AS3953_MainInterrupts_t Main_Interrupts)
+{
+	uart_sendText("IRQ Main state: \t");
+
+	if (Main_Interrupts.PowerUp_IRQ == 1)
+	{
+		uart_sendText("PowerUp_IRQ\t");
+	}
+	if (Main_Interrupts.Active_State_Enter_IRQ == 1)
+	{
+		uart_sendText("Active_State_Enter_IRQ\t");
+	}
+	if (Main_Interrupts.WakeUp_Command_Send_IRQ == 1)
+	{
+		uart_sendText("WakeUp_Command_Send_IRQ\t");
+	}
+	if (Main_Interrupts.Receive_Start_IRQ == 1)
+	{
+		uart_sendText("Receive_Start_IRQ\t");
+	}
+	if (Main_Interrupts.Receive_End_IRQ == 1)
+	{
+		uart_sendText("Receive_End_IRQ\t");
+	}
+	if (Main_Interrupts.Transmition_End_IRQ == 1)
+	{
+		uart_sendText("Transmition_End_IRQ\t");
+	}
+	if (Main_Interrupts.Fifo_Water_Level_IRQ == 1)
+	{
+		uart_sendText("Fifo_Water_Level_IRQ\t");
+	}
+
+	uart_sendChar('\n');
+}
+void AS3953_Print_AuxInterrupts(AS3953_AuxInterrupts_t Aux_Interrupts)
+{
+	uart_sendText("IRQ AUX state: \t");
+
+	if (Aux_Interrupts.Deselect_Command_Reception_IRQ == 1)
+	{
+		uart_sendText("Deselect_Command_Reception_IRQ\t");
+	}
+	if (Aux_Interrupts.Framing_Error_IRQ == 1)
+	{
+		uart_sendText("Framing_Error_IRQ\t");
+	}
+	if (Aux_Interrupts.Parity_Error_IRQ == 1)
+	{
+		uart_sendText("Parity_Error_IRQ\t");
+	}
+	if (Aux_Interrupts.CRC_Error_IRQ == 1)
+	{
+		uart_sendText("CRC_Error_IRQ\t");
+	}
+	if (Aux_Interrupts.FIFO_Error_IRQ == 1)
+	{
+		uart_sendText("FIFO_Error_IRQ\t");
+	}
+	if (Aux_Interrupts.EEPROM_Successful_Termination == 1)
+	{
+		uart_sendText("EEPROM_Successful_Termination\t");
+	}
+	if (Aux_Interrupts.EEPROM_Programming_Error_IRQ == 1)
+	{
+		uart_sendText("EEPROM_Programming_Error_IRQ\t");
+	}
+	if (Aux_Interrupts.EEPROM_Access_Due_To_PICC_Activation == 1)
+	{
+		uart_sendText("EEPROM_Access_Due_To_PICC_Activation\t");
+	}
+	uart_sendChar('\n');
 }
 
 void RTC_IRQHandler(void)
 {
 #ifdef DEBUG
 	/*Read and print registers values */
-	Print_AS3953_Registers();
+	//AS3953_Print_Registers();
 #endif
 
 	/*--------------------------------------------------*/
@@ -223,14 +296,25 @@ void RTC_IRQHandler(void)
 	uint8_t RATS_CID_BitNumber;
 	AS3953_RATS(&RATS_FSDI_BitNumber, &RATS_CID_BitNumber);
 
+	AS3953_MainInterrupts_t Main_Interrupts;
+	AS3953_Read_MainInterrupts(&Main_Interrupts);
+
+	AS3953_AuxInterrupts_t Aux_Interrupts;
+	AS3953_Read_AuxInterrupts(&Aux_Interrupts);
+
 	/*--------------------------------------------------*/
 	/* 				Print AS3953 information 			*/
 	/*--------------------------------------------------*/
 	init_uart_interface();
 
-	AS3953_PrintStatus(AS3953_PiccAfe_PowerStatus, AS3953Status);
-	AS3953_PrintFifoStatus(RxNumber, TxNumber, AS3953_FifoError);
-	AS3953_PrintRATS(RATS_FSDI_BitNumber, RATS_CID_BitNumber);
+	AS3953_Print_Status(AS3953_PiccAfe_PowerStatus, AS3953Status);
+	AS3953_Print_FifoStatus(RxNumber, TxNumber, AS3953_FifoError);
+	AS3953_Print_RATS(RATS_FSDI_BitNumber, RATS_CID_BitNumber);
+	AS3953_Print_MainInterrupts(Main_Interrupts);
+	AS3953_Print_AuxInterrupts(Aux_Interrupts);
+	uart_sendChar('\n');
+
+	for (int i=0;i<20;i++) { clockTest_short(); }
 
 	init_spi_interface();
 
