@@ -312,6 +312,7 @@ void RTC_IRQHandler(void)
 	AS3953_Print_RATS(RATS_FSDI_BitNumber, RATS_CID_BitNumber);
 	AS3953_Print_MainInterrupts(Main_Interrupts);
 	AS3953_Print_AuxInterrupts(Aux_Interrupts);
+
 	uart_sendChar('\n');
 
 	for (int i=0;i<20;i++) { clockTest_short(); }
@@ -321,6 +322,31 @@ void RTC_IRQHandler(void)
 	/* Clear RTC interrupts */
 	RTC_clearInt();
 }
+
+/* AS3953 Interrupt */
+void GPIO_EVEN_IRQHandler(void)
+{
+	 //uint8_t RxNumber = AS3953_FifoRxStatus();
+	 uint8_t fifo[32];
+	 AS3953_FIFO_Read(fifo,32);
+
+	 /*init_uart_interface();
+
+	 char buff[30];
+	 for (int i=0;i<RxNumber;i++)
+	 {
+		 sprintf(buff,"%d\t",fifo[i]);
+		 uart_sendText(buff);
+	 }
+
+	 uart_sendChar('\n');
+	 for (int i=0;i<2;i++) { clockTest_short(); }
+
+	 init_spi_interface();*/
+
+	 /* Clear flag for Push Button 0 (pin A0) interrupt */
+	 GPIO_IntClear(0x0001);
+ }
 
 int main ()
 {
@@ -337,12 +363,14 @@ int main ()
 
 	  /* AS3953 initialization */
 	  AS3953_Setting_t AS3953_Setting;
-	  AS3953_Setting.spi_cs_port=  gpioPortB;
-	  AS3953_Setting.spi_cs_pin =  8;
-	  AS3953_Setting.conf_word[0]=0x26;		//	{ 0x20, 0x7E, 0xE7, 0x80 } 14443-4		??
-	  AS3953_Setting.conf_word[1]=0x7E;
-	  AS3953_Setting.conf_word[2]=0x8f;
-	  AS3953_Setting.conf_word[3]=0x80;
+	  AS3953_Setting.spi_cs_port =  gpioPortB;
+	  AS3953_Setting.spi_cs_pin =   8;
+	  AS3953_Setting.conf_word[0] = 0x26;		//	{ 0x20, 0x7E, 0xE7, 0x80 } 14443-4		??
+	  AS3953_Setting.conf_word[1] = 0x7E;
+	  AS3953_Setting.conf_word[2] = 0x8f;
+	  AS3953_Setting.conf_word[3] = 0x80;
+	  AS3953_Setting.irq_port =     gpioPortA;
+	  AS3953_Setting.irq_pin =      0;
 	  AS3953_Init(AS3953_Setting);
 
 	  for (int i=0;i<20;i++) { clockTest_short(); }

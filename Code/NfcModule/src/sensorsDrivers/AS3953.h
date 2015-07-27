@@ -17,6 +17,8 @@ typedef struct
 	GPIO_Port_TypeDef spi_cs_port;
 	unsigned int spi_cs_pin;
 
+	GPIO_Port_TypeDef irq_port;
+	unsigned int irq_pin;
 } AS3953_Setting_t;
 
 void AS3953_Init(AS3953_Setting_t AS3953_Setting);
@@ -29,9 +31,10 @@ void AS3953_Write_Register(uint8_t reg, uint8_t data);
 uint8_t AS3953_Read_Register(uint8_t reg);
 
 void AS3953_Command(uint8_t cmd);
-void AS3953_Fifo_Init(uint16_t bits);
-void AS3953_Fifo_Write(uint8_t* data, uint8_t len);
-void AS3953_Fifo_Read(uint8_t* data, uint8_t len);
+void AS3953_FIFO_clr(void);
+void AS3953_FIFO_Init(uint16_t bits);
+void AS3953_FIFO_Write(uint8_t* data, uint8_t len);
+void AS3953_FIFO_Read(uint8_t* data, uint8_t len);
 void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len);
 uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len);
 
@@ -47,7 +50,7 @@ uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len);
 #define AS3953_FIFO_STAT_1_REG_ADDR		0x0C
 #define AS3953_FIFO_STAT_2_REG_ADDR		0x0D
 #define AS3953_NUM_TX_BYTE_1_REG_ADDR	0x10
-#define AS3953_NUM_TX_BYTE_1_REG_ADDR	0x11
+#define AS3953_NUM_TX_BYTE_2_REG_ADDR	0x11
 
 typedef enum
 {

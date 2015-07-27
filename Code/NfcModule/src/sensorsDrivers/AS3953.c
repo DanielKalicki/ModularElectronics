@@ -20,7 +20,6 @@ static void cs_clr(void)
 {
   GPIO_PinOutClear(cs_port, cs_pin);
 }
-
 // This function drives the CS pin high
 static void cs_set(void)
 {
@@ -58,38 +57,46 @@ void AS3953_Init(AS3953_Setting_t AS3953_Setting)
 			AS3953_Setting.conf_word[3]!=conf[3]
 		)
 	{
-		cs_clr(); clockTest_short();
 		AS3953_EEPROM_Write(2, AS3953_Setting.conf_word, 4);
-		cs_set(); clockTest_short();
+		clockTest_short();
 
 		AS3953_Read_Conf(conf);
 	}
+
+	/* By setting the mode to gpioModeInput its value can be read */
+	GPIO_PinModeSet(AS3953_Setting.irq_port, AS3953_Setting.irq_pin, gpioModeInput, 1);
+	if((AS3953_Setting.irq_pin & 0x01) == 0)
+	{
+		/* Enable GPIO_EVEN interrupt in NVIC */
+		NVIC_EnableIRQ(GPIO_EVEN_IRQn);
+	}
+	else
+	{
+		/* Enable GPIO_ODD interrupt in NVIC */
+		NVIC_EnableIRQ(GPIO_ODD_IRQn);
+	}
+	 /* Configure interrupt on falling edge for pins PA0 by default */
+	GPIO_IntConfig(AS3953_Setting.irq_port, AS3953_Setting.irq_pin, true, false, true);
 }
 
 void AS3953_Read_UID(uint8_t* uid)
 {
-	cs_clr(); clockTest_short();
 	AS3953_EEPROM_Read(0,uid,4);
-	cs_set();
 }
 
 void AS3953_Read_Lock(uint8_t* lock)
 {
-	cs_clr(); clockTest_short();
 	AS3953_EEPROM_Read(3,lock,4);
-	cs_set();
 }
 
 void AS3953_Read_Conf(uint8_t* conf)
 {
-	cs_clr(); clockTest_short();
 	AS3953_EEPROM_Read(2,conf,4);
-	cs_set();
 }
 
-void AS3953_Write_Register(uint8_t reg, uint8_t data){
-
-	cs_clr();
+void AS3953_Write_Register(uint8_t reg, uint8_t data)
+{
+	cs_clr(); clockTest_short();
 	//send reg address
 	USART_SpiTransfer(USART1, reg&0x1F);
 	//send data
@@ -101,13 +108,15 @@ void AS3953_Write_Register(uint8_t reg, uint8_t data){
 	dataTx[1]=data;*/
 }
 
-uint8_t AS3953_Read_Register(uint8_t reg){
-
+uint8_t AS3953_Read_Register(uint8_t reg)
+{
 	uint8_t rxData[2];
 
-	cs_clr();
+	cs_clr(); clockTest_short();
+
 	rxData[0] = USART_SpiTransfer(USART1, (reg&0x1F)+0x20);
 	rxData[1] = USART_SpiTransfer(USART1, 0x00);
+
 	cs_set();
 
 	/*uint8_t dataRx[1];
@@ -120,10 +129,18 @@ uint8_t AS3953_Read_Register(uint8_t reg){
 	return rxData[1];
 }
 
-void AS3953_Command(uint8_t cmd){
+void AS3953_Command(uint8_t cmd)
+{
+	cs_clr(); clockTest_short();
 	USART_SpiTransfer(USART1,0xC0|cmd);
+	cs_set();
 
 	/*spi_WriteBlock(1, &cmd);*/
+}
+
+void AS3953_FIFO_clr(void)
+{
+	AS3953_Command(0xC4);	//clear fifo command
 }
 
 /*void AS3953_FIFO_Init(uint16_t bits){
@@ -144,12 +161,17 @@ void AS3953_Command(uint8_t cmd){
 
 }*/
 
-void AS3953_FIFO_Write(uint8_t* data, uint8_t len){
+void AS3953_FIFO_Write(uint8_t* data, uint8_t len)
+{
+	cs_clr(); clockTest_short();
+
 	USART_SpiTransfer(USART1, 0x80);	//mask it fifo write
 
 	for (int i=0;i<len;i++){
 		USART_SpiTransfer(USART1, data[i]);
 	}
+
+	cs_set();
 
 	/*uint8_t initData[1];
 	initData[0]=0x80;
@@ -157,11 +179,16 @@ void AS3953_FIFO_Write(uint8_t* data, uint8_t len){
 	spi_WriteBlock(len,data);*/
 }
 
-void AS3953_FIFO_Read(uint8_t* data, uint8_t len){
+void AS3953_FIFO_Read(uint8_t* data, uint8_t len)
+{
+	cs_clr(); clockTest_short();
+
 	USART_SpiTransfer(USART1, 0xBF);
 	for (int i=0;i<len;i++){
 		data[i]=USART_SpiTransfer(USART1,0x00);
 	}
+
+	cs_set();
 
 	/*uint8_t initData[1];
 	initData[0]=0xBF;
@@ -169,9 +196,10 @@ void AS3953_FIFO_Read(uint8_t* data, uint8_t len){
 	spi_ReadBlock(len, data);*/
 }
 
-void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len){
-
+void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len)
+{
 	//TODO protect agains writting to lock bits.
+	cs_clr(); clockTest_short();
 
 	USART_SpiTransfer(USART1, 0x40);//mask it eeprom write
 	USART_SpiTransfer(USART1, ((word & 0x1F) << 1));
@@ -180,6 +208,8 @@ void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len){
 		USART_SpiTransfer(USART1, data[i]);
 	}
 
+	cs_set();
+
 	/*uint8_t initData[2];
 	initData[0]=0x40;
 	initData[1]=((word & 0x1F) << 1);
@@ -187,7 +217,10 @@ void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len){
 	spi_WriteBlock(len,data);*/
 }
 
-uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len){
+uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len)
+{
+	cs_clr(); clockTest_short();
+
 	if(addr>0x1F) 			return 1;
 	//if (!len || len % 4) 	return 1;
 
@@ -197,6 +230,8 @@ uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len){
 	for (int i=0;i<len;i++){
 		data[i] = USART_SpiTransfer(USART1, 0x00);
 	}
+
+	cs_set();
 
 
 	/*uint8_t initData[2];
