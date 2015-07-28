@@ -274,6 +274,9 @@ void AS3953_Print_AuxInterrupts(AS3953_AuxInterrupts_t Aux_Interrupts)
 	uart_sendChar('\n');
 }
 
+uint8_t fifo[100];
+uint8_t i_fifo=0;
+
 void RTC_IRQHandler(void)
 {
 #ifdef DEBUG
@@ -313,6 +316,14 @@ void RTC_IRQHandler(void)
 	AS3953_Print_MainInterrupts(Main_Interrupts);
 	AS3953_Print_AuxInterrupts(Aux_Interrupts);
 
+	char buff[30];
+	for (int i=0; i<i_fifo; i++)
+	{
+		sprintf(buff,"%d\t",fifo[i]);
+		uart_sendText(buff);
+	}
+	i_fifo=0;
+
 	uart_sendChar('\n');
 
 	for (int i=0;i<20;i++) { clockTest_short(); }
@@ -326,9 +337,12 @@ void RTC_IRQHandler(void)
 /* AS3953 Interrupt */
 void GPIO_EVEN_IRQHandler(void)
 {
-	 //uint8_t RxNumber = AS3953_FifoRxStatus();
-	 uint8_t fifo[32];
-	 AS3953_FIFO_Read(fifo,32);
+	 uint8_t RxNumber = 32;
+	 while ((RxNumber = AS3953_FifoRxStatus()) > 0)
+	 {
+		 AS3953_FIFO_Read(&fifo[i_fifo], RxNumber);
+	 	 i_fifo += RxNumber;
+	 }
 
 	 /*init_uart_interface();
 
