@@ -23,20 +23,20 @@ typedef struct
 
 void AS3953_Init(AS3953_Setting_t AS3953_Setting);
 
-void AS3953_Read_UID(uint8_t* uid);
-void AS3953_Read_Lock(uint8_t* lock);
-void AS3953_Read_Conf(uint8_t* conf);
+void AS3953_Read_UID(uint8_t *uid);
+void AS3953_Read_Lock(uint8_t *lock);
+void AS3953_Read_Conf(uint8_t *conf);
 
 void AS3953_Write_Register(uint8_t reg, uint8_t data);
 uint8_t AS3953_Read_Register(uint8_t reg);
 
 void AS3953_Command(uint8_t cmd);
 void AS3953_FIFO_clr(void);
-void AS3953_FIFO_Init(uint16_t bits);
-void AS3953_FIFO_Write(uint8_t* data, uint8_t len);
-void AS3953_FIFO_Read(uint8_t* data, uint8_t len);
-void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len);
-uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len);
+void AS3953_FIFO_Init(uint16_t byteNumb);
+void AS3953_FIFO_Write(uint8_t *data, uint8_t len);
+void AS3953_FIFO_Read(uint8_t *data, uint8_t len);
+void AS3953_EEPROM_Write(uint8_t word, uint8_t *data, uint8_t len);
+uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t *data, uint8_t len);
 
 #define AS3953_IO_CONF_REG_ADDR			0x00
 #define AS3953_MODE_REG_ADDR			0x01
@@ -68,7 +68,7 @@ typedef enum
 	READYX = 6,
 	ACTIVEX = 7
 } AS3953_Status_t;
-void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t* status);
+void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t *status);
 
 uint8_t AS3953_FifoRxStatus();
 
@@ -81,7 +81,7 @@ typedef struct
 } AS3953_FifoErrors_t;
 uint8_t AS3953_FifoTxStatus(AS3953_FifoErrors_t *errors);
 
-void AS3953_RATS(uint8_t* RATS_FSDI_BitNumber, uint8_t* RATS_CID_BitNumber);
+void AS3953_RATS(uint8_t* RATS_FSDI_BitNumber, uint8_t *RATS_CID_BitNumber);
 
 typedef struct
 {
@@ -93,7 +93,7 @@ typedef struct
 	uint8_t Transmition_End_IRQ;
 	uint8_t Fifo_Water_Level_IRQ;
 } AS3953_MainInterrupts_t;
-void AS3953_Read_MainInterrupts(AS3953_MainInterrupts_t* Main_Interrupts);
+void AS3953_Read_MainInterrupts(AS3953_MainInterrupts_t *Main_Interrupts);
 
 typedef struct
 {
@@ -106,6 +106,8 @@ typedef struct
 	uint8_t EEPROM_Programming_Error_IRQ;
 	uint8_t EEPROM_Access_Due_To_PICC_Activation;
 } AS3953_AuxInterrupts_t;
-void AS3953_Read_AuxInterrupts(AS3953_AuxInterrupts_t* Aux_Interrupts);
+void AS3953_Read_AuxInterrupts(AS3953_AuxInterrupts_t *Aux_Interrupts);
+
+void AS3953_sendData(uint8_t *data, uint8_t len);
 
 #endif /* AS3953_H_ */

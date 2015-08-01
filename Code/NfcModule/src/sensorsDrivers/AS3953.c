@@ -79,19 +79,17 @@ void AS3953_Init(AS3953_Setting_t AS3953_Setting)
 	GPIO_IntConfig(AS3953_Setting.irq_port, AS3953_Setting.irq_pin, true, false, true);
 }
 
-void AS3953_Read_UID(uint8_t* uid)
+void AS3953_Read_UID(uint8_t *uid)
 {
-	AS3953_EEPROM_Read(0,uid,4);
+	AS3953_EEPROM_Read(0, uid, 4);
 }
-
-void AS3953_Read_Lock(uint8_t* lock)
+void AS3953_Read_Lock(uint8_t *lock)
 {
-	AS3953_EEPROM_Read(3,lock,4);
+	AS3953_EEPROM_Read(3, lock, 4);
 }
-
-void AS3953_Read_Conf(uint8_t* conf)
+void AS3953_Read_Conf(uint8_t *conf)
 {
-	AS3953_EEPROM_Read(2,conf,4);
+	AS3953_EEPROM_Read(2, conf, 4);
 }
 
 void AS3953_Write_Register(uint8_t reg, uint8_t data)
@@ -107,7 +105,6 @@ void AS3953_Write_Register(uint8_t reg, uint8_t data)
 	dataTx[0]=reg&0x1F;
 	dataTx[1]=data;*/
 }
-
 uint8_t AS3953_Read_Register(uint8_t reg)
 {
 	uint8_t rxData[2];
@@ -142,32 +139,21 @@ void AS3953_FIFO_clr(void)
 {
 	AS3953_Command(0xC4);	//clear fifo command
 }
+void AS3953_FIFO_Init(uint16_t byteNumb)
+{
+	AS3953_FIFO_clr();
 
-/*void AS3953_FIFO_Init(uint16_t bits){
-	bits=bits&0x1FFF;
-	if(bits & 0x07) bits+=8;
-
-	spi_cs_clr(); clockTest_short();
-		as3953_command(0xC4);	//clear fifo command
-	spi_cs_set(); clockTest_short();
-
-	spi_cs_clr(); clockTest_short();
-		send_NfcController(0x10,(bits>>8)&0xFF);
-	spi_cs_set();
-
-	spi_cs_clr(); clockTest_short();
-		send_NfcController(0x11,bits&0xFF);	//mask it TODO
-	spi_cs_set();
-
-}*/
-
-void AS3953_FIFO_Write(uint8_t* data, uint8_t len)
+	AS3953_Write_Register(AS3953_NUM_TX_BYTE_1_REG_ADDR, (byteNumb & 0xF8) >> 3);
+	AS3953_Write_Register(AS3953_NUM_TX_BYTE_2_REG_ADDR, (byteNumb & 0x07) << 5);
+}
+void AS3953_FIFO_Write(uint8_t *data, uint8_t len)
 {
 	cs_clr(); clockTest_short();
 
 	USART_SpiTransfer(USART1, 0x80);	//mask it fifo write
 
-	for (int i=0;i<len;i++){
+	for (int i = 0; i < len; i++)
+	{
 		USART_SpiTransfer(USART1, data[i]);
 	}
 
@@ -178,8 +164,7 @@ void AS3953_FIFO_Write(uint8_t* data, uint8_t len)
 	spi_WriteBlock(1,initData);
 	spi_WriteBlock(len,data);*/
 }
-
-void AS3953_FIFO_Read(uint8_t* data, uint8_t len)
+void AS3953_FIFO_Read(uint8_t *data, uint8_t len)
 {
 	cs_clr(); clockTest_short();
 
@@ -196,7 +181,7 @@ void AS3953_FIFO_Read(uint8_t* data, uint8_t len)
 	spi_ReadBlock(len, data);*/
 }
 
-void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len)
+void AS3953_EEPROM_Write(uint8_t word, uint8_t *data, uint8_t len)
 {
 	//TODO protect agains writting to lock bits.
 	cs_clr(); clockTest_short();
@@ -204,7 +189,8 @@ void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len)
 	USART_SpiTransfer(USART1, 0x40);//mask it eeprom write
 	USART_SpiTransfer(USART1, ((word & 0x1F) << 1));
 
-	for (int i=0;i<len;i++){
+	for (int i = 0; i < len; i++)
+	{
 		USART_SpiTransfer(USART1, data[i]);
 	}
 
@@ -216,18 +202,17 @@ void AS3953_EEPROM_Write(uint8_t word, uint8_t* data, uint8_t len)
 	spi_WriteBlock(2,initData);
 	spi_WriteBlock(len,data);*/
 }
-
-uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len)
+uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t *data, uint8_t len)
 {
 	cs_clr(); clockTest_short();
 
-	if(addr>0x1F) 			return 1;
+	if(addr > 0x1F) 			return 1;
 	//if (!len || len % 4) 	return 1;
 
 	USART_SpiTransfer(USART1, 0x7F);	//mask it
-	USART_SpiTransfer(USART1, addr<<1);
+	USART_SpiTransfer(USART1, addr << 1);
 
-	for (int i=0;i<len;i++){
+	for (int i = 0; i < len; i++){
 		data[i] = USART_SpiTransfer(USART1, 0x00);
 	}
 
@@ -247,7 +232,7 @@ uint8_t AS3953_EEPROM_Read(uint8_t addr, uint8_t* data, uint8_t len)
 #define _IO_CONF_PICC_AFE_STAT_SHIFT	7
 #define _IO_CONF_PICC_POWER_STAT_MASK	0x07
 #define _IO_CONF_PICC_POWER_STAT_SHIFT	4
-void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t* status)
+void AS3953_Status(AS3953_PICC_AFE_PowerStatus_t *power, AS3953_Status_t *status)
 {
 	uint8_t regVal = AS3953_Read_Register(AS3953_IO_CONF_REG_ADDR);
 
@@ -535,4 +520,12 @@ void AS3953_Read_AuxInterrupts(AS3953_AuxInterrupts_t* Aux_Interrupts)
 	{
 		Aux_Interrupts->EEPROM_Access_Due_To_PICC_Activation = 0;
 	}
+}
+
+
+void AS3953_sendData(uint8_t *data, uint8_t len)
+{
+	AS3953_FIFO_Init(len);
+	AS3953_FIFO_Write(data, len);
+	AS3953_Command(0xC8);
 }

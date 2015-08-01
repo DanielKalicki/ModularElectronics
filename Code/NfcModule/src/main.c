@@ -15,13 +15,6 @@
 
 #include <stdio.h>
 
-#define SPI_PORTC     gpioPortC // USART1 (location #0) MISO and MOSI are on PORTD
-#define SPI_PORTB     gpioPortB // USART1 (location #0) SS and SCLK are on PORTC
-#define SPI_MISO_PIN  1  // PC1
-#define SPI_MOSI_PIN  0  // PC0
-#define SPI_CS_PIN    8  // PB8
-#define SPI_SCLK_PIN  7  // PB7
-
 void clockTest() {
 	long int i=0;
 	for(;i<120001L;++i) {
@@ -66,13 +59,13 @@ void init_uart_interface(void){
 void init_spi_interface(void){
 	/* SPI interface initialization */
 	struct SPI_Settings spiSettings;
-	spiSettings.spi_miso_port=gpioPortC;
-	spiSettings.spi_miso_pin= 1;
-	spiSettings.spi_mosi_port=gpioPortC;
-	spiSettings.spi_mosi_pin= 0;
-	spiSettings.spi_sclk_port=gpioPortB;
-	spiSettings.spi_sclk_pin= 7;
-	spiSettings.spi_location=0;
+	spiSettings.spi_miso_port = gpioPortC;
+	spiSettings.spi_miso_pin  = 1;
+	spiSettings.spi_mosi_port = gpioPortC;
+	spiSettings.spi_mosi_pin  = 0;
+	spiSettings.spi_sclk_port = gpioPortB;
+	spiSettings.spi_sclk_pin  = 7;
+	spiSettings.spi_location  = 0;
 
 	spi_init(spiSettings);
 }
@@ -275,7 +268,7 @@ void AS3953_Print_AuxInterrupts(AS3953_AuxInterrupts_t Aux_Interrupts)
 }
 
 uint8_t fifo[100];
-uint8_t i_fifo=0;
+uint8_t i_fifo = 0;
 
 void RTC_IRQHandler(void)
 {
@@ -305,6 +298,9 @@ void RTC_IRQHandler(void)
 	AS3953_AuxInterrupts_t Aux_Interrupts;
 	AS3953_Read_AuxInterrupts(&Aux_Interrupts);
 
+	uint8_t data[32]={'T','e','s','t',0};
+	AS3953_sendData(data,32);
+
 	/*--------------------------------------------------*/
 	/* 				Print AS3953 information 			*/
 	/*--------------------------------------------------*/
@@ -317,16 +313,16 @@ void RTC_IRQHandler(void)
 	AS3953_Print_AuxInterrupts(Aux_Interrupts);
 
 	char buff[30];
-	for (int i=0; i<i_fifo; i++)
+	for (int i = 0; i < i_fifo; i++)
 	{
-		sprintf(buff,"%d\t",fifo[i]);
+		sprintf(buff, "%d\t", fifo[i]);
 		uart_sendText(buff);
 	}
-	i_fifo=0;
+	i_fifo = 0;
 
 	uart_sendChar('\n');
 
-	for (int i=0;i<20;i++) { clockTest_short(); }
+	for (int i = 0; i < 20; i++) { clockTest_short(); }
 
 	init_spi_interface();
 
@@ -343,20 +339,6 @@ void GPIO_EVEN_IRQHandler(void)
 		 AS3953_FIFO_Read(&fifo[i_fifo], RxNumber);
 	 	 i_fifo += RxNumber;
 	 }
-
-	 /*init_uart_interface();
-
-	 char buff[30];
-	 for (int i=0;i<RxNumber;i++)
-	 {
-		 sprintf(buff,"%d\t",fifo[i]);
-		 uart_sendText(buff);
-	 }
-
-	 uart_sendChar('\n');
-	 for (int i=0;i<2;i++) { clockTest_short(); }
-
-	 init_spi_interface();*/
 
 	 /* Clear flag for Push Button 0 (pin A0) interrupt */
 	 GPIO_IntClear(0x0001);
@@ -377,14 +359,14 @@ int main ()
 
 	  /* AS3953 initialization */
 	  AS3953_Setting_t AS3953_Setting;
-	  AS3953_Setting.spi_cs_port =  gpioPortB;
-	  AS3953_Setting.spi_cs_pin =   8;
+	  AS3953_Setting.spi_cs_port  = gpioPortB;
+	  AS3953_Setting.spi_cs_pin   = 8;
 	  AS3953_Setting.conf_word[0] = 0x26;		//	{ 0x20, 0x7E, 0xE7, 0x80 } 14443-4		??
 	  AS3953_Setting.conf_word[1] = 0x7E;
 	  AS3953_Setting.conf_word[2] = 0x8f;
 	  AS3953_Setting.conf_word[3] = 0x80;
-	  AS3953_Setting.irq_port =     gpioPortA;
-	  AS3953_Setting.irq_pin =      0;
+	  AS3953_Setting.irq_port     = gpioPortA;
+	  AS3953_Setting.irq_pin      = 0;
 	  AS3953_Init(AS3953_Setting);
 
 	  for (int i=0;i<20;i++) { clockTest_short(); }
@@ -396,7 +378,8 @@ int main ()
 	  RTC_setTime(500);
 	  RTC_enableInt();
 
-	  while(1){
+	  while(1)
+	  {
 		  EMU_EnterEM2(false);
 	  }
 }
