@@ -34,7 +34,7 @@ void spi_init(struct SPI_Settings spiSettings)
 	//TODO location
 	USART_IntClear(USART1, 0x1FF9);                // clear interrupt flags (optional)
 	USART_InitSync(USART1, &usart_settings);              // apply configuration to USART1
-	USART1->ROUTE = (0 << 8) | ( 1 << 3)| (3 << 0); // use location #3, enable TX/RX/CLK pins
+	USART1->ROUTE = (spiSettings.spi_location << 8) | ( 1 << 3)| (3 << 0); // use location #3, enable TX/RX/CLK pins
 	USART_Enable(USART1, usartEnable);
 }
 
