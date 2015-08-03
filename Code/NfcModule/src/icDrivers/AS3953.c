@@ -38,7 +38,7 @@ static void clockTest_short()
 	}
 }
 
-void AS3953_Init(AS3953_Setting_t AS3953_Setting)
+void AS3953_Init(AS3953_Settings_t AS3953_Setting)
 {
 	uint8_t conf[4];
 
@@ -65,7 +65,7 @@ void AS3953_Init(AS3953_Setting_t AS3953_Setting)
 
 	/* By setting the mode to gpioModeInput its value can be read */
 	GPIO_PinModeSet(AS3953_Setting.irq_port, AS3953_Setting.irq_pin, gpioModeInput, 1);
-	if((AS3953_Setting.irq_pin & 0x01) == 0)
+	if ((AS3953_Setting.irq_pin & 0x01) == 0)
 	{
 		/* Enable GPIO_EVEN interrupt in NVIC */
 		NVIC_EnableIRQ(GPIO_EVEN_IRQn);

@@ -19,9 +19,9 @@ typedef struct
 
 	GPIO_Port_TypeDef irq_port;
 	unsigned int irq_pin;
-} AS3953_Setting_t;
+} AS3953_Settings_t;
 
-void AS3953_Init(AS3953_Setting_t AS3953_Setting);
+void AS3953_Init(AS3953_Settings_t AS3953_Settings);
 
 void AS3953_Read_UID(uint8_t *uid);
 void AS3953_Read_Lock(uint8_t *lock);

@@ -11,7 +11,7 @@
 #include "ucPeripheralDrivers\spi_connection.h"
 #include "ucPeripheralDrivers\RTC_.h"
 
-#include "sensorsDrivers\AS3953.h"
+#include "icDrivers\AS3953.h"
 
 #include <stdio.h>
 
@@ -47,10 +47,10 @@ void initOscillators(void)
 void init_uart_interface(void){
 	/* UART interface initialization */
 	struct UART_Settings uartSettings;
-	uartSettings.uart_com_port=gpioPortD;
-	uartSettings.uart_tx_pin=7;
-	uartSettings.uart_rx_pin=6;
-	uartSettings.uart_port_location=2;
+	uartSettings.uart_com_port=gpioPortC;
+	uartSettings.uart_tx_pin=0;
+	uartSettings.uart_rx_pin=1;
+	uartSettings.uart_port_location=0;
 	uartSettings.uart_speed=115200;
 
 	uart_init(uartSettings);
@@ -59,13 +59,13 @@ void init_uart_interface(void){
 void init_spi_interface(void){
 	/* SPI interface initialization */
 	struct SPI_Settings spiSettings;
-	spiSettings.spi_miso_port = gpioPortC;
-	spiSettings.spi_miso_pin  = 1;
-	spiSettings.spi_mosi_port = gpioPortC;
-	spiSettings.spi_mosi_pin  = 0;
-	spiSettings.spi_sclk_port = gpioPortB;
-	spiSettings.spi_sclk_pin  = 7;
-	spiSettings.spi_location  = 0;
+	spiSettings.spi_miso_port = gpioPortD;
+	spiSettings.spi_miso_pin  = 6;
+	spiSettings.spi_mosi_port = gpioPortD;
+	spiSettings.spi_mosi_pin  = 7;
+	spiSettings.spi_sclk_port = gpioPortC;
+	spiSettings.spi_sclk_pin  = 15;
+	spiSettings.spi_location  = 3;
 
 	spi_init(spiSettings);
 }
@@ -341,7 +341,8 @@ void GPIO_EVEN_IRQHandler(void)
 	 }
 
 	 /* Clear flag for Push Button 0 (pin A0) interrupt */
-	 GPIO_IntClear(0x0001);
+	 //GPIO_IntClear(0x0001); //TODO make this as a function
+	 GPIO_IntClear(0xFFFF); //TODO make this as a function
  }
 
 int main ()
@@ -358,15 +359,15 @@ int main ()
 	  for (int i=0;i<20;i++) { clockTest_short(); }	//long wait
 
 	  /* AS3953 initialization */
-	  AS3953_Setting_t AS3953_Setting;
-	  AS3953_Setting.spi_cs_port  = gpioPortB;
-	  AS3953_Setting.spi_cs_pin   = 8;
+	  AS3953_Settings_t AS3953_Setting;
+	  AS3953_Setting.spi_cs_port  = gpioPortC;
+	  AS3953_Setting.spi_cs_pin   = 14;
 	  AS3953_Setting.conf_word[0] = 0x26;		//	{ 0x20, 0x7E, 0xE7, 0x80 } 14443-4		??
 	  AS3953_Setting.conf_word[1] = 0x7E;
 	  AS3953_Setting.conf_word[2] = 0x8f;
 	  AS3953_Setting.conf_word[3] = 0x80;
-	  AS3953_Setting.irq_port     = gpioPortA;
-	  AS3953_Setting.irq_pin      = 0;
+	  AS3953_Setting.irq_port     = gpioPortB;
+	  AS3953_Setting.irq_pin      = 14;
 	  AS3953_Init(AS3953_Setting);
 
 	  for (int i=0;i<20;i++) { clockTest_short(); }
