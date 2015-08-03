@@ -52,7 +52,7 @@ src/main.o: ../src/main.c \
  ../src/ucPeripheralDrivers\spi_connection.h \
  ../src/ucPeripheralDrivers\RTC_.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
- ../src/sensorsDrivers\AS3953.h
+ ../src/icDrivers\AS3953.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -160,4 +160,4 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h:
 
-../src/sensorsDrivers\AS3953.h:
+../src/icDrivers\AS3953.h:

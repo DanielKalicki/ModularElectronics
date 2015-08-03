@@ -125,25 +125,6 @@ Discarded input sections
  .text.clearRxBuffer
                 0x00000000       0x14 ./src/ucPeripheralDrivers/uart_connection.o
  COMMON         0x00000000       0x6c ./src/ucPeripheralDrivers/uart_connection.o
- .text          0x00000000        0x0 ./src/sensorsDrivers/AS3953.o
- .data          0x00000000        0x0 ./src/sensorsDrivers/AS3953.o
- .bss           0x00000000        0x0 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_Write_Register
-                0x00000000       0x80 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_Read_Register
-                0x00000000       0x80 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_Command
-                0x00000000       0x74 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_FIFO_clr
-                0x00000000       0x70 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_FIFO_Write
-                0x00000000       0x94 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_EEPROM_Write
-                0x00000000       0xa4 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_EEPROM_Read
-                0x00000000       0xb4 ./src/sensorsDrivers/AS3953.o
- .text.AS3953_TxBytesNumber
-                0x00000000       0xcc ./src/sensorsDrivers/AS3953.o
  .text          0x00000000        0x0 ./src/main.o
  .data          0x00000000        0x0 ./src/main.o
  .bss           0x00000000        0x0 ./src/main.o
@@ -152,7 +133,7 @@ Discarded input sections
  .text.clockTest_short
                 0x00000000       0x30 ./src/main.o
  .text.AS3953_Print_Registers
-                0x00000000       0xe8 ./src/main.o
+                0x00000000       0xe4 ./src/main.o
  .text.AS3953_Print_FifoStatus
                 0x00000000       0x7c ./src/main.o
  .text.AS3953_Print_RATS
@@ -161,6 +142,25 @@ Discarded input sections
                 0x00000000       0xc8 ./src/main.o
  .text.AS3953_Print_AuxInterrupts
                 0x00000000       0xe0 ./src/main.o
+ .text          0x00000000        0x0 ./src/icDrivers/AS3953.o
+ .data          0x00000000        0x0 ./src/icDrivers/AS3953.o
+ .bss           0x00000000        0x0 ./src/icDrivers/AS3953.o
+ .text.AS3953_Write_Register
+                0x00000000       0x80 ./src/icDrivers/AS3953.o
+ .text.AS3953_Read_Register
+                0x00000000       0x80 ./src/icDrivers/AS3953.o
+ .text.AS3953_Command
+                0x00000000       0x74 ./src/icDrivers/AS3953.o
+ .text.AS3953_FIFO_clr
+                0x00000000       0x70 ./src/icDrivers/AS3953.o
+ .text.AS3953_FIFO_Write
+                0x00000000       0x94 ./src/icDrivers/AS3953.o
+ .text.AS3953_EEPROM_Write
+                0x00000000       0xa4 ./src/icDrivers/AS3953.o
+ .text.AS3953_EEPROM_Read
+                0x00000000       0xb4 ./src/icDrivers/AS3953.o
+ .text.AS3953_TxBytesNumber
+                0x00000000       0xcc ./src/icDrivers/AS3953.o
  .text          0x00000000        0x0 ./emlib/em_cmu.o
  .data          0x00000000        0x0 ./emlib/em_cmu.o
  .bss           0x00000000        0x0 ./emlib/em_cmu.o
@@ -545,8 +545,8 @@ LOAD ./src/ucPeripheralDrivers/i2c_connection.o
 LOAD ./src/ucPeripheralDrivers/spi.o
 LOAD ./src/ucPeripheralDrivers/spi_connection.o
 LOAD ./src/ucPeripheralDrivers/uart_connection.o
-LOAD ./src/sensorsDrivers/AS3953.o
 LOAD ./src/main.o
+LOAD ./src/icDrivers/AS3953.o
 LOAD ./emlib/em_cmu.o
 LOAD ./emlib/em_emu.o
 LOAD ./emlib/em_gpio.o
@@ -605,80 +605,80 @@ LOAD d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/
                 0x00000ac0       0x48 ./src/ucPeripheralDrivers/spi.o
                 0x00000ac0                USART1_TX_IRQHandler
  .text.spi_init
-                0x00000b08       0x94 ./src/ucPeripheralDrivers/spi_connection.o
+                0x00000b08       0x9c ./src/ucPeripheralDrivers/spi_connection.o
                 0x00000b08                spi_init
  .text.uart_init
-                0x00000b9c       0xa0 ./src/ucPeripheralDrivers/uart_connection.o
-                0x00000b9c                uart_init
+                0x00000ba4       0xa0 ./src/ucPeripheralDrivers/uart_connection.o
+                0x00000ba4                uart_init
  .text.uart_sendChar
-                0x00000c3c       0x18 ./src/ucPeripheralDrivers/uart_connection.o
-                0x00000c3c                uart_sendChar
+                0x00000c44       0x18 ./src/ucPeripheralDrivers/uart_connection.o
+                0x00000c44                uart_sendChar
  .text.uart_sendText
-                0x00000c54       0x30 ./src/ucPeripheralDrivers/uart_connection.o
-                0x00000c54                uart_sendText
- .text.AS3953_Init
-                0x00000c84      0x2c8 ./src/sensorsDrivers/AS3953.o
-                0x00000c84                AS3953_Init
- .text.AS3953_Read_UID
-                0x00000f4c       0xa4 ./src/sensorsDrivers/AS3953.o
-                0x00000f4c                AS3953_Read_UID
- .text.AS3953_Read_Lock
-                0x00000ff0       0xa4 ./src/sensorsDrivers/AS3953.o
-                0x00000ff0                AS3953_Read_Lock
- .text.AS3953_Read_Conf
-                0x00001094       0xa4 ./src/sensorsDrivers/AS3953.o
-                0x00001094                AS3953_Read_Conf
- .text.AS3953_FIFO_Init
-                0x00001138      0x114 ./src/sensorsDrivers/AS3953.o
-                0x00001138                AS3953_FIFO_Init
- .text.AS3953_FIFO_Read
-                0x0000124c       0x98 ./src/sensorsDrivers/AS3953.o
-                0x0000124c                AS3953_FIFO_Read
- .text.AS3953_Status
-                0x000012e4       0xd0 ./src/sensorsDrivers/AS3953.o
-                0x000012e4                AS3953_Status
- .text.AS3953_FifoRxStatus
-                0x000013b4       0x7c ./src/sensorsDrivers/AS3953.o
-                0x000013b4                AS3953_FifoRxStatus
- .text.AS3953_FifoTxStatus
-                0x00001430       0x98 ./src/sensorsDrivers/AS3953.o
-                0x00001430                AS3953_FifoTxStatus
- .text.AS3953_RATS
-                0x000014c8       0x88 ./src/sensorsDrivers/AS3953.o
-                0x000014c8                AS3953_RATS
- .text.AS3953_Read_MainInterrupts
-                0x00001550       0xa8 ./src/sensorsDrivers/AS3953.o
-                0x00001550                AS3953_Read_MainInterrupts
- .text.AS3953_Read_AuxInterrupts
-                0x000015f8       0xac ./src/sensorsDrivers/AS3953.o
-                0x000015f8                AS3953_Read_AuxInterrupts
- .text.AS3953_sendData
-                0x000016a4       0xdc ./src/sensorsDrivers/AS3953.o
-                0x000016a4                AS3953_sendData
+                0x00000c5c       0x30 ./src/ucPeripheralDrivers/uart_connection.o
+                0x00000c5c                uart_sendText
  .text.initOscillators
-                0x00001780       0x34 ./src/main.o
-                0x00001780                initOscillators
+                0x00000c8c       0x34 ./src/main.o
+                0x00000c8c                initOscillators
  .text.init_uart_interface
-                0x000017b4       0x24 ./src/main.o
-                0x000017b4                init_uart_interface
+                0x00000cc0       0x24 ./src/main.o
+                0x00000cc0                init_uart_interface
  .text.init_spi_interface
-                0x000017d8       0x30 ./src/main.o
-                0x000017d8                init_spi_interface
+                0x00000ce4       0x30 ./src/main.o
+                0x00000ce4                init_spi_interface
  .text.Test_AS3953
-                0x00001808      0x130 ./src/main.o
-                0x00001808                Test_AS3953
+                0x00000d14      0x124 ./src/main.o
+                0x00000d14                Test_AS3953
  .text.AS3953_Print_Status
-                0x00001938       0xa8 ./src/main.o
-                0x00001938                AS3953_Print_Status
+                0x00000e38       0xa8 ./src/main.o
+                0x00000e38                AS3953_Print_Status
  .text.RTC_IRQHandler
-                0x000019e0      0x360 ./src/main.o
-                0x000019e0                RTC_IRQHandler
+                0x00000ee0      0x360 ./src/main.o
+                0x00000ee0                RTC_IRQHandler
  .text.GPIO_EVEN_IRQHandler
-                0x00001d40       0x38 ./src/main.o
-                0x00001d40                GPIO_EVEN_IRQHandler
+                0x00001240       0x3c ./src/main.o
+                0x00001240                GPIO_EVEN_IRQHandler
  .text.startup.main
-                0x00001d78       0xa8 ./src/main.o
-                0x00001d78                main
+                0x0000127c       0xa8 ./src/main.o
+                0x0000127c                main
+ .text.AS3953_Init
+                0x00001324      0x2c8 ./src/icDrivers/AS3953.o
+                0x00001324                AS3953_Init
+ .text.AS3953_Read_UID
+                0x000015ec       0xa4 ./src/icDrivers/AS3953.o
+                0x000015ec                AS3953_Read_UID
+ .text.AS3953_Read_Lock
+                0x00001690       0xa4 ./src/icDrivers/AS3953.o
+                0x00001690                AS3953_Read_Lock
+ .text.AS3953_Read_Conf
+                0x00001734       0xa4 ./src/icDrivers/AS3953.o
+                0x00001734                AS3953_Read_Conf
+ .text.AS3953_FIFO_Init
+                0x000017d8      0x114 ./src/icDrivers/AS3953.o
+                0x000017d8                AS3953_FIFO_Init
+ .text.AS3953_FIFO_Read
+                0x000018ec       0x98 ./src/icDrivers/AS3953.o
+                0x000018ec                AS3953_FIFO_Read
+ .text.AS3953_Status
+                0x00001984       0xd0 ./src/icDrivers/AS3953.o
+                0x00001984                AS3953_Status
+ .text.AS3953_FifoRxStatus
+                0x00001a54       0x7c ./src/icDrivers/AS3953.o
+                0x00001a54                AS3953_FifoRxStatus
+ .text.AS3953_FifoTxStatus
+                0x00001ad0       0x98 ./src/icDrivers/AS3953.o
+                0x00001ad0                AS3953_FifoTxStatus
+ .text.AS3953_RATS
+                0x00001b68       0x88 ./src/icDrivers/AS3953.o
+                0x00001b68                AS3953_RATS
+ .text.AS3953_Read_MainInterrupts
+                0x00001bf0       0xa8 ./src/icDrivers/AS3953.o
+                0x00001bf0                AS3953_Read_MainInterrupts
+ .text.AS3953_Read_AuxInterrupts
+                0x00001c98       0xac ./src/icDrivers/AS3953.o
+                0x00001c98                AS3953_Read_AuxInterrupts
+ .text.AS3953_sendData
+                0x00001d44       0xdc ./src/icDrivers/AS3953.o
+                0x00001d44                AS3953_sendData
  .text.CMU_ClockEnable
                 0x00001e20       0x74 ./emlib/em_cmu.o
                 0x00001e20                CMU_ClockEnable
@@ -842,13 +842,13 @@ LOAD d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/
  *(.dtors)
  *(.rodata*)
  .rodata        0x00003474        0x4 ./src/ucPeripheralDrivers/RTC_.o
- .rodata.AS3953_Status
-                0x00003478       0x20 ./src/sensorsDrivers/AS3953.o
  .rodata.AS3953_Print_Status
-                0x00003498       0x20 ./src/main.o
+                0x00003478       0x20 ./src/main.o
  .rodata.str1.4
-                0x000034b8      0x2d8 ./src/main.o
+                0x00003498      0x2d8 ./src/main.o
                                 0x2dc (size before relaxing)
+ .rodata.AS3953_Status
+                0x00003770       0x20 ./src/icDrivers/AS3953.o
  .rodata.CMU_ClockEnable
                 0x00003790       0x1c ./emlib/em_cmu.o
  .rodata.CMU_ClockSelectSet
@@ -940,56 +940,58 @@ LOAD d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/
 .igot.plt       0x20000078        0x0 load address 0x000038f4
  .igot.plt      0x00000000        0x0 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/armv6-m/crtbegin.o
 
-.bss            0x20000078      0x130 load address 0x000038f4
+.bss            0x20000078      0x134 load address 0x000038f4
                 0x20000078                __bss_start__ = .
  *(.bss*)
  .bss           0x20000078       0x1c d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/armv6-m/crtbegin.o
- .bss.cs_pin    0x20000094        0x4 ./src/sensorsDrivers/AS3953.o
- .bss.cs_port   0x20000098        0x1 ./src/sensorsDrivers/AS3953.o
- .bss.i_fifo    0x20000099        0x1 ./src/main.o
-                0x20000099                i_fifo
+ .bss.i_fifo    0x20000094        0x1 ./src/main.o
+                0x20000094                i_fifo
+ *fill*         0x20000095        0x3 00
+ .bss.cs_pin    0x20000098        0x4 ./src/icDrivers/AS3953.o
+ .bss.cs_port   0x2000009c        0x1 ./src/icDrivers/AS3953.o
+ *fill*         0x2000009d        0x1 00
  .bss.cmuStatus
-                0x2000009a        0x2 ./emlib/em_emu.o
+                0x2000009e        0x2 ./emlib/em_emu.o
  .bss.i2cTransfer
-                0x2000009c        0xc ./emlib/em_i2c.o
+                0x200000a0        0xc ./emlib/em_i2c.o
  .bss.__malloc_free_list
-                0x200000a8        0x4 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/lib/armv6-m\libc_s.a(lib_a-mallocr.o)
-                0x200000a8                __malloc_free_list
+                0x200000ac        0x4 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/lib/armv6-m\libc_s.a(lib_a-mallocr.o)
+                0x200000ac                __malloc_free_list
  .bss.heap_end.4231
-                0x200000ac        0x4 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/lib/armv6-m\libnosys.a(sbrk.o)
+                0x200000b0        0x4 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/lib/armv6-m\libnosys.a(sbrk.o)
  *(COMMON)
- COMMON         0x200000b0       0x68 ./src/ucPeripheralDrivers/i2c_connection.o
-                0x200000b0                I2C_Status
-                0x200000b4                i2c_registers
- COMMON         0x20000118       0x24 ./src/ucPeripheralDrivers/spi.o
-                0x20000118                slaveRxBufferIndex
-                0x2000011c                masterRxBufferIndex
-                0x20000120                slaveRxBuffer
-                0x20000124                slaveRxBufferSize
-                0x20000128                masterRxBufferSize
-                0x2000012c                slaveTxBufferSize
-                0x20000130                masterRxBuffer
-                0x20000134                slaveTxBuffer
-                0x20000138                slaveTxBufferIndex
- COMMON         0x2000013c       0x64 ./src/main.o
-                0x2000013c                fifo
- COMMON         0x200001a0        0x4 ./CMSIS/efm32zg/system_efm32zg.o
-                0x200001a0                SystemCoreClock
- COMMON         0x200001a4        0x4 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/lib/armv6-m\libc_s.a(lib_a-reent.o)
-                0x200001a4                errno
-                0x200001a8                __bss_end__ = .
+ COMMON         0x200000b4       0x68 ./src/ucPeripheralDrivers/i2c_connection.o
+                0x200000b4                I2C_Status
+                0x200000b8                i2c_registers
+ COMMON         0x2000011c       0x24 ./src/ucPeripheralDrivers/spi.o
+                0x2000011c                slaveRxBufferIndex
+                0x20000120                masterRxBufferIndex
+                0x20000124                slaveRxBuffer
+                0x20000128                slaveRxBufferSize
+                0x2000012c                masterRxBufferSize
+                0x20000130                slaveTxBufferSize
+                0x20000134                masterRxBuffer
+                0x20000138                slaveTxBuffer
+                0x2000013c                slaveTxBufferIndex
+ COMMON         0x20000140       0x64 ./src/main.o
+                0x20000140                fifo
+ COMMON         0x200001a4        0x4 ./CMSIS/efm32zg/system_efm32zg.o
+                0x200001a4                SystemCoreClock
+ COMMON         0x200001a8        0x4 d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/../../../../arm-none-eabi/lib/armv6-m\libc_s.a(lib_a-reent.o)
+                0x200001a8                errno
+                0x200001ac                __bss_end__ = .
 
-.heap           0x200001a8        0x0
-                0x200001a8                __end__ = .
-                0x200001a8                end = __end__
-                0x200001a8                _end = __end__
+.heap           0x200001b0        0x0
+                0x200001b0                __end__ = .
+                0x200001b0                end = __end__
+                0x200001b0                _end = __end__
  *(.heap*)
- .heap          0x200001a8        0x0 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
-                0x200001a8                __HeapLimit = .
+ .heap          0x200001b0        0x0 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
+                0x200001b0                __HeapLimit = .
 
-.stack_dummy    0x200001a8      0x400
+.stack_dummy    0x200001b0      0x400
  *(.stack)
- .stack         0x200001a8      0x400 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
+ .stack         0x200001b0      0x400 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
                 0x20001000                __StackTop = (ORIGIN (RAM) + 0x1000)
                 0x20000c00                __StackLimit = (__StackTop - SIZEOF (.stack_dummy))
                 0x20001000                PROVIDE (__stack, __StackTop)
@@ -1016,9 +1018,9 @@ OUTPUT(NfcModule.axf elf32-littlearm)
  .ARM.attributes
                 0x0000012e       0x32 ./src/ucPeripheralDrivers/uart_connection.o
  .ARM.attributes
-                0x00000160       0x32 ./src/sensorsDrivers/AS3953.o
+                0x00000160       0x32 ./src/main.o
  .ARM.attributes
-                0x00000192       0x32 ./src/main.o
+                0x00000192       0x32 ./src/icDrivers/AS3953.o
  .ARM.attributes
                 0x000001c4       0x32 ./emlib/em_cmu.o
  .ARM.attributes
@@ -1091,8 +1093,8 @@ OUTPUT(NfcModule.axf elf32-littlearm)
  .comment       0x00000000       0x71 ./src/ucPeripheralDrivers/spi.o
  .comment       0x00000000       0x71 ./src/ucPeripheralDrivers/spi_connection.o
  .comment       0x00000000       0x71 ./src/ucPeripheralDrivers/uart_connection.o
- .comment       0x00000000       0x71 ./src/sensorsDrivers/AS3953.o
  .comment       0x00000000       0x71 ./src/main.o
+ .comment       0x00000000       0x71 ./src/icDrivers/AS3953.o
  .comment       0x00000000       0x71 ./emlib/em_cmu.o
  .comment       0x00000000       0x71 ./emlib/em_emu.o
  .comment       0x00000000       0x71 ./emlib/em_gpio.o
@@ -1101,55 +1103,55 @@ OUTPUT(NfcModule.axf elf32-littlearm)
  .comment       0x00000000       0x71 ./emlib/em_usart.o
  .comment       0x00000000       0x71 ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_info     0x00000000     0xc895
+.debug_info     0x00000000     0xc896
  .debug_info    0x00000000      0x829 ./src/ucPeripheralDrivers/RTC_.o
  .debug_info    0x00000829      0xd90 ./src/ucPeripheralDrivers/i2c_connection.o
  .debug_info    0x000015b9      0x9c6 ./src/ucPeripheralDrivers/spi.o
  .debug_info    0x00001f7f      0x8e3 ./src/ucPeripheralDrivers/spi_connection.o
  .debug_info    0x00002862      0xa50 ./src/ucPeripheralDrivers/uart_connection.o
- .debug_info    0x000032b2     0x33f3 ./src/sensorsDrivers/AS3953.o
- .debug_info    0x000066a5     0x1d04 ./src/main.o
- .debug_info    0x000083a9     0x16cc ./emlib/em_cmu.o
- .debug_info    0x00009a75      0x5f4 ./emlib/em_emu.o
- .debug_info    0x0000a069      0x579 ./emlib/em_gpio.o
- .debug_info    0x0000a5e2      0x8df ./emlib/em_i2c.o
- .debug_info    0x0000aec1      0x3f5 ./emlib/em_rtc.o
- .debug_info    0x0000b2b6     0x1074 ./emlib/em_usart.o
- .debug_info    0x0000c32a       0xa1 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
- .debug_info    0x0000c3cb      0x4ca ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_info    0x000032b2     0x1d05 ./src/main.o
+ .debug_info    0x00004fb7     0x33f3 ./src/icDrivers/AS3953.o
+ .debug_info    0x000083aa     0x16cc ./emlib/em_cmu.o
+ .debug_info    0x00009a76      0x5f4 ./emlib/em_emu.o
+ .debug_info    0x0000a06a      0x579 ./emlib/em_gpio.o
+ .debug_info    0x0000a5e3      0x8df ./emlib/em_i2c.o
+ .debug_info    0x0000aec2      0x3f5 ./emlib/em_rtc.o
+ .debug_info    0x0000b2b7     0x1074 ./emlib/em_usart.o
+ .debug_info    0x0000c32b       0xa1 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
+ .debug_info    0x0000c3cc      0x4ca ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_abbrev   0x00000000     0x23f5
+.debug_abbrev   0x00000000     0x23fe
  .debug_abbrev  0x00000000      0x26c ./src/ucPeripheralDrivers/RTC_.o
  .debug_abbrev  0x0000026c      0x2a0 ./src/ucPeripheralDrivers/i2c_connection.o
  .debug_abbrev  0x0000050c      0x27e ./src/ucPeripheralDrivers/spi.o
  .debug_abbrev  0x0000078a      0x1d4 ./src/ucPeripheralDrivers/spi_connection.o
  .debug_abbrev  0x0000095e      0x242 ./src/ucPeripheralDrivers/uart_connection.o
- .debug_abbrev  0x00000ba0      0x3e8 ./src/sensorsDrivers/AS3953.o
- .debug_abbrev  0x00000f88      0x3bf ./src/main.o
- .debug_abbrev  0x00001347      0x331 ./emlib/em_cmu.o
- .debug_abbrev  0x00001678      0x20c ./emlib/em_emu.o
- .debug_abbrev  0x00001884      0x1c1 ./emlib/em_gpio.o
- .debug_abbrev  0x00001a45      0x2d0 ./emlib/em_i2c.o
- .debug_abbrev  0x00001d15      0x224 ./emlib/em_rtc.o
- .debug_abbrev  0x00001f39      0x2f5 ./emlib/em_usart.o
- .debug_abbrev  0x0000222e       0x14 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
- .debug_abbrev  0x00002242      0x1b3 ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_abbrev  0x00000ba0      0x3c8 ./src/main.o
+ .debug_abbrev  0x00000f68      0x3e8 ./src/icDrivers/AS3953.o
+ .debug_abbrev  0x00001350      0x331 ./emlib/em_cmu.o
+ .debug_abbrev  0x00001681      0x20c ./emlib/em_emu.o
+ .debug_abbrev  0x0000188d      0x1c1 ./emlib/em_gpio.o
+ .debug_abbrev  0x00001a4e      0x2d0 ./emlib/em_i2c.o
+ .debug_abbrev  0x00001d1e      0x224 ./emlib/em_rtc.o
+ .debug_abbrev  0x00001f42      0x2f5 ./emlib/em_usart.o
+ .debug_abbrev  0x00002237       0x14 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
+ .debug_abbrev  0x0000224b      0x1b3 ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_loc      0x00000000     0x6aa5
+.debug_loc      0x00000000     0x6a93
  .debug_loc     0x00000000       0x8d ./src/ucPeripheralDrivers/RTC_.o
  .debug_loc     0x0000008d      0x525 ./src/ucPeripheralDrivers/i2c_connection.o
  .debug_loc     0x000005b2      0x2df ./src/ucPeripheralDrivers/spi.o
  .debug_loc     0x00000891      0x235 ./src/ucPeripheralDrivers/spi_connection.o
  .debug_loc     0x00000ac6       0x97 ./src/ucPeripheralDrivers/uart_connection.o
- .debug_loc     0x00000b5d     0x183b ./src/sensorsDrivers/AS3953.o
- .debug_loc     0x00002398      0xd5a ./src/main.o
- .debug_loc     0x000030f2     0x18a8 ./emlib/em_cmu.o
- .debug_loc     0x0000499a      0x141 ./emlib/em_emu.o
- .debug_loc     0x00004adb      0x312 ./emlib/em_gpio.o
- .debug_loc     0x00004ded      0x9f4 ./emlib/em_i2c.o
- .debug_loc     0x000057e1      0x176 ./emlib/em_rtc.o
- .debug_loc     0x00005957      0xd30 ./emlib/em_usart.o
- .debug_loc     0x00006687      0x41e ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_loc     0x00000b5d      0xd48 ./src/main.o
+ .debug_loc     0x000018a5     0x183b ./src/icDrivers/AS3953.o
+ .debug_loc     0x000030e0     0x18a8 ./emlib/em_cmu.o
+ .debug_loc     0x00004988      0x141 ./emlib/em_emu.o
+ .debug_loc     0x00004ac9      0x312 ./emlib/em_gpio.o
+ .debug_loc     0x00004ddb      0x9f4 ./emlib/em_i2c.o
+ .debug_loc     0x000057cf      0x176 ./emlib/em_rtc.o
+ .debug_loc     0x00005945      0xd30 ./emlib/em_usart.o
+ .debug_loc     0x00006675      0x41e ./CMSIS/efm32zg/system_efm32zg.o
 
 .debug_aranges  0x00000000      0x5b8
  .debug_aranges
@@ -1163,9 +1165,9 @@ OUTPUT(NfcModule.axf elf32-littlearm)
  .debug_aranges
                 0x00000118       0x38 ./src/ucPeripheralDrivers/uart_connection.o
  .debug_aranges
-                0x00000150       0xc0 ./src/sensorsDrivers/AS3953.o
+                0x00000150       0x90 ./src/main.o
  .debug_aranges
-                0x00000210       0x90 ./src/main.o
+                0x000001e0       0xc0 ./src/icDrivers/AS3953.o
  .debug_aranges
                 0x000002a0       0xc8 ./emlib/em_cmu.o
  .debug_aranges
@@ -1183,40 +1185,40 @@ OUTPUT(NfcModule.axf elf32-littlearm)
  .debug_aranges
                 0x00000558       0x60 ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_ranges   0x00000000     0x2520
+.debug_ranges   0x00000000     0x2530
  .debug_ranges  0x00000000       0x88 ./src/ucPeripheralDrivers/RTC_.o
  .debug_ranges  0x00000088       0xf8 ./src/ucPeripheralDrivers/i2c_connection.o
  .debug_ranges  0x00000180       0xc0 ./src/ucPeripheralDrivers/spi.o
  .debug_ranges  0x00000240       0x60 ./src/ucPeripheralDrivers/spi_connection.o
  .debug_ranges  0x000002a0       0x58 ./src/ucPeripheralDrivers/uart_connection.o
- .debug_ranges  0x000002f8     0x1288 ./src/sensorsDrivers/AS3953.o
- .debug_ranges  0x00001580      0x5b0 ./src/main.o
- .debug_ranges  0x00001b30      0x508 ./emlib/em_cmu.o
- .debug_ranges  0x00002038       0x48 ./emlib/em_emu.o
- .debug_ranges  0x00002080       0x58 ./emlib/em_gpio.o
- .debug_ranges  0x000020d8       0xc0 ./emlib/em_i2c.o
- .debug_ranges  0x00002198       0xb8 ./emlib/em_rtc.o
- .debug_ranges  0x00002250      0x1a0 ./emlib/em_usart.o
- .debug_ranges  0x000023f0      0x130 ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_ranges  0x000002f8      0x5c0 ./src/main.o
+ .debug_ranges  0x000008b8     0x1288 ./src/icDrivers/AS3953.o
+ .debug_ranges  0x00001b40      0x508 ./emlib/em_cmu.o
+ .debug_ranges  0x00002048       0x48 ./emlib/em_emu.o
+ .debug_ranges  0x00002090       0x58 ./emlib/em_gpio.o
+ .debug_ranges  0x000020e8       0xc0 ./emlib/em_i2c.o
+ .debug_ranges  0x000021a8       0xb8 ./emlib/em_rtc.o
+ .debug_ranges  0x00002260      0x1a0 ./emlib/em_usart.o
+ .debug_ranges  0x00002400      0x130 ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_line     0x00000000     0x3c85
+.debug_line     0x00000000     0x3c93
  .debug_line    0x00000000      0x2d7 ./src/ucPeripheralDrivers/RTC_.o
  .debug_line    0x000002d7      0x390 ./src/ucPeripheralDrivers/i2c_connection.o
  .debug_line    0x00000667      0x357 ./src/ucPeripheralDrivers/spi.o
  .debug_line    0x000009be      0x28e ./src/ucPeripheralDrivers/spi_connection.o
  .debug_line    0x00000c4c      0x2e0 ./src/ucPeripheralDrivers/uart_connection.o
- .debug_line    0x00000f2c      0xb93 ./src/sensorsDrivers/AS3953.o
- .debug_line    0x00001abf      0x6b3 ./src/main.o
- .debug_line    0x00002172      0x777 ./emlib/em_cmu.o
- .debug_line    0x000028e9      0x2ed ./emlib/em_emu.o
- .debug_line    0x00002bd6      0x251 ./emlib/em_gpio.o
- .debug_line    0x00002e27      0x3e1 ./emlib/em_i2c.o
- .debug_line    0x00003208      0x284 ./emlib/em_rtc.o
- .debug_line    0x0000348c      0x4e0 ./emlib/em_usart.o
- .debug_line    0x0000396c       0x85 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
- .debug_line    0x000039f1      0x294 ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_line    0x00000f2c      0x6c6 ./src/main.o
+ .debug_line    0x000015f2      0xb8e ./src/icDrivers/AS3953.o
+ .debug_line    0x00002180      0x777 ./emlib/em_cmu.o
+ .debug_line    0x000028f7      0x2ed ./emlib/em_emu.o
+ .debug_line    0x00002be4      0x251 ./emlib/em_gpio.o
+ .debug_line    0x00002e35      0x3e1 ./emlib/em_i2c.o
+ .debug_line    0x00003216      0x284 ./emlib/em_rtc.o
+ .debug_line    0x0000349a      0x4e0 ./emlib/em_usart.o
+ .debug_line    0x0000397a       0x85 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
+ .debug_line    0x000039ff      0x294 ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_str      0x00000000     0x28b5
+.debug_str      0x00000000     0x28b0
  .debug_str     0x00000000      0x666 ./src/ucPeripheralDrivers/RTC_.o
                                 0x6b0 (size before relaxing)
  .debug_str     0x00000666      0x5b2 ./src/ucPeripheralDrivers/i2c_connection.o
@@ -1227,23 +1229,23 @@ OUTPUT(NfcModule.axf elf32-littlearm)
                                 0x8d1 (size before relaxing)
  .debug_str     0x000011bd      0x211 ./src/ucPeripheralDrivers/uart_connection.o
                                 0xaa5 (size before relaxing)
- .debug_str     0x000013ce      0x50d ./src/sensorsDrivers/AS3953.o
-                                0xb57 (size before relaxing)
- .debug_str     0x000018db      0x194 ./src/main.o
+ .debug_str     0x000013ce      0x596 ./src/main.o
                                 0xb9f (size before relaxing)
- .debug_str     0x00001a6f      0x5eb ./emlib/em_cmu.o
+ .debug_str     0x00001964      0x106 ./src/icDrivers/AS3953.o
+                                0xb52 (size before relaxing)
+ .debug_str     0x00001a6a      0x5eb ./emlib/em_cmu.o
                                 0xa85 (size before relaxing)
- .debug_str     0x0000205a       0xd3 ./emlib/em_emu.o
+ .debug_str     0x00002055       0xd3 ./emlib/em_emu.o
                                 0x379 (size before relaxing)
- .debug_str     0x0000212d       0xb4 ./emlib/em_gpio.o
+ .debug_str     0x00002128       0xb4 ./emlib/em_gpio.o
                                 0x4d0 (size before relaxing)
- .debug_str     0x000021e1      0x192 ./emlib/em_i2c.o
+ .debug_str     0x000021dc      0x192 ./emlib/em_i2c.o
                                 0x63d (size before relaxing)
- .debug_str     0x00002373       0x6b ./emlib/em_rtc.o
+ .debug_str     0x0000236e       0x6b ./emlib/em_rtc.o
                                 0x24c (size before relaxing)
- .debug_str     0x000023de      0x441 ./emlib/em_usart.o
+ .debug_str     0x000023d9      0x441 ./emlib/em_usart.o
                                 0xb5b (size before relaxing)
- .debug_str     0x0000281f       0x96 ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_str     0x0000281a       0x96 ./CMSIS/efm32zg/system_efm32zg.o
                                 0x35e (size before relaxing)
 
 .debug_frame    0x00000000     0x12d0
@@ -1252,8 +1254,8 @@ OUTPUT(NfcModule.axf elf32-littlearm)
  .debug_frame   0x00000174       0x9c ./src/ucPeripheralDrivers/spi.o
  .debug_frame   0x00000210       0x8c ./src/ucPeripheralDrivers/spi_connection.o
  .debug_frame   0x0000029c       0x74 ./src/ucPeripheralDrivers/uart_connection.o
- .debug_frame   0x00000310      0x2b4 ./src/sensorsDrivers/AS3953.o
- .debug_frame   0x000005c4      0x1c8 ./src/main.o
+ .debug_frame   0x00000310      0x1c8 ./src/main.o
+ .debug_frame   0x000004d8      0x2b4 ./src/icDrivers/AS3953.o
  .debug_frame   0x0000078c      0x200 ./emlib/em_cmu.o
  .debug_frame   0x0000098c       0x78 ./emlib/em_emu.o
  .debug_frame   0x00000a04       0x84 ./emlib/em_gpio.o
