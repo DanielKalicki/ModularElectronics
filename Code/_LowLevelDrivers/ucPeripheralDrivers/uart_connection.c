@@ -4,14 +4,36 @@
 #include "em_cmu.h"
 #include "em_gpio.h"
 
-void uart_init(struct UART_Settings uartSettings){
+uint8_t (*Uart_RxValidateFunction)(void);
+
+uint8_t Uart_RxValidate_Terminator(void)
+{
+	if (UART_MESSAGE_TERMINATOR == rxBuff.data[rxBuff.wrI-1])
+	{
+		return UART_RX_VALIDATE_RESULT_FINISHED;
+	}
+	else
+	{
+		return UART_RX_VALIDATE_RESULT_NOT_FINISHED;
+	}
+}
+
+void uart_init(struct UART_Settings uartSettings
+#ifdef UART_RX_VALIDATE_FUNC
+				, uint8_t (*Uart_RxValidate_FunctionPointer)(void)
+#endif
+			   )
+{
+#ifndef UART_RX_IRQ
+#warning "To use UART receive function you need to define UART_RX_IRQ"
+#endif
+
 	//Oscillators
 	CMU_ClockEnable(cmuClock_USART1, true);                 // enable USART1 peripheral clock
 
 	//GPIOs
 	GPIO_PinModeSet(uartSettings.uart_com_port, uartSettings.uart_tx_pin, gpioModePushPull, 1); // set TX pin to push-pull output, initialize high (otherwise glitches can occur)
 	GPIO_PinModeSet(uartSettings.uart_com_port, uartSettings.uart_rx_pin, gpioModeInput, 0);    // set RX pin as input (no filter)
-
 
 	USART_InitAsync_TypeDef uartInit =
 	  {	//230400
@@ -33,37 +55,61 @@ void uart_init(struct UART_Settings uartSettings){
 	 NVIC_ClearPendingIRQ(USART1_RX_IRQn);    // clear pending RX interrupt flag in NVIC
 	 NVIC_ClearPendingIRQ(USART1_TX_IRQn);    // clear pending TX interrupt flag in NVIC
 
+#ifdef UART_RX_VALIDATE_FUNC
+	 Uart_RxValidateFunction = Uart_RxValidate_FunctionPointer;
+#else
+	 Uart_RxValidateFunction = Uart_RxValidate_Terminator;
+#endif
+
+#ifdef UART_RX_IRQ
+	 USART_IntEnable(USART1, USART_IF_RXDATAV);
+	 NVIC_EnableIRQ(USART1_RX_IRQn);
+	 NVIC_EnableIRQ(USART1_TX_IRQn);
+#endif
+
 	 USART_Enable(USART1, usartEnable);       // enable transmitter and receiver
 }
-void uart_sendChar(char c){
-	while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
+void uart_sendChar(char c)
+{
+	while (!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 	USART1->TXDATA = c; 			       // send character
 }
-void uart_sendText(char * text){
-	int i=0;
-	uint8_t len=150;
-	for (;i<len;++i){
+void uart_sendText(char * text)
+{
+	int i = 0;
+	uint8_t len = 150;
+	for (;i < len; ++i){
 		if(text[i]==0) break;
-		while(!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
+		while (!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 		USART1->TXDATA = text[i];       // send character
 	}
+	while(!(USART1->STATUS & (1 << 6)));
 }
 
+#ifdef UART_RX_IRQ
 void USART1_RX_IRQHandler(void) {
   /* Check for RX data valid interrupt */
-  if (USART1->STATUS & USART_STATUS_RXDATAV) {
+  if (USART1->STATUS & USART_STATUS_RXDATAV)
+  {
 	//buffer is NOT full
 		/* Copy data into RX Buffer */
 	uint8_t rxData = USART_Rx(USART1);
-	if( !rxBuff.overflow ){
+	if ((!rxBuff.overflow) && (!rxBuff.ready))	/* !rxBuff.ready could be removed */
+	{
 		rxBuff.data[rxBuff.wrI] = rxData;
 		rxBuff.wrI++;
-		if(rxData==0){
-			rxBuff.ready=true;
+		if (UART_RX_VALIDATE_RESULT_FINISHED == Uart_RxValidateFunction())
+		{
+			rxBuff.ready = true;
+		}
+		else
+		{
+			; /* do nothing */
 		}
 
 		/* Flag Rx overflow */
-		if ( rxBuff.wrI >= UART_BUFFER_SIZE){
+		if (rxBuff.wrI >= UART_BUFFER_SIZE)
+		{
 		  rxBuff.overflow = true;
 		}
 	}
@@ -72,9 +118,11 @@ void USART1_RX_IRQHandler(void) {
     USART_IntClear(USART1, USART_IF_RXDATAV);
   }
 }
+#endif
 
-void clearRxBuffer(){
-	rxBuff.wrI=0;
-	rxBuff.ready=false;
-	rxBuff.overflow=false;
+void clearRxBuffer()
+{
+	rxBuff.wrI = 0;
+	rxBuff.ready = false;
+	rxBuff.overflow = false;
 }

@@ -9,6 +9,12 @@
 extern "C" {
 #endif
 
+#define UART_RX_IRQ
+
+/* 							!!!							  */
+/* To use UART RX you need to define UART_RX_IRQ in spi.h */
+/* 							!!!							  */
+
 struct UART_Settings{
 	GPIO_Port_TypeDef uart_com_port;
 	unsigned int uart_tx_pin;
@@ -17,7 +23,7 @@ struct UART_Settings{
 	uint32_t uart_speed;
 };
 
-#define UART_BUFFER_SIZE	100
+#define UART_BUFFER_SIZE	400
 
 volatile struct messageBuffer{
 	uint8_t data[UART_BUFFER_SIZE];
@@ -26,7 +32,17 @@ volatile struct messageBuffer{
 	bool ready;
 } rxBuff;
 
-void uart_init(struct UART_Settings uartSettings);
+#define UART_MESSAGE_TERMINATOR	'\n'
+
+#define UART_RX_VALIDATE_FUNC
+#define UART_RX_VALIDATE_RESULT_FINISHED 		1
+#define UART_RX_VALIDATE_RESULT_NOT_FINISHED	0
+
+void uart_init(struct UART_Settings uartSettings
+#ifdef UART_RX_VALIDATE_FUNC
+		, uint8_t (*Uart_RxFunctionPointer)(void)
+#endif
+);
 
 void uart_sendChar(char c);
 void uart_sendText(char * text);
