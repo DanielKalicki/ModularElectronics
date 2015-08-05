@@ -11,7 +11,7 @@
 
 #include "ucPeripheralDrivers\i2c_connection.h"
 #include "ucPeripheralDrivers\RTC_.h"
-#include "ucPeripheralDrivers\uart_connection.h"
+#include "ucPeripheralDrivers\leuart_connection.h"
 
 #include "sensorsDrivers\HMC5883L.h"
 #include "sensorsDrivers\MPU6050.h"
@@ -144,10 +144,11 @@ enum registerMap{
 
 //-------------INIT--------------
 void initOscillators(void){
-	CMU_ClockEnable(cmuClock_HFPER, true);
+  CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_CORELEDIV2);  // select HFCORECLK/2 as clock source to LFB
+  CMU_ClockEnable(cmuClock_CORELE, true);                  // enable the Low Energy Peripheral Interface clock
 
-	CMU_ClockEnable(cmuClock_GPIO, true);                   // enable GPIO peripheral clock
-	CMU_ClockEnable(cmuClock_I2C0,true);
+  CMU_ClockEnable(cmuClock_HFPER, true);
+  CMU_ClockEnable(cmuClock_GPIO, true);                    // enable GPIO peripheral clock
 }
 void initGPIO(void){
 
@@ -175,80 +176,80 @@ void clockTest_short() {
 
 //------------SENSORS------------
 void detectSensors(){
-	uart_sendText("\nDETECTING CONNECTED SENSORS\n");
+	LeUart_SendText("\nDETECTING CONNECTED SENSORS\n");
 	sensors = 0;
 
 	//-----------SI7013---------
 	if (Si7013_detect()){
-		uart_sendText("\t\tSi7013 detected\n");
+		LeUart_SendText("\t\tSi7013 detected\n");
 		sensors |= 0x01;
 	}
 	else
-		uart_sendText("---\t\tSi7013 NOT DETECTED\t\t---\n");
+		LeUart_SendText("---\t\tSi7013 NOT DETECTED\t\t---\n");
 
 	//-----------SI1142---------
 	if (Si114x_detect()){
-		uart_sendText("\t\tSi1142 detected\n");
+		LeUart_SendText("\t\tSi1142 detected\n");
 		sensors |= 0x02;
 	}
 	else
-		uart_sendText("---\t\tSi1142 NOT DETECTED\t\t---\n");
+		LeUart_SendText("---\t\tSi1142 NOT DETECTED\t\t---\n");
 
 	//-----------BMP180---------
 	if (BMP180_detect()) {
-		uart_sendText("\t\tBMP180 detected\n");
+		LeUart_SendText("\t\tBMP180 detected\n");
 		sensors |= 0x08;
 	}
 	else
-		uart_sendText("---\t\tBMP180 NOT DETECTED\t\t---\n");
+		LeUart_SendText("---\t\tBMP180 NOT DETECTED\t\t---\n");
 
 	//-----------HMC5883L---------
 	if (HMC5883L_detect()) {
-		uart_sendText("\t\tHMC5883L detected\n");
+		LeUart_SendText("\t\tHMC5883L detected\n");
 		sensors |= 0x10;
 	}
 	else
-		uart_sendText("---\t\tHMC5883L NOT DETECTED\t\t---\n");
+		LeUart_SendText("---\t\tHMC5883L NOT DETECTED\t\t---\n");
 
 	//-----------MPU6050---------
 	if (MPU6050_detect()) {
-		uart_sendText("\t\tMPU6050 detected\n");
+		LeUart_SendText("\t\tMPU6050 detected\n");
 		sensors |= 0x20;
 	}
 	else
-		uart_sendText("---\t\tMPU6050 NOT DETECTED\t\t---\n");
+		LeUart_SendText("---\t\tMPU6050 NOT DETECTED\t\t---\n");
 }
 
 void initSensors()
 {
-	uart_sendText("\nINITIALIZATION: ");
+	LeUart_SendText("\nINITIALIZATION: ");
 
 	if(sensors & SI7013_SENS)
 	{
 		Si7013_init();
-		uart_sendText(" SI7013");
+		LeUart_SendText(" SI7013");
 	}
 	if(sensors & SI114x_SENS)
 	{
 		Si114x_init();
-		uart_sendText(" SI1142");
+		LeUart_SendText(" SI1142");
 	}
 	if(sensors & BMP180_SENS)
 	{
 		BMP180_init();
-		uart_sendText(" BMP180");
+		LeUart_SendText(" BMP180");
 	}
 	if(sensors & HMC5883L_SENS)
 	{
 		HMC5883L_init();
-		uart_sendText(" HMC5883L");
+		LeUart_SendText(" HMC5883L");
 	}
 	if(sensors & MPU6050_SENS)
 	{
 		MPU6050_init();
-		uart_sendText(" MPU6050");
+		LeUart_SendText(" MPU6050");
 	}
-	uart_sendChar('\n');
+	LeUart_SendChar('\n');
 }
 
 //------------RTC----------------
@@ -260,55 +261,55 @@ void printResults(void)
 
 	uint32_t pressure=(uint32_t)devInternalRegisters[REG_BMP180_PRESS_XHIGH]*1000+(uint32_t)devInternalRegisters[REG_BMP180_PRESS_HIGH]*10+(uint32_t)devInternalRegisters[REG_BMP180_PRESS_LOW];
 	sprintf(buff,"\nPress:%ld ",pressure);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	uint32_t rhData = (uint32_t)devInternalRegisters[REG_SI7013_HUM_HIGH] * 100 + (uint32_t)devInternalRegisters[REG_SI7013_HUM_LOW];
 	int32_t   tData = (int32_t)devInternalRegisters[REG_SI7013_TEMP_HIGH] * 100 + (uint32_t)devInternalRegisters[REG_SI7013_TEMP_LOW];
 	sprintf(buff,"Hum:%ld Temp:%ld ",rhData,tData);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	uint16_t ambientLight = (((uint16_t)devInternalRegisters[REG_SI114x_ALS_HIGH])<<8) + (uint16_t)devInternalRegisters[REG_SI114x_ALS_LOW];
 	sprintf(buff,"ALS:%d ",ambientLight);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	short temp=(short)devInternalRegisters[REG_BMP180_TEMP_HIGH]*10+(short)devInternalRegisters[REG_BMP180_TEMP_LOW];
 	sprintf(buff,"Temp:%d ",temp);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	int16_t compass_x=((int16_t)devInternalRegisters[REG_HMC5883L_X_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_X_LOW];
 	int16_t compass_y=((int16_t)devInternalRegisters[REG_HMC5883L_Y_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_Y_LOW];
 	int16_t compass_z=((int16_t)devInternalRegisters[REG_HMC5883L_Z_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_Z_LOW];
-	uart_sendChar('\n');
+	LeUart_SendChar('\n');
 	sprintf(buff,"Compass: X[%d] Y[%d] Z[%d]\n",compass_x,compass_y,compass_z);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	int16_t accel[3];
 	accel[0]=((int16_t)devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_X_ACCEL_LOW];
 	accel[1]=((int16_t)devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW];
 	accel[2]=((int16_t)devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW];
 	sprintf(buff,"Acc: X[%d] Y[%d] Z[%d]",accel[0],accel[1],accel[2]);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	int16_t gyro[3];
 	gyro[0]=((int16_t)devInternalRegisters[REG_MPU6050_X_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_X_GYRO_LOW];
 	gyro[1]=((int16_t)devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Y_GYRO_LOW];
 	gyro[2]=((int16_t)devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Z_GYRO_LOW];
 	sprintf(buff,"\tGyro: X[%d] Y[%d] Z[%d]\n",gyro[0],gyro[1],gyro[2]);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	unsigned long pedometer_count=((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1]<<24UL) +
 								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2]<<16UL) +
 								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3]<<8UL) +
 								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4]);
 	sprintf(buff,"\t\tPedometer count: %ld",pedometer_count);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 
 	unsigned long pedometer_time=((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1]<<24UL) +
 							     ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2]<<16UL) +
 								 ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3]<<8UL) +
 								 ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4]);
 	sprintf(buff,"\t\tPedometer time: %ld",pedometer_time);
-	uart_sendText(buff);
+	LeUart_SendText(buff);
 }
 #endif
 
@@ -352,7 +353,7 @@ void RTC_IRQHandler(void)
 			}
 #ifdef DEBUG
 			else {
-				uart_sendText("Error measuring temperature and humidity\n");
+				LeUart_SendText("Error measuring temperature and humidity\n");
 			}
 #endif
 		}
@@ -478,24 +479,26 @@ void RTC_IRQHandler(void)
 }
 
 void initInterfaces(){
-	//uart initialization
-	struct UART_Settings uartSettings;
-	uartSettings.uart_com_port=gpioPortD;
-	uartSettings.uart_tx_pin=7;
-	uartSettings.uart_rx_pin=6;
-	uartSettings.uart_port_location=2;
-	uartSettings.uart_speed=115200;
-	uart_init(uartSettings);
-	uart_sendText("\nSTARTUP\n");
+#ifdef DEBUG
+	/* LeUart interface initialization */
+	struct LeUart_Settings leuartSettings;
+	leuartSettings.leuart_com_port = gpioPortF;
+	leuartSettings.leuart_tx_pin = 0;
+	leuartSettings.leuart_rx_pin = 1;
+	leuartSettings.leuart_port_location = 3;
+	leuartSettings.leuart_baudrate = 115200;
+	LeUart_Init(leuartSettings);
+	LeUart_SendText("Startup\n");
+#endif
 
-	//i2c initialization
+	/* i2c initialization */
 	struct I2C_Settings i2cSettings;
-	i2cSettings.i2c_SCL_port = gpioPortE;
-	i2cSettings.i2c_SCL_pin =  13;
-	i2cSettings.i2c_SDA_port = gpioPortE;
-	i2cSettings.i2c_SDA_pin =  12;
-	i2cSettings.i2c_port_location =  6;
-	i2c_masterInit(i2cSettings);
+	i2cSettings.i2c_SCL_port = gpioPortD;
+	i2cSettings.i2c_SCL_pin =  7;
+	i2cSettings.i2c_SDA_port = gpioPortD;
+	i2cSettings.i2c_SDA_pin =  6;
+	i2cSettings.i2c_port_location =  1;
+	i2c_InitMaster(i2cSettings);
 	i2c_Scan(I2C0);
 }
 

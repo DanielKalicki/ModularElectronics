@@ -50,9 +50,10 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_rtc.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h \
- ../src/ucPeriperalDrivers\i2c_connection.h \
- ../src/ucPeriperalDrivers\RTC_.h \
- ../src/ucPeriperalDrivers\uart_connection.h \
+ ../src/ucPeripheralDrivers\i2c_connection.h \
+ ../src/ucPeripheralDrivers\RTC_.h \
+ ../src/ucPeripheralDrivers\leuart_connection.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h \
  ../src/sensorsDrivers\HMC5883L.h ../src/sensorsDrivers\MPU6050.h \
  ../src/sensorsDrivers\inv_mpu.h \
  ../src/sensorsDrivers\inv_mpu_dmp_motion_driver.h \
@@ -161,11 +162,13 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h:
 
-../src/ucPeriperalDrivers\i2c_connection.h:
+../src/ucPeripheralDrivers\i2c_connection.h:
 
-../src/ucPeriperalDrivers\RTC_.h:
+../src/ucPeripheralDrivers\RTC_.h:
 
-../src/ucPeriperalDrivers\uart_connection.h:
+../src/ucPeripheralDrivers\leuart_connection.h:
+
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h:
 
 ../src/sensorsDrivers\HMC5883L.h:
 
