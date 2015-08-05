@@ -20,7 +20,7 @@ struct UART_Settings{
 	unsigned int uart_tx_pin;
 	unsigned int uart_rx_pin;
 	uint8_t uart_port_location;
-	uint32_t uart_speed;
+	uint32_t uart_baudrate;
 };
 
 #define UART_BUFFER_SIZE	400

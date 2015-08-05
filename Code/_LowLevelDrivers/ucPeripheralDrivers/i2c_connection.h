@@ -28,7 +28,7 @@ struct I2C_Settings{
 	uint8_t i2c_port_location;
 };
 
-void initI2C_Master(struct I2C_Settings i2cSettings);
+void i2c_InitMaster(struct I2C_Settings i2cSettings);
 int i2c_RegisterGet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *val);
 int i2c_RegisterSet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t  val);
 int i2c_Register_Write_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data);

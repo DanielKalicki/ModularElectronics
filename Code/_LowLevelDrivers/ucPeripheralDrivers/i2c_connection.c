@@ -10,7 +10,7 @@
 #include <stdio.h>
 //#include "RTC_.h"
 
-void initI2C_Master(struct I2C_Settings i2cSettings)
+void i2c_InitMaster(struct I2C_Settings i2cSettings)
 {
   CMU_ClockEnable(cmuClock_I2C0,true);
 

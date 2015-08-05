@@ -39,7 +39,7 @@ void uart_init(struct UART_Settings uartSettings
 	  {	//230400
 	    .enable = usartDisable,     			// wait to enable transmitter and receiver
 	    .refFreq = 0,               		  	// setting refFreq to 0 will invoke the CMU_ClockFreqGet() function and measure the HFPER clock
-	    .baudrate = uartSettings.uart_speed,  	// desired baud rate
+	    .baudrate = uartSettings.uart_baudrate,  	// desired baud rate
 	    .oversampling = usartOVS16, 			// set oversampling to x16
 	    .databits = usartDatabits8, 			// 8 data bits
 	    .parity = usartNoParity,    			// no parity bits
@@ -49,7 +49,7 @@ void uart_init(struct UART_Settings uartSettings
 	    .prsRxCh = usartPrsRxCh0,   			// doesn't matter what channel we select
 	 };
 	 USART_InitAsync(USART1, &uartInit);      // apply configuration to USART1
-	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | (uartSettings.uart_port_location<<_USART_ROUTE_LOCATION_SHIFT); // clear buffers, enable transmitter and receiver pins
+	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | (uartSettings.uart_port_location << _USART_ROUTE_LOCATION_SHIFT); // clear buffers, enable transmitter and receiver pins
 
 	 USART_IntClear(USART1, _USART_IF_MASK);  // clear all USART interrupt flags
 	 NVIC_ClearPendingIRQ(USART1_RX_IRQn);    // clear pending RX interrupt flag in NVIC
