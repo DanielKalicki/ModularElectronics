@@ -188,7 +188,7 @@ void detectSensors(){
 		LeUart_SendText("---\t\tSi7013 NOT DETECTED\t\t---\n");
 
 	//-----------SI1142---------
-	if (Si114x_detect()){
+	if (Si114x_Detect()){
 		LeUart_SendText("\t\tSi1142 detected\n");
 		sensors |= 0x02;
 	}
@@ -231,7 +231,7 @@ void initSensors()
 	}
 	if(sensors & SI114x_SENS)
 	{
-		Si114x_init();
+		Si114x_Init();
 		LeUart_SendText(" SI1142");
 	}
 	if(sensors & BMP180_SENS)
@@ -324,7 +324,7 @@ void RTC_IRQHandler(void)
 	{
 		if(sensors & SI114x_SENS)
 		{
-			Si114x_forceAmbientLightMeasurment();
+			Si114x_ForceAmbientLightMeasurment();
 		}
 		if(sensors & BMP180_SENS)
 		{
@@ -363,7 +363,7 @@ void RTC_IRQHandler(void)
 		{
 			uint16_t ambientLight=0;
 
-			if (Si114x_readAmbientLight(&ambientLight)!=-1)
+			if (Si114x_ReadAmbientLight(&ambientLight)!=-1)
 			{
 				devInternalRegisters[REG_SI114x_ALS_HIGH]  = ambientLight>>8;
 				devInternalRegisters[REG_SI114x_ALS_LOW]   = (uint8_t)ambientLight;

@@ -10,10 +10,13 @@
 
 #include <stdint.h>
 
-uint8_t Si114x_detect(void);
-void Si114x_init(void);
+/* Define used sensor for i2c address */
+#define SI1147
 
-void Si114x_forceAmbientLightMeasurment(void);
-int Si114x_readAmbientLight(uint16_t *ambientLight);
+uint8_t Si114x_Detect(void);
+void Si114x_Init(void);
+
+void Si114x_ForceAmbientLightMeasurment(void);
+uint8_t Si114x_ReadAmbientLight(uint16_t *AmbientLight);
 
 #endif /* SI114X_H_ */

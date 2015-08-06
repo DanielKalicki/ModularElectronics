@@ -256,7 +256,7 @@ void i2c_Scan (I2C_TypeDef *i2c){
 		if (i2c_Detect(i2c,i*2)==1){
 			char buff[30];
 			sprintf(buff,"Detected I2C device: %d %02x\n",i*2,i);
-			//uart_sendText(buff);
+			LeUart_SendText(buff);
 		}
 	}
 }
