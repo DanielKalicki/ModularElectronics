@@ -17,11 +17,11 @@ extern "C" {
 #define I2CDRV_SDA_PIN  		12
 #define I2CDRV_PORT_LOCATION 	6
 #define I2CDRV_TRANSFER_TIMEOUT 3000*/
-#define I2CDRV_SCL_PORT gpioPortC
-#define I2CDRV_SCL_PIN  1
-#define I2CDRV_SDA_PORT gpioPortC
-#define I2CDRV_SDA_PIN  0
-#define I2CDRV_PORT_LOCATION 4
+#define I2CDRV_SCL_PORT gpioPortE
+#define I2CDRV_SCL_PIN  13
+#define I2CDRV_SDA_PORT gpioPortE
+#define I2CDRV_SDA_PIN  12
+#define I2CDRV_PORT_LOCATION 6
 #define I2CDRV_TRANSFER_TIMEOUT 3000
 
 //i2c slave

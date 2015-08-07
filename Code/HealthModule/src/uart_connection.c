@@ -20,7 +20,7 @@ void initUART(void){
 	    .prsRxCh = usartPrsRxCh0,   // doesn't matter what channel we select
 	 };
 	 USART_InitAsync(USART1, &uartInit);      // apply configuration to USART1
-	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | USART_ROUTE_LOCATION_LOC2; // clear buffers, enable transmitter and receiver pins
+	 USART1->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | USART_ROUTE_LOCATION_LOC0; // clear buffers, enable transmitter and receiver pins
 
 	 USART_IntClear(USART1, _USART_IF_MASK);  // clear all USART interrupt flags
 	 NVIC_ClearPendingIRQ(USART1_RX_IRQn);    // clear pending RX interrupt flag in NVIC
