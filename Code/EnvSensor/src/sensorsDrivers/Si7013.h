@@ -10,10 +10,10 @@
 
 #include <stdint.h>
 
-uint8_t Si7013_detect(void);
-void Si7013_init(void);
+uint8_t Si7013_Detect(void);
+void Si7013_Init(void);
 
-void Si7013_forceRhMeasurment(void);
-int Si7013_readHumidityAndTemperature(uint32_t *rhData, int32_t *tData);
+void Si7013_ForceRhMeasurment(void);
+int Si7013_ReadHumidityAndTemperature(uint32_t *rhData, int32_t *tData);
 
 #endif /* SI7013_H_ */

@@ -23,18 +23,22 @@
 #include "sensorsDrivers\Si114x.h"
 
 //This register contains information from the module
-#define DEV_INT_REG_BUFFER_SIZE       	100
+#define DEV_INT_REG_BUFFER_SIZE       	(100)
 volatile uint8_t devInternalRegisters[DEV_INT_REG_BUFFER_SIZE];
 
-#define sensors devInternalRegisters[5]		//5 - REG_SENSORS
+#define sensors (devInternalRegisters[5])		//5 - REG_SENSORS
 
-#define SI7013_SENS		0x01
-#define SI114x_SENS		0x02
-//#define AS3935_SENS		0x04
-#define BMP180_SENS		0x08
-#define HMC5883L_SENS	0x10
-#define MPU6050_SENS	0x20
+#define SI114X_IRQ_PORT		(gpioPortB)
+#define SI114X_IRQ_PIN		(8)
 
+#define SI7013_SENS		(0x01)
+#define SI114X_SENS		(0x02)
+//#define AS3935_SENS		(0x04)
+#define BMP180_SENS		(0x08)
+#define HMC5883L_SENS	(0x10)
+#define MPU6050_SENS	(0x20)
+
+/* !!! register map is not updated with the latest changes */
 /********** i2c slave register map **********
  * [0:9] - configuration registers
  * [10:11] - Si7013 humidity   -> 	e.g. hum=56.25%  [10]=56 [11]=25
@@ -53,94 +57,84 @@ volatile uint8_t devInternalRegisters[DEV_INT_REG_BUFFER_SIZE];
  * */
 enum registerMap{
 
-	REG_DATA_LENGTH				=0,
+	REG_DATA_LENGTH				= 0,
 
-	REG_MODULE_ID_1				=1,
-	REG_MODULE_ID_2				=2,
-	REG_MODULE_ID_3				=3,
+	REG_MODULE_ID_1				= 1,
+	REG_MODULE_ID_2				= 2,
+	REG_MODULE_ID_3				= 3,
 
-	REG_I2C_ADDR				=4,
+	REG_I2C_ADDR				= 4,
 
-	REG_SENSORS					=5,
-	REG_MPU6050_CONFIG			=REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
+	REG_SENSORS					= 5,
+	REG_MPU6050_CONFIG			= REG_MPU6050_CONFIG_NUMBER,				//BIT0 ---- 0 - normal mode,   1 - low-power accel-only mode
 
-	REG_COMMAND_CODE			=7,		//this registers are used to send commands to the module
-	REG_COMMAND_DATA_1			=8,
-	REG_COMMAND_DATA_2			=9,
+	REG_COMMAND_CODE			= 7,		//this registers are used to send commands to the module
+	REG_COMMAND_DATA_1			= 8,
+	REG_COMMAND_DATA_2			= 9,
 
-	REG_SI7013_HUM_HIGH			=10,
-	REG_SI7013_HUM_LOW			=11,
+	REG_SI7013_HUM_HIGH			= 10,
+	REG_SI7013_HUM_LOW			= 11,
 
-	REG_SI7013_TEMP_HIGH		=12,
-	REG_SI7013_TEMP_LOW			=13,
+	REG_SI7013_TEMP_HIGH		= 12,
+	REG_SI7013_TEMP_LOW			= 13,
 
-	REG_SI114x_ALS_HIGH			=14,
-	REG_SI114x_ALS_LOW			=15,
+	REG_SI114x_ALS_HIGH			= 14,
+	REG_SI114x_ALS_LOW			= 15,
 
-	REG_AS3935_LIGHT_DET_NUM	=16,
+	REG_SI114x_UV_HIGH			= 16,
+	REG_SI114x_UV_LOW			= 17,
 
-	REG_BMP180_TEMP_HIGH		=17,
-	REG_BMP180_TEMP_LOW			=18,
+	REG_BMP180_TEMP_HIGH		= 18,
+	REG_BMP180_TEMP_LOW			= 19,
 
-	REG_BMP180_PRESS_XHIGH		=19,
-	REG_BMP180_PRESS_HIGH		=20,
-	REG_BMP180_PRESS_LOW		=21,
+	REG_BMP180_PRESS_XHIGH		= 20,
+	REG_BMP180_PRESS_HIGH		= 21,
+	REG_BMP180_PRESS_LOW		= 22,
 
-	REG_HMC5883L_X_HIGH			=22,
-	REG_HMC5883L_X_LOW			=23,
-	REG_HMC5883L_Y_HIGH			=24,
-	REG_HMC5883L_Y_LOW			=25,
-	REG_HMC5883L_Z_HIGH			=26,
-	REG_HMC5883L_Z_LOW			=27,
+	REG_HMC5883L_X_HIGH			= 23,
+	REG_HMC5883L_X_LOW			= 24,
+	REG_HMC5883L_Y_HIGH			= 25,
+	REG_HMC5883L_Y_LOW			= 26,
+	REG_HMC5883L_Z_HIGH			= 27,
+	REG_HMC5883L_Z_LOW			= 28,
 
-	REG_MPU6050_X_ACCEL_HIGH	=28,
-	REG_MPU6050_X_ACCEL_LOW		=29,
-	REG_MPU6050_Y_ACCEL_HIGH	=30,
-	REG_MPU6050_Y_ACCEL_LOW		=31,
-	REG_MPU6050_Z_ACCEL_HIGH	=32,
-	REG_MPU6050_Z_ACCEL_LOW		=33,
+	REG_MPU6050_X_ACCEL_HIGH	= 29,
+	REG_MPU6050_X_ACCEL_LOW		= 30,
+	REG_MPU6050_Y_ACCEL_HIGH	= 31,
+	REG_MPU6050_Y_ACCEL_LOW		= 32,
+	REG_MPU6050_Z_ACCEL_HIGH	= 33,
+	REG_MPU6050_Z_ACCEL_LOW		= 34,
 
-	REG_MPU6050_X_GYRO_HIGH		=34,
-	REG_MPU6050_X_GYRO_LOW		=35,
-	REG_MPU6050_Y_GYRO_HIGH		=36,
-	REG_MPU6050_Y_GYRO_LOW		=37,
-	REG_MPU6050_Z_GYRO_HIGH		=38,
-	REG_MPU6050_Z_GYRO_LOW		=39,
+	REG_MPU6050_X_GYRO_HIGH		= 35,
+	REG_MPU6050_X_GYRO_LOW		= 36,
+	REG_MPU6050_Y_GYRO_HIGH		= 37,
+	REG_MPU6050_Y_GYRO_LOW		= 38,
+	REG_MPU6050_Z_GYRO_HIGH		= 39,
+	REG_MPU6050_Z_GYRO_LOW		= 40,
 
-	REG_MPU6050_X_PEDO_COUNT_1	=40,
-	REG_MPU6050_X_PEDO_COUNT_2	=41,
-	REG_MPU6050_X_PEDO_COUNT_3	=42,
-	REG_MPU6050_X_PEDO_COUNT_4	=43,
+	REG_MPU6050_X_PEDO_COUNT_1	= 41,
+	REG_MPU6050_X_PEDO_COUNT_2	= 42,
+	REG_MPU6050_X_PEDO_COUNT_3	= 43,
+	REG_MPU6050_X_PEDO_COUNT_4	= 44,
 
-	REG_MPU6050_X_PEDO_TIME_1	=44,
-	REG_MPU6050_X_PEDO_TIME_2	=45,
-	REG_MPU6050_X_PEDO_TIME_3	=46,
-	REG_MPU6050_X_PEDO_TIME_4	=47,
+	REG_MPU6050_X_PEDO_TIME_1	= 45,
+	REG_MPU6050_X_PEDO_TIME_2	= 46,
+	REG_MPU6050_X_PEDO_TIME_3	= 47,
+	REG_MPU6050_X_PEDO_TIME_4	= 48,
 
-	REG_MPU6050_X_TAP_EVENT_1	=48,
-	REG_MPU6050_X_TAP_EVENT_2	=49,
-	REG_MPU6050_X_TAP_EVENT_3	=50,
-	REG_MPU6050_X_TAP_EVENT_4	=51,
-	REG_MPU6050_X_TAP_EVENT_5	=52,
-	REG_MPU6050_X_TAP_EVENT_6	=53,
-	REG_MPU6050_X_TAP_EVENT_7	=54,
-	REG_MPU6050_X_TAP_EVENT_8	=55,
-	REG_MPU6050_X_TAP_EVENT_9	=56,
-	REG_MPU6050_X_TAP_EVENT_10	=57,
-
-	REG_AS3935_lIGH_DIST_1		=58,
-	REG_AS3935_lIGH_DIST_2,
-	REG_AS3935_lIGH_DIST_3,
-	REG_AS3935_lIGH_DIST_4,
-	REG_AS3935_lIGH_DIST_5,
-	REG_AS3935_lIGH_DIST_6,
-	REG_AS3935_lIGH_DIST_7,
-	REG_AS3935_lIGH_DIST_8,
-	REG_AS3935_lIGH_DIST_9,
-	REG_AS3935_lIGH_DIST_10,
+	REG_MPU6050_X_TAP_EVENT_1	= 49,
+	REG_MPU6050_X_TAP_EVENT_2	= 50,
+	REG_MPU6050_X_TAP_EVENT_3	= 51,
+	REG_MPU6050_X_TAP_EVENT_4	= 52,
+	REG_MPU6050_X_TAP_EVENT_5	= 53,
+	REG_MPU6050_X_TAP_EVENT_6	= 54,
+	REG_MPU6050_X_TAP_EVENT_7	= 55,
+	REG_MPU6050_X_TAP_EVENT_8	= 56,
+	REG_MPU6050_X_TAP_EVENT_9	= 57,
+	REG_MPU6050_X_TAP_EVENT_10	= 58
 };
 
-#define REG_DATA_LENGTH_VALUE	68
+#define REG_DATA_LENGTH_VALUE	68		//TODO recalculate this
 
 //-------------INIT--------------
 void initOscillators(void){
@@ -174,155 +168,81 @@ void clockTest_short() {
 	}
 }
 
-//------------SENSORS------------
-void detectSensors(){
-	LeUart_SendText("\nDETECTING CONNECTED SENSORS\n");
-	sensors = 0;
-
-	//-----------SI7013---------
-	if (Si7013_detect()){
-		LeUart_SendText("\t\tSi7013 detected\n");
-		sensors |= 0x01;
-	}
-	else
-		LeUart_SendText("---\t\tSi7013 NOT DETECTED\t\t---\n");
-
-	//-----------SI1142---------
-	if (Si114x_Detect()){
-		LeUart_SendText("\t\tSi1142 detected\n");
-		sensors |= 0x02;
-	}
-	else
-		LeUart_SendText("---\t\tSi1142 NOT DETECTED\t\t---\n");
-
-	//-----------BMP180---------
-	if (BMP180_detect()) {
-		LeUart_SendText("\t\tBMP180 detected\n");
-		sensors |= 0x08;
-	}
-	else
-		LeUart_SendText("---\t\tBMP180 NOT DETECTED\t\t---\n");
-
-	//-----------HMC5883L---------
-	if (HMC5883L_detect()) {
-		LeUart_SendText("\t\tHMC5883L detected\n");
-		sensors |= 0x10;
-	}
-	else
-		LeUart_SendText("---\t\tHMC5883L NOT DETECTED\t\t---\n");
-
-	//-----------MPU6050---------
-	if (MPU6050_detect()) {
-		LeUart_SendText("\t\tMPU6050 detected\n");
-		sensors |= 0x20;
-	}
-	else
-		LeUart_SendText("---\t\tMPU6050 NOT DETECTED\t\t---\n");
-}
-
-void initSensors()
-{
-	LeUart_SendText("\nINITIALIZATION: ");
-
-	if(sensors & SI7013_SENS)
-	{
-		Si7013_init();
-		LeUart_SendText(" SI7013");
-	}
-	if(sensors & SI114x_SENS)
-	{
-		Si114x_Init();
-		LeUart_SendText(" SI1142");
-	}
-	if(sensors & BMP180_SENS)
-	{
-		BMP180_init();
-		LeUart_SendText(" BMP180");
-	}
-	if(sensors & HMC5883L_SENS)
-	{
-		HMC5883L_init();
-		LeUart_SendText(" HMC5883L");
-	}
-	if(sensors & MPU6050_SENS)
-	{
-		MPU6050_init();
-		LeUart_SendText(" MPU6050");
-	}
-	LeUart_SendChar('\n');
-}
-
-//------------RTC----------------
-
 #ifdef DEBUG
 void printResults(void)
 {
 	char buff[30];
 
-	uint32_t pressure=(uint32_t)devInternalRegisters[REG_BMP180_PRESS_XHIGH]*1000+(uint32_t)devInternalRegisters[REG_BMP180_PRESS_HIGH]*10+(uint32_t)devInternalRegisters[REG_BMP180_PRESS_LOW];
-	sprintf(buff,"\nPress:%ld ",pressure);
+	uint32_t pressure = (uint32_t)devInternalRegisters[REG_BMP180_PRESS_XHIGH] * 1000
+					  + (uint32_t)devInternalRegisters[REG_BMP180_PRESS_HIGH]  * 10
+					  + (uint32_t)devInternalRegisters[REG_BMP180_PRESS_LOW];
+	sprintf(buff, "\nPress:%ld ", pressure);
 	LeUart_SendText(buff);
 
 	uint32_t rhData = (uint32_t)devInternalRegisters[REG_SI7013_HUM_HIGH] * 100 + (uint32_t)devInternalRegisters[REG_SI7013_HUM_LOW];
 	int32_t   tData = (int32_t)devInternalRegisters[REG_SI7013_TEMP_HIGH] * 100 + (uint32_t)devInternalRegisters[REG_SI7013_TEMP_LOW];
-	sprintf(buff,"Hum:%ld Temp:%ld ",rhData,tData);
+	sprintf(buff, "Hum:%ld Temp:%ld ", rhData, tData);
 	LeUart_SendText(buff);
 
-	uint16_t ambientLight = (((uint16_t)devInternalRegisters[REG_SI114x_ALS_HIGH])<<8) + (uint16_t)devInternalRegisters[REG_SI114x_ALS_LOW];
-	sprintf(buff,"ALS:%d ",ambientLight);
+	uint16_t ambientLight = (((uint16_t)devInternalRegisters[REG_SI114x_ALS_HIGH]) << 8) + (uint16_t)devInternalRegisters[REG_SI114x_ALS_LOW];
+	uint16_t UvIndex      = (((uint16_t)devInternalRegisters[REG_SI114x_UV_HIGH]) << 8) + (uint16_t)devInternalRegisters[REG_SI114x_UV_LOW];
+	sprintf(buff, "\nALS:%d UV:%d\n", ambientLight, UvIndex);
 	LeUart_SendText(buff);
 
-	short temp=(short)devInternalRegisters[REG_BMP180_TEMP_HIGH]*10+(short)devInternalRegisters[REG_BMP180_TEMP_LOW];
-	sprintf(buff,"Temp:%d ",temp);
+	short temp = (short)devInternalRegisters[REG_BMP180_TEMP_HIGH] * 10 + (short)devInternalRegisters[REG_BMP180_TEMP_LOW];
+	sprintf(buff, "Temp:%d ", temp);
 	LeUart_SendText(buff);
 
-	int16_t compass_x=((int16_t)devInternalRegisters[REG_HMC5883L_X_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_X_LOW];
-	int16_t compass_y=((int16_t)devInternalRegisters[REG_HMC5883L_Y_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_Y_LOW];
-	int16_t compass_z=((int16_t)devInternalRegisters[REG_HMC5883L_Z_HIGH]<<8) + devInternalRegisters[REG_HMC5883L_Z_LOW];
+	int16_t compass_x = ((int16_t)devInternalRegisters[REG_HMC5883L_X_HIGH] << 8) + devInternalRegisters[REG_HMC5883L_X_LOW];
+	int16_t compass_y = ((int16_t)devInternalRegisters[REG_HMC5883L_Y_HIGH] << 8) + devInternalRegisters[REG_HMC5883L_Y_LOW];
+	int16_t compass_z = ((int16_t)devInternalRegisters[REG_HMC5883L_Z_HIGH] << 8) + devInternalRegisters[REG_HMC5883L_Z_LOW];
 	LeUart_SendChar('\n');
-	sprintf(buff,"Compass: X[%d] Y[%d] Z[%d]\n",compass_x,compass_y,compass_z);
+	sprintf(buff, "Compass: X[%d] Y[%d] Z[%d]\n", compass_x, compass_y, compass_z);
 	LeUart_SendText(buff);
 
 	int16_t accel[3];
-	accel[0]=((int16_t)devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_X_ACCEL_LOW];
-	accel[1]=((int16_t)devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW];
-	accel[2]=((int16_t)devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW];
-	sprintf(buff,"Acc: X[%d] Y[%d] Z[%d]",accel[0],accel[1],accel[2]);
+	accel[0] = ((int16_t)devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH] << 8) + devInternalRegisters[REG_MPU6050_X_ACCEL_LOW];
+	accel[1] = ((int16_t)devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH] << 8) + devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW];
+	accel[2] = ((int16_t)devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH] << 8) + devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW];
+	sprintf(buff, "Acc: X[%d] Y[%d] Z[%d]", accel[0], accel[1], accel[2]);
 	LeUart_SendText(buff);
 
 	int16_t gyro[3];
-	gyro[0]=((int16_t)devInternalRegisters[REG_MPU6050_X_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_X_GYRO_LOW];
-	gyro[1]=((int16_t)devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Y_GYRO_LOW];
-	gyro[2]=((int16_t)devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH]<<8) + devInternalRegisters[REG_MPU6050_Z_GYRO_LOW];
-	sprintf(buff,"\tGyro: X[%d] Y[%d] Z[%d]\n",gyro[0],gyro[1],gyro[2]);
+	gyro[0] = ((int16_t)devInternalRegisters[REG_MPU6050_X_GYRO_HIGH] << 8) + devInternalRegisters[REG_MPU6050_X_GYRO_LOW];
+	gyro[1] = ((int16_t)devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH] << 8) + devInternalRegisters[REG_MPU6050_Y_GYRO_LOW];
+	gyro[2] = ((int16_t)devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH] << 8) + devInternalRegisters[REG_MPU6050_Z_GYRO_LOW];
+	sprintf(buff, "\tGyro: X[%d] Y[%d] Z[%d]\n", gyro[0], gyro[1], gyro[2]);
 	LeUart_SendText(buff);
 
-	unsigned long pedometer_count=((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1]<<24UL) +
-								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2]<<16UL) +
-								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3]<<8UL) +
-								  ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4]);
-	sprintf(buff,"\t\tPedometer count: %ld",pedometer_count);
+	unsigned long pedometer_count = ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1] << 24UL) +
+								    ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2] << 16UL) +
+								    ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3] << 8UL) +
+								    ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4]);
+	sprintf(buff, "\t\tPedometer count: %ld", pedometer_count);
 	LeUart_SendText(buff);
 
-	unsigned long pedometer_time=((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1]<<24UL) +
-							     ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2]<<16UL) +
-								 ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3]<<8UL) +
-								 ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4]);
-	sprintf(buff,"\t\tPedometer time: %ld",pedometer_time);
+	unsigned long pedometer_time = ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1] << 24UL) +
+							       ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2] << 16UL) +
+								   ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3] << 8UL) +
+								   ((unsigned long)devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4]);
+	sprintf(buff, "\t\tPedometer time: %ld", pedometer_time);
 	LeUart_SendText(buff);
 }
 #endif
 
-uint8_t time_interrupt_type=0;
+/* -------------------------------------------------------------*/
+/*							  RTC Timer 						*/
+/* -------------------------------------------------------------*/
+uint8_t g_TimeInterruptType = 0;
 void RTC_IRQHandler(void)
 {
 	clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();
 
-	devInternalRegisters[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
+	devInternalRegisters[REG_DATA_LENGTH] = REG_DATA_LENGTH_VALUE;
 
-	if(time_interrupt_type==0)
+	if(g_TimeInterruptType == 0)
 	{
-		if(sensors & SI114x_SENS)
+		if(sensors & SI114X_SENS)
 		{
 			Si114x_ForceAmbientLightMeasurment();
 		}
@@ -332,142 +252,177 @@ void RTC_IRQHandler(void)
 		}
 		if(sensors & SI7013_SENS) 	//this must be least to read
 		{
-			Si7013_forceRhMeasurment();
+			Si7013_ForceRhMeasurment();
 		}
 
 		RTC_setTime(100);	//change RTC time to 100ms
-		time_interrupt_type=1;
+		g_TimeInterruptType = 1;
 
 	}
-	else if(time_interrupt_type==1)
+	else if(g_TimeInterruptType == 1)
 	{
 		if(sensors & SI7013_SENS)	//this sensor must be executed first
 		{
-			uint32_t rhData=0;
-			int32_t   tData=0;
-			if (Si7013_readHumidityAndTemperature(&rhData,&tData)!=-1){
-				devInternalRegisters[REG_SI7013_HUM_HIGH]  = rhData/100;
-				devInternalRegisters[REG_SI7013_HUM_LOW]   = rhData%100;
-				devInternalRegisters[REG_SI7013_TEMP_HIGH] = tData/100;
-				devInternalRegisters[REG_SI7013_TEMP_LOW]  = tData%100;
+			uint32_t rhData = 0;
+			int32_t   tData = 0;
+			if (Si7013_ReadHumidityAndTemperature(&rhData,&tData) != -1)
+			{
+				devInternalRegisters[REG_SI7013_HUM_HIGH]  = rhData / 100;
+				devInternalRegisters[REG_SI7013_HUM_LOW]   = rhData % 100;
+				devInternalRegisters[REG_SI7013_TEMP_HIGH] = tData / 100;
+				devInternalRegisters[REG_SI7013_TEMP_LOW]  = tData % 100;
 			}
 #ifdef DEBUG
-			else {
+			else
+			{
 				LeUart_SendText("Error measuring temperature and humidity\n");
 			}
 #endif
 		}
 
 		/* Read Si114x ambient light */
-		if(sensors & SI114x_SENS)
+		if(sensors & SI114X_SENS)
 		{
 			uint16_t ambientLight=0;
 
-			if (Si114x_ReadAmbientLight(&ambientLight)!=-1)
+			if (Si114x_ReadAmbientLight(&ambientLight) != -1)
 			{
-				devInternalRegisters[REG_SI114x_ALS_HIGH]  = ambientLight>>8;
+				devInternalRegisters[REG_SI114x_ALS_HIGH]  = ambientLight >> 8;
 				devInternalRegisters[REG_SI114x_ALS_LOW]   = (uint8_t)ambientLight;
 			}
+
+			Si114x_ForceUvIndexMeasurment();
 		}
 
 		/* Read temperature from BMP180 */
 		if(sensors & BMP180_SENS)
 		{
-			short temp=0;
+			short temp = 0;
 			BMP180_readTemperature(&temp);
 
-			devInternalRegisters[REG_BMP180_TEMP_HIGH]  = temp/10;
-			devInternalRegisters[REG_BMP180_TEMP_LOW]   = temp%10;
+			devInternalRegisters[REG_BMP180_TEMP_HIGH]  = temp / 10;
+			devInternalRegisters[REG_BMP180_TEMP_LOW]   = temp % 10;
 
 			BMP180_forcePressureMeasurment();
 		}
 
 		/* Read magnetometer data */
-		if(sensors & HMC5883L_SENS){
-			int16_t X; 		int16_t Y;			int16_t Z;
-			HMC5883L_getCompassData(&X,&Y,&Z);
+		if(sensors & HMC5883L_SENS)
+		{
+			int16_t X;
+			int16_t Y;
+			int16_t Z;
+			HMC5883L_getCompassData(&X, &Y, &Z);
 
-			devInternalRegisters[REG_HMC5883L_X_HIGH]=      X>>8;
-			devInternalRegisters[REG_HMC5883L_X_LOW] =(uint8_t)X;
-			devInternalRegisters[REG_HMC5883L_Y_HIGH]=      Y>>8;
-			devInternalRegisters[REG_HMC5883L_Y_LOW] =(uint8_t)Y;
-			devInternalRegisters[REG_HMC5883L_Z_HIGH]=      Z>>8;
-			devInternalRegisters[REG_HMC5883L_Z_LOW] =(uint8_t)Z;
+			devInternalRegisters[REG_HMC5883L_X_HIGH] =      X >> 8;
+			devInternalRegisters[REG_HMC5883L_X_LOW]  = (uint8_t)X;
+			devInternalRegisters[REG_HMC5883L_Y_HIGH] =      Y >> 8;
+			devInternalRegisters[REG_HMC5883L_Y_LOW]  = (uint8_t)Y;
+			devInternalRegisters[REG_HMC5883L_Z_HIGH] =      Z >> 8;
+			devInternalRegisters[REG_HMC5883L_Z_LOW]  = (uint8_t)Z;
 		}
 
 		/* Read accel and gyro data */
-		if(sensors & MPU6050_SENS){
+		if(sensors & MPU6050_SENS)
+		{
 			int16_t accel[3];
 			int16_t gyro[3];
 
 			// read accelerometer data
-			mpu_get_accel_reg(accel,0);
-			devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH]=      accel[0]>>8;
-			devInternalRegisters[REG_MPU6050_X_ACCEL_LOW] =(uint8_t)accel[0];
-			devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH]=      accel[1]>>8;
-			devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW] =(uint8_t)accel[1];
-			devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH]=      accel[2]>>8;
-			devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW] =(uint8_t)accel[2];
+			mpu_get_accel_reg(accel, 0);
+			devInternalRegisters[REG_MPU6050_X_ACCEL_HIGH] =      accel[0] >> 8;
+			devInternalRegisters[REG_MPU6050_X_ACCEL_LOW]  = (uint8_t)accel[0];
+			devInternalRegisters[REG_MPU6050_Y_ACCEL_HIGH] =      accel[1] >> 8;
+			devInternalRegisters[REG_MPU6050_Y_ACCEL_LOW]  = (uint8_t)accel[1];
+			devInternalRegisters[REG_MPU6050_Z_ACCEL_HIGH] =      accel[2] >> 8;
+			devInternalRegisters[REG_MPU6050_Z_ACCEL_LOW]  = (uint8_t)accel[2];
 
 			// read gyroscope data
-			mpu_get_gyro_reg(gyro,0);
-			devInternalRegisters[REG_MPU6050_X_GYRO_HIGH]=      gyro[0]>>8;
-			devInternalRegisters[REG_MPU6050_X_GYRO_LOW] =(uint8_t)gyro[0];
-			devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH]=      gyro[1]>>8;
-			devInternalRegisters[REG_MPU6050_Y_GYRO_LOW] =(uint8_t)gyro[1];
-			devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH]=      gyro[2]>>8;
-			devInternalRegisters[REG_MPU6050_Z_GYRO_LOW] =(uint8_t)gyro[2];
+			mpu_get_gyro_reg(gyro, 0);
+			devInternalRegisters[REG_MPU6050_X_GYRO_HIGH] =      gyro[0] >> 8;
+			devInternalRegisters[REG_MPU6050_X_GYRO_LOW]  = (uint8_t)gyro[0];
+			devInternalRegisters[REG_MPU6050_Y_GYRO_HIGH] =      gyro[1] >> 8;
+			devInternalRegisters[REG_MPU6050_Y_GYRO_LOW]  = (uint8_t)gyro[1];
+			devInternalRegisters[REG_MPU6050_Z_GYRO_HIGH] =      gyro[2] >> 8;
+			devInternalRegisters[REG_MPU6050_Z_GYRO_LOW]  = (uint8_t)gyro[2];
 
 			short sensors_mpu;
 			long quat[4];
 			unsigned char more;
 
 			// check gesture interrupts
-			dmp_read_fifo(gyro,accel,quat,0,&sensors_mpu,&more);
+			dmp_read_fifo(gyro, accel, quat, 0, &sensors_mpu, &more);
 
-			for (int i=0;i<10;i++){
-				if(i<i_tapData){
-					devInternalRegisters[REG_MPU6050_X_TAP_EVENT_1+i]=tapData[i];
+			for (int i = 0; i < 10; i++)
+			{
+				if(i < i_tapData)
+				{
+					devInternalRegisters[REG_MPU6050_X_TAP_EVENT_1 + i] = tapData[i];
 				}
-				else {
-					devInternalRegisters[REG_MPU6050_X_TAP_EVENT_1+i]=0;
+				else
+				{
+					devInternalRegisters[REG_MPU6050_X_TAP_EVENT_1 + i] = 0;
 				}
 			}
-			i_tapData=0;
+			i_tapData = 0;
 
 			// read pedometer data
-			unsigned long pedometer_count=0;
+			unsigned long pedometer_count = 0;
 			dmp_get_pedometer_step_count(&pedometer_count);
-			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1]=(uint8_t)(pedometer_count>>24);
-			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2]=(uint8_t)(pedometer_count>>16);
-			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3]=(uint8_t)(pedometer_count>>8);
-			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4]=(uint8_t)(pedometer_count);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_1] = (uint8_t)(pedometer_count >> 24);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_2] = (uint8_t)(pedometer_count >> 16);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_3] = (uint8_t)(pedometer_count >> 8);
+			devInternalRegisters[REG_MPU6050_X_PEDO_COUNT_4] = (uint8_t)(pedometer_count);
 
-			unsigned long pedometer_time=0;
+			unsigned long pedometer_time = 0;
 			dmp_get_pedometer_walk_time(&pedometer_time);
-			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1]=(uint8_t)(pedometer_time>>24);
-			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2]=(uint8_t)(pedometer_time>>16);
-			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3]=(uint8_t)(pedometer_time>>8);
-			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4]=(uint8_t)(pedometer_time);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_1] = (uint8_t)(pedometer_time >> 24);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_2] = (uint8_t)(pedometer_time >> 16);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_3] = (uint8_t)(pedometer_time >> 8);
+			devInternalRegisters[REG_MPU6050_X_PEDO_TIME_4] = (uint8_t)(pedometer_time);
 		}
 
 		//dont change the RTC setting
-		time_interrupt_type++;
+		g_TimeInterruptType++;
 	}
-	else if(time_interrupt_type==2){
+	else if(g_TimeInterruptType == 2)
+	{
+		/* Read Si114x UV index */
+		if(sensors & SI114X_SENS)
+		{
+			uint16_t UvIndex=0;
+
+			if (Si114x_ReadUvIndex(&UvIndex) != -1)
+			{
+				devInternalRegisters[REG_SI114x_UV_HIGH]  = UvIndex >> 8;
+				devInternalRegisters[REG_SI114x_UV_LOW]   = (uint8_t)UvIndex;
+			}
+
+#ifdef DEBUG
+			uint16_t PS1;
+			uint16_t PS2;
+			uint16_t PS3;
+			Si114x_ReadPsMeasurments(&PS1, &PS2, &PS3);
+			char buff[30];
+			sprintf(buff, "\nPS:\t%d\t%d\t%d\n", PS1, PS2, PS3);
+			LeUart_SendText(buff);
+#endif
+		}
+
 		/* Read pressure */
-		if(sensors & BMP180_SENS){
-			uint32_t pressure=0;
+		if(sensors & BMP180_SENS)
+		{
+			uint32_t pressure = 0;
 			BMP180_readPressure(&pressure);
 
-			devInternalRegisters[REG_BMP180_PRESS_XHIGH]=pressure/1000;
-			devInternalRegisters[REG_BMP180_PRESS_HIGH] =(pressure%1000)/10;
-			devInternalRegisters[REG_BMP180_PRESS_LOW]  =pressure%10000;
+			devInternalRegisters[REG_BMP180_PRESS_XHIGH] = pressure / 1000;
+			devInternalRegisters[REG_BMP180_PRESS_HIGH]  = (pressure % 1000) /10;
+			devInternalRegisters[REG_BMP180_PRESS_LOW]   = pressure % 10000;
 		}
 
 		//change RTC time to 400ms
 		RTC_setTime(400);
-		time_interrupt_type=0;
+		g_TimeInterruptType = 0;
 
 		//after getting all the data print it
 		printResults();
@@ -476,6 +431,162 @@ void RTC_IRQHandler(void)
 	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();	clockTest_short();
 
 	RTC_clearInt();
+}
+
+/* -------------------------------------------------------------*/
+/*							IRQ Interrupts 						*/
+/* -------------------------------------------------------------*/
+
+void GPIO_EVEN_IRQHandler(void)
+{
+	/* Detect interrupt source and run the corresponding function */
+	if (sensors & SI114X_SENS)
+	{
+		if (GPIO_PinInGet(SI114X_IRQ_PORT, SI114X_IRQ_PIN) == 0)
+		{
+			Si114x_Interrupt();
+		}
+	}
+
+	GPIO_IntClear(0xFFFF); //TODO make this as a function
+}
+
+/* -------------------------------------------------------------*/
+/*							Initialization 						*/
+/* -------------------------------------------------------------*/
+
+/* -------------- Sensors detection ------------------*/
+void detectSensors()
+{
+#ifdef DEBUG
+	LeUart_SendText("\nDETECTING CONNECTED SENSORS\n");
+#endif
+	sensors = 0;
+
+	//-----------SI7013---------
+	if (Si7013_Detect())
+	{
+#ifdef DEBUG
+		LeUart_SendText("\t\tSi7013 detected\n");
+#endif
+		sensors |= SI7013_SENS;
+	}
+#ifdef DEBUG
+	else
+	{
+		LeUart_SendText("---\t\tSi7013 NOT DETECTED\t\t---\n");
+	}
+#endif
+
+	//-----------SI114x---------
+	if (Si114x_Detect())
+	{
+#ifdef DEBUG
+		LeUart_SendText("\t\tSi1142 detected\n");
+#endif
+		sensors |= SI114X_SENS;
+	}
+#ifdef DEBUG
+	else
+	{
+		LeUart_SendText("---\t\tSi1142 NOT DETECTED\t\t---\n");
+	}
+#endif
+
+	//-----------BMP180---------
+	if (BMP180_detect())
+	{
+#ifdef DEBUG
+		LeUart_SendText("\t\tBMP180 detected\n");
+#endif
+		sensors |= BMP180_SENS;
+	}
+#ifdef DEBUG
+	else
+	{
+		LeUart_SendText("---\t\tBMP180 NOT DETECTED\t\t---\n");
+	}
+#endif
+
+	//-----------HMC5883L---------
+	if (HMC5883L_detect())
+	{
+#ifdef DEBUG
+		LeUart_SendText("\t\tHMC5883L detected\n");
+#endif
+		sensors |= HMC5883L_SENS;
+	}
+#ifdef DEBUG
+	else
+	{
+		LeUart_SendText("---\t\tHMC5883L NOT DETECTED\t\t---\n");
+	}
+#endif
+
+	//-----------MPU6050---------
+	if (MPU6050_detect())
+	{
+#ifdef DEBUG
+		LeUart_SendText("\t\tMPU6050 detected\n");
+#endif
+		sensors |= MPU6050_SENS;
+	}
+#ifdef DEBUG
+	else
+	{
+		LeUart_SendText("---\t\tMPU6050 NOT DETECTED\t\t---\n");
+	}
+#endif
+}
+
+/* -------------- Sensors initialization ------------------*/
+void initSensors(void)
+{
+#ifdef DEBUG
+	LeUart_SendText("\nINITIALIZATION: ");
+#endif
+
+	if(sensors & SI7013_SENS)
+	{
+		Si7013_Init();
+#ifdef DEBUG
+		LeUart_SendText(" SI7013");
+#endif
+	}
+	if(sensors & SI114X_SENS)
+	{
+		Si114x_Settings_t Si114xSettings;
+		Si114xSettings.irq_pin  = SI114X_IRQ_PIN;
+		Si114xSettings.irq_port = SI114X_IRQ_PORT;
+		Si114x_Init(Si114xSettings);
+#ifdef DEBUG
+		LeUart_SendText(" SI1142");
+#endif
+	}
+	if(sensors & BMP180_SENS)
+	{
+		BMP180_init();
+#ifdef DEBUG
+		LeUart_SendText(" BMP180");
+#endif
+	}
+	if(sensors & HMC5883L_SENS)
+	{
+		HMC5883L_init();
+#ifdef DEBUG
+		LeUart_SendText(" HMC5883L");
+#endif
+	}
+	if(sensors & MPU6050_SENS)
+	{
+		MPU6050_init();
+#ifdef DEBUG
+		LeUart_SendText(" MPU6050");
+#endif
+	}
+#ifdef DEBUG
+	LeUart_SendChar('\n');
+#endif
 }
 
 void initInterfaces(){
@@ -511,13 +622,14 @@ int main(void) {
   initInterfaces();
 
   //TODO remove this later
-  for (int i=0;i<DEV_INT_REG_BUFFER_SIZE;i++){
-	  devInternalRegisters[i]=0;
+  for (int i=0;i<DEV_INT_REG_BUFFER_SIZE;i++)
+  {
+	  devInternalRegisters[i] = 0;
   }
-  devInternalRegisters[REG_DATA_LENGTH]=REG_DATA_LENGTH_VALUE;
-  devInternalRegisters[REG_MODULE_ID_1]='E';
-  devInternalRegisters[REG_MODULE_ID_2]='S';
-  devInternalRegisters[REG_MODULE_ID_3]='N';
+  devInternalRegisters[REG_DATA_LENGTH] = REG_DATA_LENGTH_VALUE;
+  devInternalRegisters[REG_MODULE_ID_1] = 'E';
+  devInternalRegisters[REG_MODULE_ID_2] = 'S';
+  devInternalRegisters[REG_MODULE_ID_3] = 'N';
 
   //sensors initalization
   detectSensors();
@@ -529,7 +641,8 @@ int main(void) {
   RTC_enableInt();
 
   /* Infinite loop */
-  while (1) {
+  while (1)
+  {
 	  /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
 	  EMU_EnterEM2(false);
   }

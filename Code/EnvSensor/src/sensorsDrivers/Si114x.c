@@ -9,6 +9,13 @@
 #include "..\ucPeripheralDrivers\i2c_connection.h"
 #include "..\ucPeripheralDrivers\leuart_connection.h"
 
+/* TODO
+ * read block of two bytes data like SI114X_ALS_VIS_DATA[0:1]_REG
+ */
+
+#define TRUE	(1)
+#define FALSE	(0)
+
 #if defined(SI1141) || defined(SI1142) || defined(SI1143)
 const uint8_t SI114x_ADDR=0x5A*2;
 #endif
@@ -63,7 +70,7 @@ static void Si114x_SetRegister(SI114x_Registers_t Si114x_reg, uint8_t val)
 	i2c_RegisterSet(I2C0, SI114x_ADDR, (uint8_t)Si114x_reg, val);
 }
 
-static void Si114X_GetRegister(SI114x_Registers_t Si114x_reg, uint8_t *val)
+static void Si114x_GetRegister(SI114x_Registers_t Si114x_reg, uint8_t *val)
 {
 	i2c_RegisterGet(I2C0, SI114x_ADDR, (uint8_t)Si114x_reg, val);
 }
@@ -77,7 +84,7 @@ static void Si114X_GetRegister(SI114x_Registers_t Si114x_reg, uint8_t *val)
 uint8_t Si114x_GetPartId(void)
 {
 	uint8_t ret = 0;
-	Si114X_GetRegister(SI114X_PART_ID_REG, &ret);
+	Si114x_GetRegister(SI114X_PART_ID_REG, &ret);
 	return(ret);
 }
 
@@ -85,7 +92,7 @@ uint8_t Si114x_GetPartId(void)
 uint8_t Si114x_GetRevId(void)
 {
 	uint8_t ret = 0;
-	Si114X_GetRegister(SI114X_REV_ID_REG, &ret);
+	Si114x_GetRegister(SI114X_REV_ID_REG, &ret);
 	return(ret);
 }
 
@@ -93,7 +100,7 @@ uint8_t Si114x_GetRevId(void)
 uint8_t Si114x_GetSeqId(void)
 {
 	uint8_t ret = 0;
-	Si114X_GetRegister(SI114X_SEQ_ID_REG, &ret);
+	Si114x_GetRegister(SI114X_SEQ_ID_REG, &ret);
 	return(ret);
 }
 
@@ -150,7 +157,7 @@ void Si114x_SetIrqEnable(Si114x_Irq_Enable_ALS_t IrqEnableALS,
 }
 
 /* ---------------- SI114X_HW_KEY -----------------*/
-void Si114x_SetHW(void)
+void Si114x_SetHwKey(void)
 {
 	/* This register needs to be set to 0x17 for proper
 	 * Si114x operation.
@@ -166,11 +173,24 @@ void Si114x_SetHW(void)
 	Note that for the Si1145/6/7 with SEQ_ID=0x01, there is a code error that places
 	MEAS_RATE0 at 0x0A with MEAS_RATE1 at 0x08 instead. This will be fixed in
 	future revisions of the Si1145/6/7
+
+	32000 = 1s
+	32 	  = 1ms
 */
 void Si114x_SetMeasurmentRate(uint16_t measRate)
 {
-	Si114x_SetRegister(SI114X_MEAS_RATE0_REG, (uint8_t)((measRate >> 8) & 0x0F));
-	Si114x_SetRegister(SI114X_MEAS_RATE1_REG, (uint8_t)(measRate));
+	Si114x_SetRegister(SI114X_MEAS_RATE0_REG, (uint8_t)(measRate));
+	Si114x_SetRegister(SI114X_MEAS_RATE1_REG, (uint8_t)((measRate >> 8) & 0xFF));
+
+#ifdef DEBUG
+	uint8_t reg1;
+	uint8_t reg2;
+	Si114x_GetRegister(SI114X_MEAS_RATE0_REG, &reg1);
+	Si114x_GetRegister(SI114X_MEAS_RATE1_REG, &reg2);
+	char buff[30];
+	sprintf(buff, "MeasRate:0x%02x%02x=%d\n", reg2, reg1, (reg1 + reg2 * 256u));
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- SI114X_PS_LED21 -------------- */
@@ -197,6 +217,16 @@ void Si114x_SetLedCurrents(uint8_t Led1_Current, uint8_t Led2_Current, uint8_t L
 
 	Si114x_SetRegister(SI114X_PS_LED21_REG, val1);
 	Si114x_SetRegister(SI114X_PS_LED3_REG, val2);
+
+#ifdef DEBUG
+	uint8_t reg1;
+	uint8_t reg2;
+	Si114x_GetRegister(SI114X_PS_LED21_REG, &reg1);
+	Si114x_GetRegister(SI114X_PS_LED3_REG, &reg2);
+	char buff[30];
+	sprintf(buff, "\nLED Current settings: 0x%02x, 0x%02x\n", reg1, reg2);
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- SI114X_UCOEF[0:3] -------------- */
@@ -327,7 +357,7 @@ void Si114x_SetParamRd(uint8_t val)
 uint8_t Si114x_GetResponse()
 {
 	uint8_t ret = 0;
-	Si114X_GetRegister(SI114X_RESPONSE_REG, &ret);
+	Si114x_GetRegister(SI114X_RESPONSE_REG, &ret);
 	return(ret);
 }
 
@@ -341,7 +371,7 @@ uint8_t Si114x_GetResponse()
 void Si114x_GetIrqStatus(uint8_t *ALS_Int, uint8_t *PS1_Int, uint8_t *PS2_Int, uint8_t *PS3_Int, uint8_t *CMD_Int)
 {
 	uint8_t ret = 0;
-	Si114X_GetRegister(SI114X_IRQ_STATUS_REG, &ret);
+	Si114x_GetRegister(SI114X_IRQ_STATUS_REG, &ret);
 
 	if (ret & SI114X_CMD_INT_MASK)
 	{
@@ -386,6 +416,11 @@ void Si114x_GetIrqStatus(uint8_t *ALS_Int, uint8_t *PS1_Int, uint8_t *PS2_Int, u
 
 }
 
+void Si114x_ClrIrqStatus(void)
+{
+	Si114x_SetRegister(SI114X_IRQ_STATUS_REG, 0x00);
+}
+
 /* -------------- CHIP_STAT -------------- */
 #define SI114X_CHIP_STAT_RUNNING_MASK 0x04
 #define SI114X_CHIP_STAT_SUSPEND_MASK 0x02
@@ -394,7 +429,7 @@ void Si114x_GetIrqStatus(uint8_t *ALS_Int, uint8_t *PS1_Int, uint8_t *PS2_Int, u
 void Si114x_GetChipStat(uint8_t *Si114x_Sleep, uint8_t *Si114x_Suspend, uint8_t *Si114x_Running)
 {
 	uint8_t ret = 0;
-	Si114X_GetRegister(SI114X_CHIP_STAT_REG, &ret);
+	Si114x_GetRegister(SI114X_CHIP_STAT_REG, &ret);
 
 	if (ret & SI114X_CHIP_STAT_RUNNING_MASK)
 	{
@@ -423,14 +458,14 @@ void Si114x_GetChipStat(uint8_t *Si114x_Sleep, uint8_t *Si114x_Suspend, uint8_t 
 }
 
 /* -------------- ALS_VIS_DATA[0:1] -------------- */
-uint8_t Si114x_GetAlsVisData(void)
+uint16_t Si114x_GetAlsVisData(void)
 {
 	uint16_t ret;
 
 	uint8_t ALS_Vis_Data_Low;
-	Si114X_GetRegister(SI114X_ALS_VIS_DATA0_REG, &ALS_Vis_Data_Low);
+	Si114x_GetRegister(SI114X_ALS_VIS_DATA0_REG, &ALS_Vis_Data_Low);
 	uint8_t ALS_Vis_Data_High;
-	Si114X_GetRegister(SI114X_ALS_VIS_DATA1_REG, &ALS_Vis_Data_High);
+	Si114x_GetRegister(SI114X_ALS_VIS_DATA1_REG, &ALS_Vis_Data_High);
 
 	ret = (ALS_Vis_Data_High << 8) + ALS_Vis_Data_Low;
 
@@ -438,14 +473,14 @@ uint8_t Si114x_GetAlsVisData(void)
 }
 
 /* -------------- ALS_IR_DATA[0:1] -------------- */
-uint8_t Si114x_GetAlsIrData(void)
+uint16_t Si114x_GetAlsIrData(void)
 {
 	uint16_t ret;
 
 	uint8_t ALS_Ir_Data_Low;
-	Si114X_GetRegister(SI114X_ALS_IR_DATA0_REG, &ALS_Ir_Data_Low);
+	Si114x_GetRegister(SI114X_ALS_IR_DATA0_REG, &ALS_Ir_Data_Low);
 	uint8_t ALS_Ir_Data_High;
-	Si114X_GetRegister(SI114X_ALS_IR_DATA1_REG, &ALS_Ir_Data_High);
+	Si114x_GetRegister(SI114X_ALS_IR_DATA1_REG, &ALS_Ir_Data_High);
 
 	ret = (ALS_Ir_Data_High << 8) + ALS_Ir_Data_Low;
 
@@ -453,14 +488,14 @@ uint8_t Si114x_GetAlsIrData(void)
 }
 
 /* -------------- PS1_DATA[0:1] -------------- */
-uint8_t Si114x_GetPs1Data(void)
+uint16_t Si114x_GetPs1Data(void)
 {
 	uint16_t ret;
 
 	uint8_t PS1_Data_Low;
-	Si114X_GetRegister(SI114X_PS1_DATA0_REG, &PS1_Data_Low);
+	Si114x_GetRegister(SI114X_PS1_DATA0_REG, &PS1_Data_Low);
 	uint8_t PS1_Data_High;
-	Si114X_GetRegister(SI114X_PS1_DATA1_REG, &PS1_Data_High);
+	Si114x_GetRegister(SI114X_PS1_DATA1_REG, &PS1_Data_High);
 
 	ret = (PS1_Data_High << 8) + PS1_Data_Low;
 
@@ -468,14 +503,14 @@ uint8_t Si114x_GetPs1Data(void)
 }
 
 /* -------------- PS2_DATA[0:1] -------------- */
-uint8_t Si114x_GetPs2Data(void)
+uint16_t Si114x_GetPs2Data(void)
 {
 	uint16_t ret;
 
 	uint8_t PS2_Data_Low;
-	Si114X_GetRegister(SI114X_PS2_DATA0_REG, &PS2_Data_Low);
+	Si114x_GetRegister(SI114X_PS2_DATA0_REG, &PS2_Data_Low);
 	uint8_t PS2_Data_High;
-	Si114X_GetRegister(SI114X_PS2_DATA1_REG, &PS2_Data_High);
+	Si114x_GetRegister(SI114X_PS2_DATA1_REG, &PS2_Data_High);
 
 	ret = (PS2_Data_High << 8) + PS2_Data_Low;
 
@@ -483,14 +518,14 @@ uint8_t Si114x_GetPs2Data(void)
 }
 
 /* -------------- PS3_DATA[0:1] -------------- */
-uint8_t Si114x_GetPs3Data(void)
+uint16_t Si114x_GetPs3Data(void)
 {
 	uint16_t ret;
 
 	uint8_t PS3_Data_Low;
-	Si114X_GetRegister(SI114X_PS3_DATA0_REG, &PS3_Data_Low);
+	Si114x_GetRegister(SI114X_PS3_DATA0_REG, &PS3_Data_Low);
 	uint8_t PS3_Data_High;
-	Si114X_GetRegister(SI114X_PS3_DATA1_REG, &PS3_Data_High);
+	Si114x_GetRegister(SI114X_PS3_DATA1_REG, &PS3_Data_High);
 
 	ret = (PS3_Data_High << 8) + PS3_Data_Low;
 
@@ -498,14 +533,14 @@ uint8_t Si114x_GetPs3Data(void)
 }
 
 /* -------------- AUX_UV_DATA[0:1] -------------- */
-uint8_t Si114x_GetAuxUvData(void)
+uint16_t Si114x_GetAuxUvData(void)
 {
 	uint16_t ret;
 
 	uint8_t AuxUv_Data_Low;
-	Si114X_GetRegister(SI114X_AUX_UV_DATA0_REG, &AuxUv_Data_Low);
+	Si114x_GetRegister(SI114X_AUX_UV_DATA0_REG, &AuxUv_Data_Low);
 	uint8_t AuxUv_Data_High;
-	Si114X_GetRegister(SI114X_AUX_UV_DATA1_REG, &AuxUv_Data_High);
+	Si114x_GetRegister(SI114X_AUX_UV_DATA1_REG, &AuxUv_Data_High);
 
 	ret = (AuxUv_Data_High << 8) + AuxUv_Data_Low;
 
@@ -554,21 +589,37 @@ typedef enum{
 #define SI114X_EN_PS2_CHANNEL_SHIFT		1
 #define SI114X_EN_PS1_CHANNEL_SHIFT		0
 
-void Si114x_EnableChannel(uint8_t UV, uint8_t AUX, uint8_t ALS_IR,
-						  uint8_t ALS_Vis, uint8_t PS3, uint8_t PS2,
-						  uint8_t PS1)
+typedef struct{
+	uint8_t UV;
+	uint8_t AUX;
+	uint8_t ALS_IR;
+	uint8_t ALS_Vis;
+	uint8_t PS3;
+	uint8_t PS2;
+	uint8_t PS1;
+}Si114x_EnableChannel_t;
+
+void Si114x_EnableChannel(Si114x_EnableChannel_t EnableChannel)
 {
 	uint8_t val;
-	val = ((UV & 0x01) 		<< SI114X_EN_UV_CHANNEL_SHIFT)
-		+ ((AUX & 0x01) 	<< SI114X_EN_AUX_CHANNEL_SHIFT)
-		+ ((ALS_IR & 0x01)	<< SI114X_EN_ALS_IR_CHANNEL_SHIFT)
-		+ ((ALS_Vis & 0x01)	<< SI114X_EN_ALS_VIS_CHANNEL_SHIFT)
-		+ ((PS3 & 0x01)		<< SI114X_EN_PS3_CHANNEL_SHIFT)
-		+ ((PS2 & 0x01)		<< SI114X_EN_PS2_CHANNEL_SHIFT)
-		+ ((PS1 & 0x01)		<< SI114X_EN_PS1_CHANNEL_SHIFT);
+	val = ((EnableChannel.UV & 0x01) 		<< SI114X_EN_UV_CHANNEL_SHIFT)
+		+ ((EnableChannel.AUX & 0x01) 		<< SI114X_EN_AUX_CHANNEL_SHIFT)
+		+ ((EnableChannel.ALS_IR & 0x01)	<< SI114X_EN_ALS_IR_CHANNEL_SHIFT)
+		+ ((EnableChannel.ALS_Vis & 0x01)	<< SI114X_EN_ALS_VIS_CHANNEL_SHIFT)
+		+ ((EnableChannel.PS3 & 0x01)		<< SI114X_EN_PS3_CHANNEL_SHIFT)
+		+ ((EnableChannel.PS2 & 0x01)		<< SI114X_EN_PS2_CHANNEL_SHIFT)
+		+ ((EnableChannel.PS1 & 0x01)		<< SI114X_EN_PS1_CHANNEL_SHIFT);
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_CHLIST_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_CHLIST_REG);
 
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_CHLIST_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "\nSI114X_CHLIST_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- PSLED12_SELECT -------------- */
@@ -583,30 +634,66 @@ void Si114x_EnableChannel(uint8_t UV, uint8_t AUX, uint8_t ALS_IR,
 #define SI114X_PS2_LED_SHIFT		4
 #define SI114X_PS1_LED_SHIFT		0
 
-void Si114x_SetPsLedSelect(uint8_t PS1_Led, uint8_t PS2_Led, uint8_t PS3_Led)
+/* To select Led configuration you can or the macros together:
+ * Led1 and Led2 enabled ---> SI114X_LED1_ENABLE | SI114X_LED2_ENABLE
+ */
+#define SI114X_LED1_ENABLE 	 (0x01)
+#define SI114X_LED2_ENABLE 	 (0x02)
+#define SI114X_LED3_ENABLE 	 (0x04)
+
+typedef struct{
+	uint8_t PS1_Led;
+	uint8_t PS2_Led;
+	uint8_t PS3_Led;
+} Si114x_PsX_Led_Select_t;
+
+void Si114x_SetPsLedSelect(Si114x_PsX_Led_Select_t PsXLedSelect)
 {
+
+#ifdef DEBUG
+	char buff[30];
+	uint8_t reg;
+#endif
 #if defined(SI1141) || defined(SI1145)
 	/* Those ic can drive only one led */
-	PS3_Led = PS3_Led & 0x01;
-	PS2_Led = PS2_Led & 0x01;
-	PS1_Led = PS1_Led & 0x01;
+	PsXLedSelect.PS3_Led = PsXLedSelect.PS3_Led & 0x01;
+	PsXLedSelect.PS2_Led = PsXLedSelect.PS2_Led & 0x01;
+	PsXLedSelect.PS1_Led = PsXLedSelect.PS1_Led & 0x01;
 #endif
 
 #if defined(SI1142) || defined(SI1146)
 	/* Those ic can drive only two led */
-	PS3_Led = PS3_Led & 0x03;
-	PS2_Led = PS2_Led & 0x03;
-	PS1_Led = PS1_Led & 0x03;
+	PsXLedSelect.PS3_Led = PsXLedSelect.PS3_Led & 0x03;
+	PsXLedSelect.PS2_Led = PsXLedSelect.PS2_Led & 0x03;
+	PsXLedSelect.PS1_Led = PsXLedSelect.PS1_Led & 0x03;
 #endif
-	uint8_t val = 0x00;
-	val = ((PS2_Led & 0x07) << SI114X_PS2_LED_SHIFT)
-		+ ((PS1_Led & 0x07) << SI114X_PS1_LED_SHIFT);
-	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PSLED12_SELECT_REG);
 
-	val = (PS3_Led & 0x07) << SI114X_PS1_LED_SHIFT;
+	uint8_t val = 0x00;
+	val = ((PsXLedSelect.PS2_Led & 0x07) << SI114X_PS2_LED_SHIFT)
+		+ ((PsXLedSelect.PS1_Led & 0x07) << SI114X_PS1_LED_SHIFT);
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PSLED3_SELECT_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PSLED12_SELECT_REG);
+
+	/* TODO This readout function makes the setting to be done correctly
+		    this ensures a small delay between setting the PS leds registers */
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PSLED12_SELECT_REG);
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+#ifdef DEBUG
+	sprintf(buff, "SI114X_PSLED12_SELECT_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
+
+	val = (PsXLedSelect.PS3_Led & 0x07) << SI114X_PS3_LED_SHIFT;
+	Si114x_SetParamWr(val);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PSLED3_SELECT_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PSLED3_SELECT_REG);
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	sprintf(buff, "SI114X_PSLED3_SELECT_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
+
 }
 
 /* -------------- PS_ENCODING -------------- */
@@ -624,7 +711,7 @@ void Si114x_SetPsEncoding(uint8_t PS1_Align, uint8_t PS2_Align, uint8_t PS3_Alig
 		+ ((PS2_Align & 0x01) << SI114X_AS2_ALIGN_SHIFT)
 		+ ((PS3_Align & 0x01) << SI114X_AS3_ALIGN_SHIFT);
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ENCODING_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ENCODING_REG);
 }
 
 /* -------------- ALS_ENCODING -------------- */
@@ -640,7 +727,7 @@ void Si114x_SetAlsEncoding(uint8_t ALS_IR_Align, uint8_t ALS_Vis_Align)
 	val = ((ALS_IR_Align  & 0x01) << SI114X_ALS_IR_ALIGN_SHIFT)
 		+ ((ALS_Vis_Align & 0x01) << SI114X_ALS_VIS_ALIGN_SHIFT);
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_ENCODING_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_ENCODING_REG);
 }
 
 
@@ -678,7 +765,7 @@ typedef enum{
 	SI114X_PS_ADC_SMALL_IR				= 0x00,
 	SI114X_PS_ADC_VISIBLE_PHOTODIODE	= 0x02,
 	SI114X_PS_ADC_LARGE_IR				= 0x03,
-	SI114X_PS_ADC_NO_PHOTODIODE		= 0x06,
+	SI114X_PS_ADC_NO_PHOTODIODE			= 0x06,
 	SI114X_PS_ADC_GND_VOLT				= 0x25,
 	SI114X_PS_ADC_TEMPERATURE			= 0x65,
 	SI114X_PS_ADC_VDD_VOLT				= 0x75
@@ -687,17 +774,44 @@ typedef enum{
 void Si114x_SetPs1ADC(Si114x_PS_Meas_ADC_t adc)
 {
 	Si114x_SetParamWr((uint8_t)adc);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS1_ADCMUX_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS1_ADCMUX_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PS1_ADCMUX_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "SI114X_PS1_ADCMUX_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 void Si114x_SetPs2ADC(Si114x_PS_Meas_ADC_t adc)
 {
 	Si114x_SetParamWr((uint8_t)adc);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS2_ADCMUX_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS2_ADCMUX_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PS2_ADCMUX_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "SI114X_PS2_ADCMUX_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 void Si114x_SetPs3ADC(Si114x_PS_Meas_ADC_t adc)
 {
 	Si114x_SetParamWr((uint8_t)adc);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS3_ADCMUX_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS3_ADCMUX_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PS3_ADCMUX_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "SI114X_PS3_ADCMUX_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- AUX_ADCMUX -------------- */
@@ -711,7 +825,7 @@ typedef enum{
 void Si114x_SetAuxADC(Si114x_Aux_Meas_ADC_t adc)
 {
 	Si114x_SetParamWr((uint8_t)adc);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_AUX_ADCMUX_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_AUX_ADCMUX_REG);
 }
 
 /* -------------- PS_ADC_COUNTER -------------- */
@@ -734,7 +848,16 @@ void Si114x_SetPsAdcCounter(uint8_t adcRecPeriod)
 	val = (adcRecPeriod & 0x07) << SI114X_PS_ADC_REC_SHIFT;
 
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ADC_COUNTER_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ADC_COUNTER_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PS_ADC_COUNTER_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "SI114X_PS_ADC_COUNTER_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- ALS_VIS_ADC_COUNTER -------------- */
@@ -746,7 +869,7 @@ void Si114x_SetAlsVisAdcCounter(uint8_t adcRecPeriod)
 	val = (adcRecPeriod & 0x07) << SI114X_ALS_VIS_ADC_REC_SHIFT;
 
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_VIS_ADC_COUNTER_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_VIS_ADC_COUNTER_REG);
 }
 
 /* -------------- ALS_IR_ADC_COUNTER -------------- */
@@ -758,7 +881,7 @@ void Si114x_SetAlsIrAdcCounter(uint8_t adcRecPeriod)
 	val = (adcRecPeriod & 0x07) << SI114X_ALS_IR_ADC_REC_SHIFT;
 
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_IR_ADC_COUNTER_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_IR_ADC_COUNTER_REG);
 }
 
 /* -------------- PS_ADC_GAIN -------------- */
@@ -786,7 +909,16 @@ void Si114x_SetPsAdcGain(uint8_t adcGain, uint8_t protectionDisable)
 		}
 	}
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ADC_GAIN_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ADC_GAIN_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PS_ADC_GAIN_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "SI114X_PS_ADC_GAIN_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- ALS_VIS_ADC_GAIN -------------- */
@@ -802,7 +934,7 @@ void Si114x_SetAlsVisAdcGain(uint8_t adcGain)
 	uint8_t val = 0x00;
 	val = (adcGain & 0x07);
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_VIS_ADC_GAIN_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_VIS_ADC_GAIN_REG);
 }
 
 /* -------------- ALS_IR_ADC_GAIN -------------- */
@@ -811,7 +943,7 @@ void Si114x_SetAlsIrAdcGain(uint8_t adcGain)
 	uint8_t val = 0x00;
 	val = (adcGain & 0x07);
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_IR_ADC_GAIN_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_IR_ADC_GAIN_REG);
 }
 
 /* -------------- PS_ADC_MISC -------------- */
@@ -837,7 +969,16 @@ void Si114x_SetPsAdcMisc(uint8_t PsRange, uint8_t PsAdcMode)
 		+ ((PsAdcMode & 0x01) << SI114X_PS_ADC_MODE_SHIFT);
 
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ADC_MISC_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_PS_ADC_MISC_REG);
+
+#ifdef DEBUG
+	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PS_ADC_MISC_REG);
+	uint8_t reg;
+	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
+	char buff[30];
+	sprintf(buff, "SI114X_PS_ADC_MISC_REG: 0x%02x\n", reg);
+	LeUart_SendText(buff);
+#endif
 }
 
 /* -------------- ALS_VIS_ADC_MISC -------------- */
@@ -855,7 +996,7 @@ void Si114x_SetAlsVisAdcMisc(uint8_t AlsVisRange)
 	val = ((AlsVisRange & 0x01) << SI114X_ALS_VIS_RANGE_SHIFT);
 
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_VIS_ADC_MISC_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_VIS_ADC_MISC_REG);
 }
 
 /* -------------- ALS_IR_ADC_MISC -------------- */
@@ -867,7 +1008,7 @@ void Si114x_SetAlsIrAdcMisc(uint8_t AlsIrRange)
 	val = ((AlsIrRange & 0x01) << SI114X_ALS_IR_RANGE_SHIFT);
 
 	Si114x_SetParamWr(val);
-	Si114x_setCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_IR_ADC_MISC_REG);
+	Si114x_SetCommand(SI114X_CMD_PARAM_SET, SI114X_ALS_IR_ADC_MISC_REG);
 }
 
 /* --------------------------------------------- */
@@ -880,49 +1021,205 @@ uint8_t Si114x_Detect(void)
 	return i2c_Detect(I2C0, SI114x_ADDR);
 }
 
-void Si114x_Init(void)
+void Si114x_Init(Si114x_Settings_t Si114x_Settings)
 {
-	i2c_RegisterSet(I2C0, SI114x_ADDR,0x07,0x17);
+			/*--------------------------------*/
+			/*        IRQ configuration       */
+			/*--------------------------------*/
+	/* By setting the mode to gpioModeInput its value can be read */
+	GPIO_PinModeSet(Si114x_Settings.irq_port, Si114x_Settings.irq_pin, gpioModeInput, 1);
+	if ((Si114x_Settings.irq_pin & 0x01) == 0)
+	{
+		/* Enable GPIO_EVEN interrupt in NVIC */
+		NVIC_EnableIRQ(GPIO_EVEN_IRQn);
+	}
+	else
+	{
+		/* Enable GPIO_ODD interrupt in NVIC */
+		NVIC_EnableIRQ(GPIO_ODD_IRQn);
+	}
+	 /* Configure interrupt on falling edge by default */
+	GPIO_IntConfig(Si114x_Settings.irq_port, Si114x_Settings.irq_pin, false, true, true);
+
+
+			/*--------------------------------*/
+			/*      Si114x configuration      */
+			/*--------------------------------*/
+	Si114x_SetHwKey();
 
 	/* turn on ALS_VIS measurement */
-	i2c_RegisterSet(I2C0, SI114x_ADDR,0x17,0x10);	/* write to PARAM reg */
-	i2c_RegisterSet(I2C0, SI114x_ADDR,0x18,0xA1);	/* write to COMAND reg */
+	Si114x_EnableChannel_t enableChannel;
+	enableChannel.ALS_IR 	= FALSE;
+	enableChannel.ALS_Vis 	= TRUE;
+	enableChannel.AUX 		= FALSE;
+	enableChannel.PS1 		= TRUE;
+	enableChannel.PS2 		= TRUE;
+	enableChannel.PS3 		= TRUE;
+	enableChannel.UV 		= TRUE;
+	Si114x_EnableChannel(enableChannel);
 
 	/* ALS_VIS_ADC_GAIN is set to 1 by default */
 	/* ALS_VIS_ADC_MISC is set to Normal Signal Range by default */
+
+	/* Set the device to wake-up every 1ms and performs all CHILIST */
+	/* Maximum ALS + UV + 3x PS measurement time = 660us */
+	/* Single PS measurement takes = 155us */
+	Si114x_SetMeasurmentRate(3200);
+
+	Si114x_PsX_Led_Select_t PsXLedSelect;
+	PsXLedSelect.PS1_Led = SI114X_LED1_ENABLE;
+	PsXLedSelect.PS2_Led = SI114X_LED2_ENABLE;
+	PsXLedSelect.PS3_Led = SI114X_LED3_ENABLE;
+	Si114x_SetPsLedSelect(PsXLedSelect);
+
+	/* The encoding is set to 0 by default */
+	/* Si114x_SetPsEncoding(0,0,0); */
+	/* Si114x_SetAlsEncoding(0,0); */
+
+	/* MUX settings */
+	/* TODO This should work with IR diodes, but currently i dont have any
+	 * so i used RED Leds so the PS measurements are made using a visible
+	 * photodiode */
+	Si114x_SetPs1ADC(SI114X_PS_ADC_VISIBLE_PHOTODIODE);
+	Si114x_SetPs2ADC(SI114X_PS_ADC_VISIBLE_PHOTODIODE);
+	Si114x_SetPs3ADC(SI114X_PS_ADC_VISIBLE_PHOTODIODE);
+	/* Si114x_SetAuxADC() This is not set, the default values is working ok */
+
+	/* Enable interrupts */
+	// Si114x_SetIntCfg(SI114X_INT_OE_ENABLE);
+
+	/* Enable measurement interrupts */
+	//Si114x_SetIrqEnable(SI114X_PS3_IE_DISABLE, SI114X_PS2_IE_DISABLE,
+	//					SI114X_PS1_IE_ENABLE , SI114X_ALS_IE_DISABLE);
+
+	/* Set the led currents */
+	Si114x_SetLedCurrents(0x0A,0x0A,0x0A);
+
+	/* 0x07 = 511 ADC Clocks = 25.55us */
+	/* 0x07 is the default value */
+	Si114x_SetPsAdcCounter(0x07);
+	Si114x_SetAlsVisAdcCounter(0x07);
+	Si114x_SetAlsIrAdcCounter(0x07);
+
+	/* Set Normal Signal Range on PS measurement  	 (0b)
+	 * and Normal Proximity Measurement mode         (1b) */
+	Si114x_SetPsAdcMisc(1, 1);
+
+	/* Default values set to 1 ADC clock = 25.55us */
+	/* This ensures low power consumption but the detection distance is reduced */
+	Si114x_SetPsAdcGain(0x00, 0);
+	Si114x_SetAlsVisAdcGain(0x00);
+	Si114x_SetAlsIrAdcGain(0x00);
+
+	Si114x_SetCommand(SI114X_CMD_PS_AUTO, 0);
+}
+
+void Si114x_Interrupt(void)
+{
+#ifdef DEBUG
+	LeUart_SendChar('s');
+	LeUart_SendChar('i');
+#endif
+	Si114x_ClrIrqStatus();
 }
 
 void Si114x_ForceAmbientLightMeasurment(void)
 {
 	/* Force a single ALS measurement */
-	i2c_RegisterSet(I2C0, SI114x_ADDR, 0x18, 0x06);	/* write to COMAND reg */
+	Si114x_SetCommand(SI114X_CMD_ALS_FORCE, 0);
 }
 
 uint8_t Si114x_ReadAmbientLight(uint16_t *AmbientLight)
 {
 	uint8_t response = 0;
-	i2c_RegisterGet(I2C0, SI114x_ADDR, 0x20, &response);
+	response = Si114x_GetResponse();
 
-	if((response&0xF0) != 0){
-		/* ----there were an error---- */
+	if((response & 0xF0) != 0)
+	{
+		/* ----there was an error---- */
 #ifdef DEBUG
 		char buff[30];
-		sprintf(buff, "SI114x Error=%d\n", response);
+		sprintf(buff, "\n\t\t\tSI114x ALS meas Error=0x%02x\n", response);
 		LeUart_SendText(buff);
 #endif
 
-		i2c_RegisterSet(I2C0, SI114x_ADDR, 0x18, 0x01);//send to the sequencer RESET cmd
+		/* send to the sequencer RESET cmd */
+		Si114x_SetCommand(SI114X_CMD_NOP, 0);
 		return -1;
 	}
 	else
 	{
-		/* ----no error occured---- */
-		uint8_t ALS_VIS_l = 0;
-		i2c_RegisterGet(I2C0, SI114x_ADDR, 0x22, &ALS_VIS_l);	//TODO read block using i2c
-		uint8_t ALS_VIS_h = 0;
-		i2c_RegisterGet(I2C0, SI114x_ADDR, 0x23, &ALS_VIS_h);
-
-		*AmbientLight = (((uint16_t)ALS_VIS_h) << 8) + ALS_VIS_l;
+		/* ----no error occurred---- */
+		*AmbientLight = Si114x_GetAlsVisData();
 	}
 	return 0;
+}
+
+void Si114x_ForceUvIndexMeasurment(void)
+{
+	Si114x_EnableUvReading();
+	/* Force a single ALS measurement */
+	Si114x_SetCommand(SI114X_CMD_ALS_FORCE, 0);
+}
+
+uint8_t Si114x_ReadUvIndex(uint16_t *UvIndex)
+{
+	uint8_t response = 0;
+	uint8_t ret = 0;
+	response = Si114x_GetResponse();
+
+	if((response & 0xF0) != 0)
+	{
+		/* ----there was an error---- */
+#ifdef DEBUG
+		char buff[30];
+		sprintf(buff, "\n\t\t\tSI114x UV meas Error=0x%02x\n", response);
+		LeUart_SendText(buff);
+#endif
+
+		/* send to the sequencer RESET cmd */
+		Si114x_SetCommand(SI114X_CMD_NOP, 0);
+		ret = -1;
+	}
+	else
+	{
+		/* ----no error occurred---- */
+		*UvIndex = Si114x_GetAuxUvData();
+	}
+
+	Si114x_DisableUvReading();
+
+	return(ret);
+}
+
+uint8_t Si114x_ReadPsMeasurments(uint16_t *PS1, uint16_t *PS2, uint16_t *PS3)
+{
+	uint8_t response = 0;
+	uint8_t ret = 0;
+	response = Si114x_GetResponse();
+
+	if((response & 0xF0) != 0)
+	{
+		/* ----there was an error---- */
+#ifdef DEBUG
+		char buff[30];
+		sprintf(buff, "\n\t\t\tSI114x UV meas Error=0x%02x\n", response);
+		LeUart_SendText(buff);
+#endif
+
+		/* send to the sequencer RESET cmd */
+		Si114x_SetCommand(SI114X_CMD_NOP, 0);
+		ret = -1;
+	}
+	else
+	{
+		/* ----no error occurred---- */
+		*PS1 = Si114x_GetPs1Data();
+		*PS2 = Si114x_GetPs2Data();
+		*PS3 = Si114x_GetPs3Data();
+	}
+
+	Si114x_DisableUvReading();
+
+	return(ret);
 }

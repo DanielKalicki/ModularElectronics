@@ -250,12 +250,14 @@ bool i2c_Detect    (I2C_TypeDef *i2c, uint8_t addr)
 }
 
 #ifdef DEBUG
-void i2c_Scan (I2C_TypeDef *i2c){
-	int i=0;
-	for (;i<128;i++){
-		if (i2c_Detect(i2c,i*2)==1){
+void i2c_Scan (I2C_TypeDef *i2c)
+{
+	int i = 0;
+	for (; i < 128; i++){
+		if (i2c_Detect(i2c, i * 2) == 1)
+		{
 			char buff[30];
-			sprintf(buff,"Detected I2C device: %d %02x\n",i*2,i);
+			sprintf(buff, "Detected I2C device: %d 0x%02x\n", i * 2, i);
 			LeUart_SendText(buff);
 		}
 	}

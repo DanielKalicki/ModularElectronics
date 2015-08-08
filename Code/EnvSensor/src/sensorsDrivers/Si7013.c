@@ -2,19 +2,22 @@
 #include "..\ucPeripheralDrivers\i2c_connection.h"
 #include "..\ucPeripheralDrivers\uart_connection.h"
 
-#define SI7013_ADDR 	0x40*2
+#define SI7013_ADDR 	(0x40*2)
 
-uint8_t Si7013_detect(void){
+uint8_t Si7013_Detect(void)
+{
 	return i2c_Detect(I2C0, SI7013_ADDR);
 }
 
-void Si7013_init(void){
-
+void Si7013_Init(void)
+{
+	;
 }
 
 
-static int Si7013_readTemperature(I2C_TypeDef *i2c, uint8_t addr, uint32_t *data,
-                          	  	  uint8_t command){
+static int Si7013_ReadTemperature(I2C_TypeDef *i2c, uint8_t addr, uint32_t *data,
+                          	  	  uint8_t command)
+{
 	I2C_TransferSeq_TypeDef    seq;
 	uint8_t                    i2c_read_data[2];
 	uint8_t                    i2c_write_data[1];
@@ -31,10 +34,12 @@ static int Si7013_readTemperature(I2C_TypeDef *i2c, uint8_t addr, uint32_t *data
 
 	I2C_Status = I2C_TransferInit(i2c, &seq);
 	uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	while (I2C_Status == i2cTransferInProgress && timeout--) {
+	while (I2C_Status == i2cTransferInProgress && timeout--)
+	{
 		I2C_Status = I2C_Transfer(I2C0);
 	}
-	if(timeout==(uint32_t)(-1)){
+	if(timeout==(uint32_t)(-1))
+	{
 		uart_sendText("\nERROR: I2C_get_timeout\n");
 	}
 
@@ -49,7 +54,8 @@ static int Si7013_readTemperature(I2C_TypeDef *i2c, uint8_t addr, uint32_t *data
 	return((int) 2);
 }
 
-void Si7013_forceRhMeasurment(void){
+void Si7013_ForceRhMeasurment(void)
+{
 	I2C_TransferSeq_TypeDef    seq;
 	uint8_t                    i2c_write_data[1];
 
@@ -62,15 +68,18 @@ void Si7013_forceRhMeasurment(void){
 
 	I2C_Status = I2C_TransferInit(I2C0, &seq);
 	uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
-	while (I2C_Status == i2cTransferInProgress && timeout--) {
+	while (I2C_Status == i2cTransferInProgress && timeout--)
+	{
 		I2C_Status = I2C_Transfer(I2C0);
 	}
-	if(timeout==(uint32_t)(-1)){
+	if(timeout == (uint32_t)(-1))
+	{
 		uart_sendText("\nERROR: I2C_get_timeout\n");
 	}
 }
 
-int Si7013_readHumidityAndTemperature(uint32_t *rhData, int32_t *tData){
+int Si7013_ReadHumidityAndTemperature(uint32_t *rhData, int32_t *tData)
+{
 	 I2C_TransferSeq_TypeDef seq;
 	 uint8_t data[2];
 
@@ -87,7 +96,8 @@ int Si7013_readHumidityAndTemperature(uint32_t *rhData, int32_t *tData){
 	    //EMU_EnterEM1();
 		I2C_Status = I2C_Transfer(I2C0);
 	 }
-	 if(timeout==(uint32_t)(-1)){
+	 if(timeout == (uint32_t)(-1))
+	 {
 		 uart_sendText("\nERROR: I2C_get_timeout\n");
 	 }
 
@@ -96,9 +106,9 @@ int Si7013_readHumidityAndTemperature(uint32_t *rhData, int32_t *tData){
 	    return((int)I2C_Status);
 	 }
 
-	 *rhData = ((((((uint16_t)data[0])<<8)+data[1]) * 15625L) >> 13) - 6000;
+	 *rhData = ((((((uint16_t)data[0]) << 8) + data[1]) * 15625L) >> 13) - 6000;
 
-	 Si7013_readTemperature(I2C0,SI7013_ADDR,tData,0xE0);
+	 Si7013_ReadTemperature(I2C0, SI7013_ADDR, tData, 0xE0);
 	 *tData = (((*tData) * 21965L) >> 13) - 46850; /* convert to milli-degC */
 
 	 return ((int) 1);
