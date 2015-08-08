@@ -2,6 +2,8 @@
 #define __MPU6050_H
 
 #include "em_device.h"
+#include "MPU6050\inv_mpu.h"
+#include "MPU6050\inv_mpu_dmp_motion_driver.h"
 
 #ifdef __cplusplus
 extern "C" {

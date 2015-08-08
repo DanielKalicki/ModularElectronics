@@ -9,13 +9,15 @@
 #define SI114X_H_
 
 #include <stdint.h>
+#include "em_gpio.h"
 
-/* Define used sensor for i2c address */
-#define SI1147
+/*----------------------------------------------------*/
+/*							!!!						  */
+/* In Si114x_reg.h you need to define the used sensor */
+/*							!!!						  */
+/*----------------------------------------------------*/
 
 uint8_t Si114x_Detect(void);
-
-#include "em_gpio.h"
 
 typedef struct
 {
