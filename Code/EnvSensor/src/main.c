@@ -15,8 +15,6 @@
 
 #include "sensorsDrivers\HMC5883L.h"
 #include "sensorsDrivers\MPU6050.h"
-#include "sensorsDrivers\inv_mpu.h"
-#include "sensorsDrivers\inv_mpu_dmp_motion_driver.h"
 //#include "sensorsDrivers\AS3935.h"
 #include "sensorsDrivers\BMP180.h"
 #include "sensorsDrivers\Si7013.h"

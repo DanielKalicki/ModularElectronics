@@ -6,7 +6,9 @@
 #include "em_emu.h"
 #include "em_i2c.h"
 #include "em_int.h"
-//#include "uart_connection.h"	//for i2c_Scan
+#ifdef DEBUG
+#include "leuart_connection.h"
+#endif
 #include <stdio.h>
 //#include "RTC_.h"
 
@@ -23,7 +25,7 @@ void i2c_InitMaster(struct I2C_Settings i2cSettings)
   /* but in case some slower devices are added on */
   /* prototype board, we use standard mode. */
   //I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRFast};
-  I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRStandard};
+  I2C_Init_TypeDef i2cInit = {true, true, 0, I2C_FREQ_FAST_MAX, i2cClockHLRFast};
 
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_I2C0, true);
