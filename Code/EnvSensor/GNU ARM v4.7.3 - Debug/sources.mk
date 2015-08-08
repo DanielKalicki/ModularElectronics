@@ -16,6 +16,8 @@ EXECUTABLES :=
 SUBDIRS := \
 src/ucPeripheralDrivers \
 src/sensorsDrivers \
+src/sensorsDrivers/Si114x \
+src/sensorsDrivers/MPU6050 \
 src \
 emlib \
 CMSIS/efm32zg \

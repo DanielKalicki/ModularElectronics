@@ -55,8 +55,8 @@ src/main.o: ../src/main.c \
  ../src/ucPeripheralDrivers\leuart_connection.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h \
  ../src/sensorsDrivers\HMC5883L.h ../src/sensorsDrivers\MPU6050.h \
- ../src/sensorsDrivers\inv_mpu.h \
- ../src/sensorsDrivers\inv_mpu_dmp_motion_driver.h \
+ ../src/sensorsDrivers\MPU6050\inv_mpu.h \
+ ../src/sensorsDrivers\MPU6050\inv_mpu_dmp_motion_driver.h \
  ../src/sensorsDrivers\BMP180.h ../src/sensorsDrivers\Si7013.h \
  ../src/sensorsDrivers\Si114x.h
 
@@ -174,9 +174,9 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h
 
 ../src/sensorsDrivers\MPU6050.h:
 
-../src/sensorsDrivers\inv_mpu.h:
+../src/sensorsDrivers\MPU6050\inv_mpu.h:
 
-../src/sensorsDrivers\inv_mpu_dmp_motion_driver.h:
+../src/sensorsDrivers\MPU6050\inv_mpu_dmp_motion_driver.h:
 
 ../src/sensorsDrivers\BMP180.h:
 

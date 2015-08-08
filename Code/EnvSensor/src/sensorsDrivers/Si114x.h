@@ -24,7 +24,6 @@ typedef struct
 	GPIO_Port_TypeDef irq_port;
 	unsigned int irq_pin;
 } Si114x_Settings_t;
-
 void Si114x_Init(Si114x_Settings_t Si114x_Settings);
 
 void Si114x_Interrupt(void);
