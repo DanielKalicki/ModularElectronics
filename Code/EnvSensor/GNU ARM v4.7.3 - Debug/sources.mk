@@ -18,6 +18,7 @@ src/ucPeripheralDrivers \
 src/sensorsDrivers \
 src/sensorsDrivers/Si114x \
 src/sensorsDrivers/MPU6050 \
+src/sensorsDrivers/MAX4400x \
 src \
 emlib \
 CMSIS/efm32zg \

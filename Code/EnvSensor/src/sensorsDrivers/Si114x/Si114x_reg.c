@@ -177,7 +177,7 @@ void Si114x_SetMeasurmentRate(uint16_t measRate)
 	Si114x_GetRegister(SI114X_MEAS_RATE0_REG, &reg1);
 	Si114x_GetRegister(SI114X_MEAS_RATE1_REG, &reg2);
 	char buff[30];
-	sprintf(buff, "MeasRate:0x%02x%02x=%d\n", reg2, reg1, (reg1 + reg2 * 256u));
+	sprintf(buff, "\tMeasRate:0x%02x%02x=%d\n", reg2, reg1, (reg1 + reg2 * 256u));
 	LeUart_SendText(buff);
 #endif
 }
@@ -213,7 +213,7 @@ void Si114x_SetLedCurrents(uint8_t Led1_Current, uint8_t Led2_Current, uint8_t L
 	Si114x_GetRegister(SI114X_PS_LED21_REG, &reg1);
 	Si114x_GetRegister(SI114X_PS_LED3_REG, &reg2);
 	char buff[30];
-	sprintf(buff, "\nLED Current settings: 0x%02x, 0x%02x\n", reg1, reg2);
+	sprintf(buff, "\tLED Current settings: 0x%02x, 0x%02x\n", reg1, reg2);
 	LeUart_SendText(buff);
 #endif
 }
@@ -578,11 +578,11 @@ void Si114x_EnableChannel(Si114x_EnableChannel_t EnableChannel)
 #ifdef DEBUG
 	/* TODO Small wait fixes the problem - probably if the two commands
 	to the sequencer are send one by one the first could be not executed */
-	LeUart_SendText("Lets wait\n");
+	LeUart_SendText("\tCHLIST init: ");
 
 	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_CHLIST_REG);
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
-	sprintf(buff, "\nSI114X_CHLIST_REG: 0x%02x, 0x%02x\n", reg, val);
+	sprintf(buff, "SI114X_CHLIST_REG: 0x%02x, 0x%02x\n", reg, val);
 	LeUart_SendText(buff);
 #endif
 }
@@ -634,7 +634,7 @@ void Si114x_SetPsLedSelect(Si114x_PsX_Led_Select_t PsXLedSelect)
 	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PSLED12_SELECT_REG);
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 #ifdef DEBUG
-	sprintf(buff, "SI114X_PSLED12_SELECT_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PSLED12_SELECT_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 
@@ -645,7 +645,7 @@ void Si114x_SetPsLedSelect(Si114x_PsX_Led_Select_t PsXLedSelect)
 #ifdef DEBUG
 	Si114x_SetCommand(SI114X_CMD_PARAM_QUERY, SI114X_PSLED3_SELECT_REG);
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
-	sprintf(buff, "SI114X_PSLED3_SELECT_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PSLED3_SELECT_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 
@@ -726,7 +726,7 @@ void Si114x_SetPs1ADC(Si114x_PS_Meas_ADC_t adc)
 	uint8_t reg;
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 	char buff[30];
-	sprintf(buff, "SI114X_PS1_ADCMUX_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PS1_ADCMUX_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 }
@@ -740,7 +740,7 @@ void Si114x_SetPs2ADC(Si114x_PS_Meas_ADC_t adc)
 	uint8_t reg;
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 	char buff[30];
-	sprintf(buff, "SI114X_PS2_ADCMUX_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PS2_ADCMUX_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 }
@@ -754,7 +754,7 @@ void Si114x_SetPs3ADC(Si114x_PS_Meas_ADC_t adc)
 	uint8_t reg;
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 	char buff[30];
-	sprintf(buff, "SI114X_PS3_ADCMUX_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PS3_ADCMUX_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 }
@@ -793,7 +793,7 @@ void Si114x_SetPsAdcCounter(uint8_t adcRecPeriod)
 	uint8_t reg;
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 	char buff[30];
-	sprintf(buff, "SI114X_PS_ADC_COUNTER_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PS_ADC_COUNTER_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 }
@@ -854,7 +854,7 @@ void Si114x_SetPsAdcGain(uint8_t adcGain, uint8_t protectionDisable)
 	uint8_t reg;
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 	char buff[30];
-	sprintf(buff, "SI114X_PS_ADC_GAIN_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PS_ADC_GAIN_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 }
@@ -914,7 +914,7 @@ void Si114x_SetPsAdcMisc(uint8_t PsRange, uint8_t PsAdcMode)
 	uint8_t reg;
 	Si114x_GetRegister(SI114X_PARAM_RD_REG, &reg);
 	char buff[30];
-	sprintf(buff, "SI114X_PS_ADC_MISC_REG: 0x%02x\n", reg);
+	sprintf(buff, "\tSI114X_PS_ADC_MISC_REG: 0x%02x\n", reg);
 	LeUart_SendText(buff);
 #endif
 }

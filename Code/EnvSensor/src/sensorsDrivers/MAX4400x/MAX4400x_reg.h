@@ -1,11 +1,21 @@
 #ifndef MAX4400X_REG_H_
 #define MAX4400X_REG_H_
 
+#include <stdint.h>
+
+/*----------------------------------------------------*/
+/*							!!!						  */
+/* 			Define used sensor for i2c address 		  */
+/*							!!!						  */
+/*----------------------------------------------------*/
+#define MAX44008
+#define MAX4400X_A0		1
+
 /* Comments included in this file comes from MAX44005 datasheet
  * http://datasheets.maximintegrated.com/en/ds/MAX44005.pdf
  */
 
-void MAX4400x_Detect_LowLevel(void);
+uint8_t MAX4400x_Detect_LowLevel(void);
 
 typedef struct{
 	uint8_t Reset;
@@ -123,5 +133,49 @@ DRV[3:0] 	LED CURRENT (mA) 			DRV[3:0] 		LED CURRENT (mA)
 	uint8_t LED_Drive_Current_Setting;
 }MAX4400x_Proximity_Configuration_t;
 void MAX4400x_SetProximityConfiguration(MAX4400x_Proximity_Configuration_t ProximityConfiguration);
+
+uint16_t MAX4400x_GetAmbientClear(void);
+uint16_t MAX4400x_GetAmbientRed(void);
+uint16_t MAX4400x_GetAmbientGreen(void);
+uint16_t MAX4400x_GetAmbientBlue(void);
+uint16_t MAX4400x_GetAmbientIr(void);
+uint16_t MAX4400x_GetAmbientIrComp(void);
+
+uint16_t MAX4400x_GetProximityIr(void);
+uint16_t MAX4400x_GetTemperature(void);
+
+uint16_t MAX4400x_GetAmbientUpThreshold(void);
+void     MAX4400x_SetAmbientUpThreshold(uint16_t UpThreshold);
+uint16_t MAX4400x_GetAmbientLowThreshold(void);
+void     MAX4400x_SetAmbientLowThreshold(uint16_t LowThreshold);
+
+typedef struct{
+/*PRXPST[1:0] or AMBPST[1:0] 		NO. OF CONSECUTIVE MEASUREMENTS REQUIRED TO
+											TRIGGER AN INTERRUPT
+			00 											1
+			01 											4
+			10 											8
+			11 											16
+*/
+	uint8_t Proximity_Persistant_Timer;
+	uint8_t Ambient_Persistant_Timer;
+}MAX4400x_Threshold_Persist_Timer_t;
+void MAX4400x_SetThresholdPersistTimer(MAX4400x_Threshold_Persist_Timer_t ThresholdPersistTimer);
+
+uint16_t MAX4400x_GetProximityUpThreshold(void);
+void     MAX4400x_SetProximityUpThreshold(uint16_t UpThreshold);
+uint16_t MAX4400x_GetProximityLowThreshold(void);
+void     MAX4400x_SetProximityUpThreshold(uint16_t LowThreshold);
+
+uint8_t MAX4400x_GetTrimGainClear(void);
+void    MAX4400x_SetTrimGainClear(uint8_t TrimGain);
+uint8_t MAX4400x_GetTrimGainRed(void);
+void    MAX4400x_SetTrimGainRed(uint8_t TrimGain);
+uint8_t MAX4400x_GetTrimGainGreen(void);
+void    MAX4400x_SetTrimGainGreen(uint8_t TrimGain);
+uint8_t MAX4400x_GetTrimGainBlue(void);
+void    MAX4400x_SetTrimGainBlue(uint8_t TrimGain);
+uint8_t MAX4400x_GetTrimGainIr(void);
+void    MAX4400x_SetTrimGainIr(uint8_t TrimGain);
 
 #endif /* MAX4400X_REG_H_ */

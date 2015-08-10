@@ -19,6 +19,7 @@
 #include "sensorsDrivers\BMP180.h"
 #include "sensorsDrivers\Si7013.h"
 #include "sensorsDrivers\Si114x.h"
+#include "sensorsDrivers\MAX4400x.h"
 
 //This register contains information from the module
 #define DEV_INT_REG_BUFFER_SIZE       	(100)
@@ -29,12 +30,16 @@ volatile uint8_t devInternalRegisters[DEV_INT_REG_BUFFER_SIZE];
 #define SI114X_IRQ_PORT		(gpioPortB)
 #define SI114X_IRQ_PIN		(8)
 
+#define MAX4400X_IRQ_PORT		(gpioPortB)
+#define MAX4400X_IRQ_PIN		(11)
+
 #define SI7013_SENS		(0x01)
 #define SI114X_SENS		(0x02)
-//#define AS3935_SENS		(0x04)
+//#define AS3935_SENS	(0x04)
 #define BMP180_SENS		(0x08)
 #define HMC5883L_SENS	(0x10)
 #define MPU6050_SENS	(0x20)
+#define MAX4400X_SENS	(0x40)
 
 /* !!! register map is not updated with the latest changes */
 /********** i2c slave register map **********
@@ -142,27 +147,40 @@ void initOscillators(void){
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);                    // enable GPIO peripheral clock
 }
-void initGPIO(void){
-
+void initGPIO(void)
+{
+	; /* Nothing to do */
 }
 
 //------------TEST---------------
-void clockTest() {
-	long int i=0;
-	for(;i<120001L;++i) {
-	  if(i==120000L)
+void clockTest() 
+{
+	long int i = 0;
+	for(;i < 120001L; ++i) 
+	{
+	  if(i == 120000L)
+	  {
 		  GPIO_PortOutSet(gpioPortF, 0x4);
-	  if(i==60000L)
+	  }
+	  if(i == 60000L)
+	  {
 		  GPIO_PortOutClear(gpioPortF, 0x4);
+	  }
 	}
 }
-void clockTest_short() {
-	long int i=0;
-	for(;i<121L;++i) {
-	  if(i==120L)
+void clockTest_short() 
+{
+	long int i = 0;
+	for(; i < 121L; ++i) 
+	{
+	  if(i == 120L)
+	  {
 		  GPIO_PortOutSet(gpioPortF, 0x4);
-	  if(i==60L)
+	  }
+	  if(i == 60L)
+	  {
 		  GPIO_PortOutClear(gpioPortF, 0x4);
+	  }
 	}
 }
 
@@ -437,12 +455,29 @@ void RTC_IRQHandler(void)
 
 void GPIO_EVEN_IRQHandler(void)
 {
+	IRQ_Interrupt();
+}
+
+void GPIO_ODD_IRQHandler(void)
+{
+	IRQ_Interrupt();
+}
+
+void IRQ_Interrupt(void)
+{
 	/* Detect interrupt source and run the corresponding function */
 	if (sensors & SI114X_SENS)
 	{
 		if (GPIO_PinInGet(SI114X_IRQ_PORT, SI114X_IRQ_PIN) == 0)
 		{
 			Si114x_Interrupt();
+		}
+	}
+	if (sensors & MAX4400X_SENS)
+	{
+		if (GPIO_PinInGet(MAX4400X_IRQ_PORT, MAX4400X_IRQ_PIN) == 0)
+		{
+			; //MAX4400x_Interrupt();
 		}
 	}
 
@@ -535,59 +570,86 @@ void detectSensors()
 		LeUart_SendText("---\t\tMPU6050 NOT DETECTED\t\t---\n");
 	}
 #endif
+
+	//-------MAX4400x--------
+	if (MAX4400x_Detect())
+	{
+#ifdef DEBUG
+		LeUart_SendText("\t\tMAX4400x detected\n");
+#endif
+		sensors |= MAX4400X_SENS;
+	}
+#ifdef DEBUG
+	else
+	{
+		LeUart_SendText("---\t\tMAX4400x NOT DETECTED\t\t---\n");
+	}
+#endif
 }
 
 /* -------------- Sensors initialization ------------------*/
 void initSensors(void)
 {
 #ifdef DEBUG
-	LeUart_SendText("\nINITIALIZATION: ");
+	LeUart_SendText("\nINITIALIZATION:\n");
 #endif
 
 	if(sensors & SI7013_SENS)
 	{
-		Si7013_Init();
 #ifdef DEBUG
-		LeUart_SendText(" SI7013");
+		LeUart_SendText("SI7013 initialization\n");
 #endif
+		Si7013_Init();
 	}
 	if(sensors & SI114X_SENS)
 	{
+#ifdef DEBUG
+		LeUart_SendText("SI1142 initialization\n");
+#endif
 		Si114x_Settings_t Si114xSettings;
 		Si114xSettings.irq_pin  = SI114X_IRQ_PIN;
 		Si114xSettings.irq_port = SI114X_IRQ_PORT;
 		Si114x_Init(Si114xSettings);
-#ifdef DEBUG
-		LeUart_SendText(" SI1142");
-#endif
 	}
 	if(sensors & BMP180_SENS)
 	{
-		BMP180_init();
 #ifdef DEBUG
-		LeUart_SendText(" BMP180");
+		LeUart_SendText("BMP180 initialization\n");
 #endif
+		BMP180_init();
 	}
 	if(sensors & HMC5883L_SENS)
 	{
-		HMC5883L_init();
 #ifdef DEBUG
-		LeUart_SendText(" HMC5883L");
+		LeUart_SendText("HMC5883L initialization\n");
 #endif
+		HMC5883L_init();
 	}
+
 	if(sensors & MPU6050_SENS)
 	{
-		MPU6050_init();
 #ifdef DEBUG
-		LeUart_SendText(" MPU6050");
+		LeUart_SendText("MPU6050 initialization\n");
 #endif
+		MPU6050_init();
+	}
+	if(sensors & MAX4400X_SENS)
+	{
+#ifdef DEBUG
+		LeUart_SendText("MAX4400X initialization\n");
+#endif
+		MAX4400x_Settings_t MAX4400xSettings;
+		MAX4400xSettings.irq_pin  = MAX4400X_IRQ_PIN;
+		MAX4400xSettings.irq_port = MAX4400X_IRQ_PORT;
+		MAX4400x_Init(MAX4400xSettings);
 	}
 #ifdef DEBUG
 	LeUart_SendChar('\n');
 #endif
 }
 
-void initInterfaces(){
+void initInterfaces()
+{
 #ifdef DEBUG
 	/* LeUart interface initialization */
 	struct LeUart_Settings leuartSettings;
@@ -619,7 +681,7 @@ int main(void) {
 
   initInterfaces();
 
-  //TODO remove this later
+  /* TODO remove this later */
   for (int i=0;i<DEV_INT_REG_BUFFER_SIZE;i++)
   {
 	  devInternalRegisters[i] = 0;
@@ -629,11 +691,11 @@ int main(void) {
   devInternalRegisters[REG_MODULE_ID_2] = 'S';
   devInternalRegisters[REG_MODULE_ID_3] = 'N';
 
-  //sensors initalization
+  /* sensors initalization */
   detectSensors();
   initSensors();
 
-  //RTC initialization
+  /* RTC initialization */
   RTC_init();
   RTC_setTime(500);
   RTC_enableInt();

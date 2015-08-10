@@ -58,7 +58,7 @@ src/main.o: ../src/main.c \
  ../src/sensorsDrivers\MPU6050\inv_mpu.h \
  ../src/sensorsDrivers\MPU6050\inv_mpu_dmp_motion_driver.h \
  ../src/sensorsDrivers\BMP180.h ../src/sensorsDrivers\Si7013.h \
- ../src/sensorsDrivers\Si114x.h
+ ../src/sensorsDrivers\Si114x.h ../src/sensorsDrivers\MAX4400x.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -183,3 +183,5 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h
 ../src/sensorsDrivers\Si7013.h:
 
 ../src/sensorsDrivers\Si114x.h:
+
+../src/sensorsDrivers\MAX4400x.h:

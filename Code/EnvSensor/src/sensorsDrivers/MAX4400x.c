@@ -1,7 +1,7 @@
 #include "MAX4400x.h"
 #include "MAX4400x\MAX4400x_reg.h"
 #ifdef DEBUG
-#include "..\..\ucPeripheralDrivers\leuart_connection.h"
+#include "..\ucPeripheralDrivers\leuart_connection.h"
 #endif
 
 uint8_t MAX4400x_Detect(void)
