@@ -46,7 +46,7 @@ enum registerMap{
 
 };
 
-uint8_t devices=0;
+uint8_t g_Devices = 0;
 
 #define ADP5063_SENS	(0x01)
 #define LTC2942_SENS	(0x02)
@@ -85,15 +85,15 @@ void clockTest_short()
 }
 
 
-void initDevices()
+void initDevices(void)
 {
 	//-----ADP5063----
-	if(devices & ADP5063_SENS)
+	if(g_Devices & ADP5063_SENS)
 	{
 		ADP5063_Init();
 	}
 	//-----LTC2942----
-	if(devices & LTC2942_SENS)
+	if(g_Devices & LTC2942_SENS)
 	{
 		LTC2942_Init();
 	}
@@ -114,13 +114,13 @@ void RTC_IRQHandler(void)
 	/* every 5seconds force battery voltage and temperature measurement */
 	if(g_TimeInterruptType == 5)
 	{
-		if(devices & LTC2942_SENS)
+		if(g_Devices & LTC2942_SENS)
 		{
 			/* force single battery voltage measurement */
 			LTC2942_ForceSingleVoltageMeasurement();
 		}
 		g_TimeInterruptType = 0;
-		if(devices & ADP5063_SENS)
+		if(g_Devices & ADP5063_SENS)
 		{
 			/* every 5 seconds we check the battery charger */
 			ADP5063_PrintStatus();
@@ -129,7 +129,7 @@ void RTC_IRQHandler(void)
 	/* read battery voltage and temperature */
 	else if (g_TimeInterruptType == 1)
 	{
-		if(devices & LTC2942_SENS)
+		if(g_Devices & LTC2942_SENS)
 		{
 			/* calculate battery voltage */
 			uint16_t voltage_U16 = LTC2942_GetVoltage();
@@ -143,7 +143,7 @@ void RTC_IRQHandler(void)
 			LeUart_SendText(buff);
 #endif
 
-			if(devices & ADP5063_SENS)
+			if(g_Devices & ADP5063_SENS)
 			{
 				/* if the voltage exides 4.2V stop charging */
 				if(batteryVoltage / 10 > 4250)
@@ -175,7 +175,7 @@ void RTC_IRQHandler(void)
 		}
 	}
 
-	if(devices & LTC2942_SENS){
+	if(g_Devices & LTC2942_SENS){
 
 		uint16_t chargeReg = LTC2942_GetCharger();
 		uint32_t charge_U32 = (uint32_t)65535 - (uint32_t)chargeReg;
@@ -216,7 +216,7 @@ void RTC_IRQHandler(void)
 
 void detectDevices()
 {
-	devices = 0xFF; //TODO remove this - this allows disconnection of the battery when the module is working.
+	g_Devices = 0xFF; //TODO remove this - this allows disconnection of the battery when the module is working.
 
 	//-----ADP5063----
 	if (ADP5063_Detect() == 1)
@@ -224,7 +224,7 @@ void detectDevices()
 		#ifdef DEBUG
 		LeUart_SendText("\t\tADP5063 detected\n");
 		#endif
-		devices |= ADP5063_SENS;
+		g_Devices |= ADP5063_SENS;
 	}
 	else
 	{
@@ -239,7 +239,7 @@ void detectDevices()
 		#ifdef DEBUG
 		LeUart_SendText("\t\tLTC2942 detected\n");
 		#endif
-		devices |= LTC2942_SENS;
+		g_Devices |= LTC2942_SENS;
 	}
 	else
 	{
