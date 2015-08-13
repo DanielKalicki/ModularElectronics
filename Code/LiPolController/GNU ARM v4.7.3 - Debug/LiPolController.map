@@ -1283,11 +1283,12 @@ LOAD d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/
                 0x20000078                __bss_start__ = .
  *(.bss*)
  .bss           0x20000078       0x1c d:/siliconlabs/simplicitystudio/v2/developer/toolchains/gnu_arm/4.7_2013q1/bin/../lib/gcc/arm-none-eabi/4.7.3/armv6-m/crtbegin.o
- .bss.g_TimeInterruptType
+ .bss.g_Devices
                 0x20000094        0x1 ./src/main.o
-                0x20000094                g_TimeInterruptType
- .bss.devices   0x20000095        0x1 ./src/main.o
-                0x20000095                devices
+                0x20000094                g_Devices
+ .bss.g_TimeInterruptType
+                0x20000095        0x1 ./src/main.o
+                0x20000095                g_TimeInterruptType
  .bss.chargingCompleted.8087
                 0x20000096        0x1 ./src/icDrivers/ADP5063.o
  .bss.LTC2942_i_ChargeHistory
@@ -1597,7 +1598,7 @@ OUTPUT(LiPolController.axf elf32-littlearm)
  .debug_line    0x000039d0       0x85 ./CMSIS/efm32zg/startup_gcc_efm32zg.o
  .debug_line    0x00003a55      0x290 ./CMSIS/efm32zg/system_efm32zg.o
 
-.debug_str      0x00000000     0x2de6
+.debug_str      0x00000000     0x2de8
  .debug_str     0x00000000      0x62d ./src/ucPeripheralDrivers/RTC_.o
                                 0x677 (size before relaxing)
  .debug_str     0x0000062d      0x5d1 ./src/ucPeripheralDrivers/i2c_connection.o
@@ -1608,29 +1609,29 @@ OUTPUT(LiPolController.axf elf32-littlearm)
                                 0x6ec (size before relaxing)
  .debug_str     0x00001066      0x3d9 ./src/ucPeripheralDrivers/uart_connection.o
                                 0xb06 (size before relaxing)
- .debug_str     0x0000143f      0x405 ./src/main.o
-                                0xab0 (size before relaxing)
- .debug_str     0x00001844       0x65 ./src/icDrivers/ADP5063.o
+ .debug_str     0x0000143f      0x407 ./src/main.o
+                                0xab2 (size before relaxing)
+ .debug_str     0x00001846       0x65 ./src/icDrivers/ADP5063.o
                                 0x360 (size before relaxing)
- .debug_str     0x000018a9       0x50 ./src/icDrivers/LTC2942.o
+ .debug_str     0x000018ab       0x50 ./src/icDrivers/LTC2942.o
                                 0x47d (size before relaxing)
- .debug_str     0x000018f9      0x5e3 ./emlib/em_cmu.o
+ .debug_str     0x000018fb      0x5e3 ./emlib/em_cmu.o
                                 0xa5f (size before relaxing)
- .debug_str     0x00001edc      0x52d ./emlib/em_dma.o
+ .debug_str     0x00001ede      0x52d ./emlib/em_dma.o
                                 0x9b8 (size before relaxing)
- .debug_str     0x00002409       0xd3 ./emlib/em_emu.o
+ .debug_str     0x0000240b       0xd3 ./emlib/em_emu.o
                                 0x37d (size before relaxing)
- .debug_str     0x000024dc       0xc3 ./emlib/em_gpio.o
+ .debug_str     0x000024de       0xc3 ./emlib/em_gpio.o
                                 0x4d4 (size before relaxing)
- .debug_str     0x0000259f      0x18a ./emlib/em_i2c.o
+ .debug_str     0x000025a1      0x18a ./emlib/em_i2c.o
                                 0x617 (size before relaxing)
- .debug_str     0x00002729      0x100 ./emlib/em_leuart.o
+ .debug_str     0x0000272b      0x100 ./emlib/em_leuart.o
                                 0x5c2 (size before relaxing)
- .debug_str     0x00002829       0x6b ./emlib/em_rtc.o
+ .debug_str     0x0000282b       0x6b ./emlib/em_rtc.o
                                 0x250 (size before relaxing)
- .debug_str     0x00002894      0x4bc ./emlib/em_usart.o
+ .debug_str     0x00002896      0x4bc ./emlib/em_usart.o
                                 0xb35 (size before relaxing)
- .debug_str     0x00002d50       0x96 ./CMSIS/efm32zg/system_efm32zg.o
+ .debug_str     0x00002d52       0x96 ./CMSIS/efm32zg/system_efm32zg.o
                                 0x362 (size before relaxing)
 
 .debug_frame    0x00000000     0x13f4

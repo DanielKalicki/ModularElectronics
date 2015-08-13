@@ -66,8 +66,6 @@ void initGPIO(void)
 	; /* Nothing to do */
 }
 
-void clockTest();
-
 void clockTest_short()
 {
 	long int i = 0;
