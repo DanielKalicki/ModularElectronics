@@ -42,10 +42,12 @@ typedef enum {
 	ADP8866_INDEPENDENT_SINK_CURRENT_CTR_2_REG			= 0x1B,
 	ADP8866_INDEPENDENT_SINK_CURRENT_TIME_1_REG			= 0x1C,
 	ADP8866_INDEPENDENT_SINK_CURRENT_TIME_2_REG			= 0x1D,
+
 	ADP8866_INDEPENDENT_SINK_6_OFF_TIMER_REG			= 0x1E,
 	ADP8866_INDEPENDENT_SINK_7_OFF_TIMER_REG			= 0x1F,
 	ADP8866_INDEPENDENT_SINK_8_OFF_TIMER_REG			= 0x20,
 	ADP8866_INDEPENDENT_SINK_9_OFF_TIMER_REG			= 0x21,
+
 	ADP8866_INDEPENDENT_SINK_CURRENT_FADE_REG			= 0x22,
 
 	ADP8866_SINK_CURRENT_LED_1_REG						= 0x23,
@@ -59,6 +61,7 @@ typedef enum {
 	ADP8866_SINK_CURRENT_LED_9_REG						= 0x2B,
 
 	ADP8866_HEARTBEAT_ENABLE_SEL_REG					= 0x2C,
+
 	ADP8866_INDEPENDENT_SINK_6_HEAR_PULSES_REG			= 0x2D,
 	ADP8866_INDEPENDENT_SINK_7_HEAR_PULSES_REG			= 0x2E,
 	ADP8866_INDEPENDENT_SINK_8_HEAR_PULSES_REG			= 0x2F,
@@ -189,20 +192,20 @@ void ADP8866_SetChargePumpGain(ADP8866_GainMode_t gainMode, ADP8866_GainModeLimi
 #define ADP8866_LEVEL_SET_SHIFT	0
 #define ADP8866_D9LVL_MASK		0x01
 #define ADP8866_LEVEL_SET_MASK	0x3F
-void ADP8866_SetOutputLevel(uint16_t diodesLevelSelect, ADP8866_MaxCurrentRange_t maxCurrentRange)
+void ADP8866_SetOutputLevel(uint16_t diodesList, ADP8866_MaxCurrentRange_t maxCurrentRange)
 {
 	uint8_t outputLevel_reg1 = 0x00;
-	if ((diodesLevelSelect & 0x200) == 1)
+	if ((diodesList & 0x200) == 1)
 	{
 		outputLevel_reg1 |= (ADP8866_D9LVL_MASK << ADP8866_D9LVL_SHIFT);
 	}
 	outputLevel_reg1 |= (((uint8_t)maxCurrentRange & ADP8866_LEVEL_SET_MASK) << ADP8866_LEVEL_SET_SHIFT);
-	ADP8866_SetRegister(ADP8866_OUTPUT_LEVEL_SEL_1_REG, val);
+	ADP8866_SetRegister(ADP8866_OUTPUT_LEVEL_SEL_1_REG, outputLevel_reg1);
 
 	uint8_t outputLevel_reg2 = 0x00;
 	for (uint16_t i = 1; i < 9; i++)
 	{
-		if ((diodesLevelSelect & (1U << i)) == 1)
+		if ((diodesList & (1U << i)) == 1)
 		{
 			outputLevel_reg2 |= 1U << (i - 1);
 		}
@@ -264,7 +267,7 @@ void ADP8866_SetBacklightConfiguration(uint16_t diodesList, ADP8866_Backlight_re
 #define ADP8866_BL_FI_SHIFT		0
 #define ADP8866_BL_FO_MAX		0x0F
 #define ADP8866_BL_FI_MASK		0x0F
-void ADP8866_SetBacklightFade(ADP8866_Backlight_Fade_Rate_t fadeOut, ADP8866_Backlight_Fade_Rate_t fadeIn)
+void ADP8866_SetBacklightFade(ADP8866_Fade_Rate_t fadeOut, ADP8866_Fade_Rate_t fadeIn)
 {
 	uint8_t val = 0x00;
 	val = (((uint8_t)fadeOut & ADP8866_BL_FO_MAX) << ADP8866_BL_FO_SHIFT)
@@ -278,7 +281,7 @@ void ADP8866_SetBacklightFade(ADP8866_Backlight_Fade_Rate_t fadeOut, ADP8866_Bac
 void ADP8866_SetBacklightMaxCurrent(uint8_t BacklightSetting)
 {
 	uint8_t val;
-	val = (BacklightSetting & 0x7F) << ADP8866_BL_MC_SHIFT;
+	val = (BacklightSetting & ADP8866_BL_MC_MAX) << ADP8866_BL_MC_SHIFT;
 	ADP8866_SetRegister(ADP8866_BACKLIGHT_MAX_CURRENT_REG, val);
 }
 
@@ -335,4 +338,253 @@ void ADP8866_SetIndependentSinkCurrentTime(ADP8866_SC_Time_t scTime, ADP8866_ScO
 						   + (((uint8_t)Sc2Off & ADP8866_SC2OFF_MASK) << ADP8866_SC2OFF_SHIFT)
 						   + (((uint8_t)Sc1Off & ADP8866_SC1OFF_MASK) << ADP8866_SC1OFF_SHIFT);
 	ADP8866_SetRegister(ADP8866_INDEPENDENT_SINK_CURRENT_TIME_2_REG, IndepSinkCurrTime_reg2);
+}
+
+void ADP8866_SetIndependentSinkOffTimer(uint8_t ledNumber, uint8_t offTime_01s, ADP8866_IndependentTimerMode_t mode)
+{
+	uint8_t val = 0x00;
+	ADP8866_Registers_t reg;
+	if (ADP8866_INDEPENDENT_TIMER_ENABLE == mode)
+	{
+		val = (offTime_01s & 0x7F) + 1;
+		/* saturate the value because the last value 0x7F turns off the timer */
+		if (val >= 0x7F)
+		{
+			val = 0x7E;
+		}
+	}
+	else if (ADP8866_INDEPENDENT_TIMER_OFF == mode)
+	{
+		val = 0x7F;
+	}
+	else
+	{
+		; /* do nothing */
+	}
+
+	switch (ledNumber)
+	{
+	case 6:
+		reg = ADP8866_INDEPENDENT_SINK_6_OFF_TIMER_REG;
+		break;
+	case 7:
+		reg = ADP8866_INDEPENDENT_SINK_7_OFF_TIMER_REG;
+		break;
+	case 8:
+		reg = ADP8866_INDEPENDENT_SINK_8_OFF_TIMER_REG;
+		break;
+	case 9:
+		reg = ADP8866_INDEPENDENT_SINK_9_OFF_TIMER_REG;
+		break;
+	default:
+		reg = 0xFF;
+	}
+	if (reg != 0xFF)
+	{
+		ADP8866_SetRegister(reg, val);
+	}
+}
+
+#define ADP8866_SCFO_SHIFT		4
+#define ADP8866_SCFI_SHIFT		0
+#define ADP8866_SCFO_MAX		0x0F
+#define ADP8866_SCFI_MASK		0x0F
+void ADP8866_SetIndependentSinkCurrentFade(ADP8866_Fade_Rate_t fadeOut, ADP8866_Fade_Rate_t fadeIn)
+{
+	uint8_t val = 0x00;
+	val = (((uint8_t)fadeOut & ADP8866_SCFO_MAX) << ADP8866_SCFO_SHIFT)
+		+ (((uint8_t)fadeIn  & ADP8866_SCFI_MASK) << ADP8866_SCFI_SHIFT);
+
+	ADP8866_SetRegister(ADP8866_INDEPENDENT_SINK_CURRENT_FADE_REG, val);
+}
+
+#define ADP8866_SCD_SHIFT	0
+#define ADP8866_SCD_MASK	0x7F
+void ADP8866_SetSinkCurrentLED(uint8_t ledNumber, uint8_t sinkCurrentCode)
+{
+	uint8_t val;
+	ADP8866_Registers_t reg;
+	val = (sinkCurrentCode & ADP8866_SCD_MASK) << ADP8866_SCD_SHIFT;
+
+	switch (ledNumber)
+	{
+	case 1:
+		reg = ADP8866_SINK_CURRENT_LED_1_REG;
+		break;
+	case 2:
+		reg = ADP8866_SINK_CURRENT_LED_2_REG;
+		break;
+	case 3:
+		reg = ADP8866_SINK_CURRENT_LED_3_REG;
+		break;
+	case 4:
+		reg = ADP8866_SINK_CURRENT_LED_4_REG;
+		break;
+	case 5:
+		reg = ADP8866_SINK_CURRENT_LED_5_REG;
+		break;
+	case 6:
+		reg = ADP8866_SINK_CURRENT_LED_6_REG;
+		break;
+	case 7:
+		reg = ADP8866_SINK_CURRENT_LED_7_REG;
+		break;
+	case 8:
+		reg = ADP8866_SINK_CURRENT_LED_8_REG;
+		break;
+	case 9:
+		reg = ADP8866_SINK_CURRENT_LED_9_REG;
+		break;
+	default:
+		reg = 0xFF;
+	}
+	if (reg != 0xFF)
+	{
+		ADP8866_SetRegister(reg, val);
+	}
+}
+
+#define ADP8866_D9HB_EN_SHIFT	3
+#define ADP8866_D8HB_EN_SHIFT	2
+#define ADP8866_D7HB_EN_SHIFT	1
+#define ADP8866_D6HB_EN_SHIFT	0
+#define ADP8866_D9HB_EN_MASK	0x01
+#define ADP8866_D8HB_EN_MASK	0x01
+#define ADP8866_D7HB_EN_MASK	0x01
+#define ADP8866_D6HB_EN_MASK	0x01
+void ADP8866_SetHeartbeatEnable(ADP8866_Heartbeat_Enable_t heartbeatSettings)
+{
+	uint8_t val = 0x00;
+	if (heartbeatSettings.D9HB_EN == TRUE)
+	{
+		val |= (heartbeatSettings.D9HB_EN & ADP8866_D9HB_EN_MASK) << ADP8866_D9HB_EN_SHIFT;
+	}
+	if (heartbeatSettings.D8HB_EN == TRUE)
+	{
+		val |= (heartbeatSettings.D8HB_EN & ADP8866_D8HB_EN_MASK) << ADP8866_D8HB_EN_SHIFT;
+	}
+	if (heartbeatSettings.D7HB_EN == TRUE)
+	{
+		val |= (heartbeatSettings.D7HB_EN & ADP8866_D7HB_EN_MASK) << ADP8866_D7HB_EN_SHIFT;
+	}
+	if (heartbeatSettings.D6HB_EN == TRUE)
+	{
+		val |= (heartbeatSettings.D6HB_EN & ADP8866_D6HB_EN_MASK) << ADP8866_D6HB_EN_SHIFT;
+	}
+
+	ADP8866_SetRegister(ADP8866_HEARTBEAT_ENABLE_SEL_REG, val);
+}
+
+#define ADP8866_SCDX_HB_SHIFT	0
+#define ADP8866_SCDX_HB_MAX		0x7F
+void ADP8866_SetIndependentSinkCurrent(uint8_t ledNumber, uint8_t sinkCurrent)
+{
+	uint8_t val;
+	ADP8866_Registers_t reg;
+	val = (sinkCurrent & ADP8866_SCDX_HB_MAX) << ADP8866_SCDX_HB_SHIFT;
+
+	switch (ledNumber)
+	{
+	case 6:
+		reg = ADP8866_INDEPENDENT_SINK_6_HEAR_PULSES_REG;
+		break;
+	case 7:
+		reg = ADP8866_INDEPENDENT_SINK_7_HEAR_PULSES_REG;
+		break;
+	case 8:
+		reg = ADP8866_INDEPENDENT_SINK_8_HEAR_PULSES_REG;
+		break;
+	case 9:
+		reg = ADP8866_INDEPENDENT_SINK_9_HEAR_PULSES_REG;
+		break;
+	default:
+		reg = 0xFF;
+	}
+	if (reg != 0xFF)
+	{
+		ADP8866_SetRegister(reg, val);
+	}
+}
+
+void ADP8866_SetIndependentSinkOffTimerHearthbeatMode(uint8_t ledNumber, uint8_t offTime_01s, ADP8866_IndependentTimerMode_t mode)
+{
+	uint8_t val = 0x00;
+	ADP8866_Registers_t reg;
+	if (ADP8866_INDEPENDENT_TIMER_ENABLE == mode)
+	{
+		val = (offTime_01s & 0x7F) + 1;
+		/* saturate the value because the last value 0x7F turns off the timer */
+		if (val >= 0x7F)
+		{
+			val = 0x7E;
+		}
+	}
+	else if (ADP8866_INDEPENDENT_TIMER_OFF == mode)
+	{
+		val = 0x7F;
+	}
+	else
+	{
+		; /* do nothing */
+	}
+
+	switch (ledNumber)
+	{
+	case 6:
+		reg = ADP8866_INDEPENDENT_SINK_6_TIM_OFF_HEAR_PULSES_REG;
+		break;
+	case 7:
+		reg = ADP8866_INDEPENDENT_SINK_7_TIM_OFF_HEAR_PULSES_REG;
+		break;
+	case 8:
+		reg = ADP8866_INDEPENDENT_SINK_8_TIM_OFF_HEAR_PULSES_REG;
+		break;
+	case 9:
+		reg = ADP8866_INDEPENDENT_SINK_9_TIM_OFF_HEAR_PULSES_REG;
+		break;
+	default:
+		reg = 0xFF;
+	}
+	if (reg != 0xFF)
+	{
+		ADP8866_SetRegister(reg, val);
+	}
+}
+
+#define ADP8866_SCON_HB_SHIFT 	0
+#define ADP8866_SCON_HB_MASK 	0x0F
+void ADP8866_SetHeartbeatOnTime(ADP8866_Heartbeat_Time_t timer)
+{
+	uint8_t val = 0x00;
+	val = (((uint8_t)timer & ADP8866_SCON_HB_MASK)   << ADP8866_SCON_HB_SHIFT);
+	ADP8866_SetRegister(ADP8866_HEARTBEAT_ON_TIME_REG, val);
+}
+
+void ADP8866_SetDelayTimeToFade(uint8_t ledNumber, uint16_t delay_ms)
+{
+	uint8_t val = 0x00;
+	ADP8866_Registers_t reg;
+	val = (uint8_t) (delay_ms / 10);
+
+	switch (ledNumber)
+	{
+	case 6:
+		reg = ADP8866_ENABLE_DELAY_TIME_SC6_REG;
+		break;
+	case 7:
+		reg = ADP8866_ENABLE_DELAY_TIME_SC7_REG;
+		break;
+	case 8:
+		reg = ADP8866_ENABLE_DELAY_TIME_SC8_REG;
+		break;
+	case 9:
+		reg = ADP8866_ENABLE_DELAY_TIME_SC9_REG;
+		break;
+	default:
+		reg = 0xFF;
+	}
+	if (reg != 0xFF)
+	{
+		ADP8866_SetRegister(reg, val);
+	}
 }

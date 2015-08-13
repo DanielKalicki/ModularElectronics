@@ -132,6 +132,10 @@ typedef enum{
 	ADP8866_GAIN_MODE_1_5X	=	2,
 	ADP8866_GAIN_MODE_2X	=	3
 }ADP8866_GainMode_t;
+typedef enum{
+	ADP8866_GAIN_1_5_LIMIT_DISABLE	=	0,
+	ADP8866_GAIN_1_5_LIMIT_ENABLE	=	1
+} ADP8866_GainModeLimit_t;
 void ADP8866_SetChargePumpGain(ADP8866_GainMode_t gainMode, ADP8866_GainModeLimit_t gainModeLimit);
 
 typedef enum{
@@ -202,7 +206,7 @@ typedef enum{
 } ADP8866_MaxCurrentRange_t;
 /* To control diode [X] with LEVEL_SET bits set bit [X] as 1,
  * to set diode [X] to normal mode (25mA full-scale current) set the bit [X] to 0 */
-void ADP8866_SetOutputLevel(ADP8866_DiodeLevelMode_t diodeMode, ADP8866_MaxCurrentRange_t maxCurrentRange);
+void ADP8866_SetOutputLevel(uint16_t diodesList, ADP8866_MaxCurrentRange_t maxCurrentRange);
 
 /* To power LED diode [X] from battery set bit [X] as 1,
  * to power LED diode [X] from the charge pump set the bit [X] to 0 */
@@ -239,13 +243,13 @@ typedef enum{
 	ADP8866_BACKLIGHT_FADE_1_25s	= 13,
 	ADP8866_BACKLIGHT_FADE_1_50s	= 14,
 	ADP8866_BACKLIGHT_FADE_1_75s	= 15,
-}ADP8866_Backlight_Fade_Rate_t;
-void ADP8866_SetBacklightFade(ADP8866_Backlight_Fade_Rate_t fadeOut, ADP8866_Backlight_Fade_Rate_t fadeIn);
+}ADP8866_Fade_Rate_t;
+void ADP8866_SetBacklightFade(ADP8866_Fade_Rate_t fadeOut, ADP8866_Fade_Rate_t fadeIn);
 
 /* Because the maximum current is calculated using a square law function and is a function of Backlight Output Level
- * arguments for this c function are not enumerated the user needs to read the correct register settign from the
+ * arguments for this c function are not enumerated the user needs to read the correct register setting from the
  * datasheet and set the uint8_t BacklightSetting to the corresponding DAC code value*/
-void ADP8866_SetBacklightMaxCurrent(uint8_t BacklightSetting);
+void ADP8866_SetBacklightMaxCurrent(uint8_t BacklightSettingCode);
 
 /* To enable act on LED diode [X] set bit [X] as 1,
  * to disable act on LED diode [X] set the bit [X] to 0 */
@@ -277,5 +281,55 @@ typedef enum{
 } ADP8866_ScOffTime_t;
 void ADP8866_SetIndependentSinkCurrentTime(ADP8866_SC_Time_t scTime, ADP8866_ScOffTime_t Sc5Off, ADP8866_ScOffTime_t Sc4Off,
 										 ADP8866_ScOffTime_t Sc3Off, ADP8866_ScOffTime_t Sc2Off, ADP8866_ScOffTime_t Sc1Off);
+typedef enum{
+	ADP8866_INDEPENDENT_TIMER_DISABLE	= 0,
+	ADP8866_INDEPENDENT_TIMER_ENABLE	= 1,
+	ADP8866_INDEPENDENT_TIMER_OFF		= 2
+} ADP8866_IndependentTimerMode_t;
+void ADP8866_SetIndependentSinkOffTimer(uint8_t ledNumber, uint8_t offTime_01s, ADP8866_IndependentTimerMode_t disable);
+
+void ADP8866_SetIndependentSinkCurrentFade(ADP8866_Fade_Rate_t fadeOut, ADP8866_Fade_Rate_t fadeIn);
+
+/* Because the maximum current is calculated using a square law function and is a function of Output Level
+ * arguments for this c function are not enumerated the user needs to read the correct register setting from the
+ * datasheet and set the uint8_t sinkCurrentCode to the corresponding DAC code value*/
+void ADP8866_SetSinkCurrentLED(uint8_t ledNumber, uint8_t sinkCurrentCode);
+
+typedef struct{
+	uint8_t D9HB_EN;
+	uint8_t D8HB_EN;
+	uint8_t D7HB_EN;
+	uint8_t D6HB_EN;
+} ADP8866_Heartbeat_Enable_t;
+void ADP8866_SetHeartbeatEnable(ADP8866_Heartbeat_Enable_t heartbeatSettings);
+
+/* Because the maximum current is calculated using a square law function and is a function of Output Level
+ * arguments for this c function are not enumerated the user needs to read the correct register setting from the
+ * datasheet and set the uint8_t sinkCurrentCode to the corresponding DAC code value*/
+void ADP8866_SetIndependentSinkCurrent(uint8_t ledNumber, uint8_t sinkCurrent);
+
+void ADP8866_SetIndependentSinkOffTimerHearthbeatMode(uint8_t ledNumber, uint8_t offTime_01s, ADP8866_IndependentTimerMode_t mode);
+
+typedef enum{
+	ADP8866_HB_TIME_0_00s	=	0,
+	ADP8866_HB_TIME_0_05s	=	1,
+	ADP8866_HB_TIME_0_10s	=	2,
+	ADP8866_HB_TIME_0_15s	=	3,
+	ADP8866_HB_TIME_0_20s	=	4,
+	ADP8866_HB_TIME_0_25s	=	5,
+	ADP8866_HB_TIME_0_30s	=	6,
+	ADP8866_HB_TIME_0_35s	=	7,
+	ADP8866_HB_TIME_0_40s	=	8,
+	ADP8866_HB_TIME_0_45s	=	9,
+	ADP8866_HB_TIME_0_50s	=	10,
+	ADP8866_HB_TIME_0_55s	=	11,
+	ADP8866_HB_TIME_0_60s	=	12,
+	ADP8866_HB_TIME_0_65s	=	13,
+	ADP8866_HB_TIME_0_70s	=	14,
+	ADP8866_HB_TIME_0_75s	=	15
+} ADP8866_Heartbeat_Time_t;
+void ADP8866_SetHeartbeatOnTime(ADP8866_Heartbeat_Time_t timer);
+
+void ADP8866_SetDelayTimeToFade(uint8_t ledNumber, uint16_t delay_ms);
 
 #endif /* ADP8866_REG_H_ */
