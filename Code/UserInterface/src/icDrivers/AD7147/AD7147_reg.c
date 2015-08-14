@@ -1,5 +1,9 @@
 #include "AD7147_reg.h"
 
+#include "..\..\ucPeripheralDrivers\i2c_connection.h"
+#include "..\..\ucPeripheralDrivers\leuart_connection.h"
+
+
 /* I2C address definition */
 #if AD7147_A1 == 0
 	#if AD7147_A0 == 0
@@ -26,12 +30,13 @@
 #endif
 
 
-uint8_t ADP7147_Detect_LowLevel(void)
+uint8_t AD7147_Detect_LowLevel(void)
 {
-	return i2c_Detect(I2C0, ADP7147_ADDR);
+	return i2c_Detect(I2C0, AD7147_ADDR);
 }
 
 typedef enum{
+	/* Bank 1 */
 	AD7147_PWR_CONTROL_REG						= 0x000,
 	AD7147_STAGE_CAL_EN_REG						= 0x001,
 	AD7147_AMB_COMP_CTRL0_REG					= 0x002,
@@ -60,9 +65,21 @@ typedef enum{
 	AD7147_DEVICE_ID_REG						= 0x017,
 
 	AD7147_PROXIMITY_STATUS_REG					= 0x042,
-} ADP7147_Registers_t;
 
-static void ADP7147_SetRegister(ADP7147_Registers_t reg, uint16_t val)
+	/* Bank 2 */
+	AD7147_STAGE0_CONFIGURATION1_REG			= 0x080,
+	AD7147_STAGE0_CONFIGURATION2_REG			= 0x081,
+	AD7147_STAGE0_AFE_OFFSET_REG				= 0x082,
+	AD7147_STAGE0_SENSITIVITY_REG				= 0x083,
+	AD7147_STAGE0_OFFSET_LOW_REG				= 0x084, /* High/Low reg are in this order in datasheet */
+	AD7147_STAGE0_OFFSET_HIGH_REG				= 0x085,
+	AD7147_STAGE0_OFFSET_HIGH_CLAMP_REG			= 0x086, /* High/Low reg are in this order in datasheet */
+	AD7147_STAGE0_OFFSET_LOW_CLAMP_REG			= 0x087,
+	/* Stage 1 - 11 */
+
+} AD7147_Registers_t;
+
+static void AD7147_SetRegister(AD7147_Registers_t reg, uint16_t val)
 {
 	/* This ic requires a 16b register address and 16 bit data value */
 	uint8_t data[4];
@@ -70,15 +87,15 @@ static void ADP7147_SetRegister(ADP7147_Registers_t reg, uint16_t val)
 	data[1] = (uint8_t)reg;
 	data[2] = (uint8_t)(val >> 8);
 	data[3] = (uint8_t)val;
-	i2c_Register_Write_Block (I2C0, ADP7147_ADDR, data[0], 3, &data[1]);
+	i2c_Register_Write_Block(I2C0, AD7147_ADDR, data[0], 3, &data[1]);
 }
 
 /* Not implemented correctly yet */
 /* TODO this */
 #if (0)
-static void ADP7147_GetRegister(ADP7147_Registers_t ADP7147_reg, uint16_t *val)
+static void AD7147_GetRegister(AD7147_Registers_t AD7147_reg, uint16_t *val)
 {
-	i2c_RegisterGet(I2C0, ADP7147_ADDR, (uint8_t)ADP7147_reg, val);
+	i2c_RegisterGet(I2C0, AD7147_ADDR, (uint8_t)AD7147_reg, val);
 }
 #endif
 
@@ -111,7 +128,7 @@ void AD7147_SetPowerControl(AD7147_PowerControl_t powerCtrl)
 		+ (((uint16_t)powerCtrl.AD7147_Int_Poling_Control_e  		& AD7147_INT_POL_MASK) 				<< AD7147_INT_POL_SHIFT)
 		+ (((uint16_t)powerCtrl.AD7147_Excitation_Source_Control_e  & AD7147_EXT_SOURCE_MASK) 			<< AD7147_EXT_SOURCE_SHIFT)
 		+ (((uint16_t)powerCtrl.AD7147_CDC_Bias_e  					& AD7147_CDC_BIAS_MASK) 			<< AD7147_CDC_BIAS_SHIFT);
-	ADP7147_SetRegister(AD7147_PWR_CONTROL_REG, val);
+	AD7147_SetRegister(AD7147_PWR_CONTROL_REG, val);
 }
 
 #define AD7147_STAGE_CAL_STAGE0_CAL_EN_SHIFT	0
@@ -148,7 +165,7 @@ void AD7147_SetStageCal(AD7147_StageCal_t stageCal)
 		+ (((uint16_t)stageCal.AD7147_Avg_Full_Power_Skip_Control_e & AD7147_STAGE_CAL_AVG_FP_SKIP_MASK) << AD7147_STAGE_CAL_AVG_FP_SKIP_SHIFT)
 		+ (((uint16_t)stageCal.AD7147_Avg_Low_Power_Skip_Control_e  & AD7147_STAGE_CAL_AVG_LP_SKIP_MASK) << AD7147_STAGE_CAL_AVG_LP_SKIP_SHIFT);
 
-	ADP7147_SetRegister(AD7147_STAGE_CAL_EN_REG, val);
+	AD7147_SetRegister(AD7147_STAGE_CAL_EN_REG, val);
 }
 
 #define AD7147_FF_SKIP_CNT_SHIFT				0
@@ -184,18 +201,18 @@ void AD7147_SetAmbientCompensationControl(AD7147_AmbCompCtrl_t ambCompCtrl)
 		 + (((uint16_t)ambCompCtrl.AD7147_Forced_Calibration_e					& AD7147_FORCED_CAL_MASK) 				<< AD7147_FORCED_CAL_SHIFT)
 		 + (((uint16_t)ambCompCtrl.AD7147_Conversion_Reset_e 					& AD7147_CONV_RESET_MASK) 				<< AD7147_CONV_RESET_SHIFT);
 
-	ADP7147_SetRegister(AD7147_AMB_COMP_CTRL0_REG, val1);
+	AD7147_SetRegister(AD7147_AMB_COMP_CTRL0_REG, val1);
 
 	uint16_t val2;
-	val1 = (((uint16_t)ambCompCtrl.AD7147_Proximity_Recalibration_Level 		& AD7147_PROXIMITY_RECAL_LVL_MASK) 		<< AD7147_PROXIMITY_RECAL_LVL_SHIFT)
+	val2 = (((uint16_t)ambCompCtrl.AD7147_Proximity_Recalibration_Level 		& AD7147_PROXIMITY_RECAL_LVL_MASK) 		<< AD7147_PROXIMITY_RECAL_LVL_SHIFT)
 		 + (((uint16_t)ambCompCtrl.AD7147_Proximity_Detection_Rate 				& AD7147_PROXIMITY_DETECTION_RATE_MASK) << AD7147_PROXIMITY_DETECTION_RATE_SHIFT)
 		 + (((uint16_t)ambCompCtrl.AD7147_Slow_Filter_Update_Level 				& AD7147_SLOW_FILTER_UPDATE_LVL_MASK) 	<< AD7147_SLOW_FILTER_UPDATE_LVL_SHIFT);
-	ADP7147_SetRegister(AD7147_AMB_COMP_CTRL1_REG, val2);
+	AD7147_SetRegister(AD7147_AMB_COMP_CTRL1_REG, val2);
 
 	uint16_t val3;
-	val1 = (((uint16_t)ambCompCtrl.AD7147_Full_Power_Proximity_Recalibration 	& AD7147_FP_PROXIMITY_RECAL_MASK) 		<< AD7147_FP_PROXIMITY_RECAL_SHIFT)
+	val3 = (((uint16_t)ambCompCtrl.AD7147_Full_Power_Proximity_Recalibration 	& AD7147_FP_PROXIMITY_RECAL_MASK) 		<< AD7147_FP_PROXIMITY_RECAL_SHIFT)
 		 + (((uint16_t)ambCompCtrl.AD7147_Low_Power_Proximity_Recalibration 	& AD7147_LP_PROXIMITY_RECAL_MASK) 		<< AD7147_LP_PROXIMITY_RECAL_SHIFT);
-	ADP7147_SetRegister(AD7147_AMB_COMP_CTRL2_REG, val3);
+	AD7147_SetRegister(AD7147_AMB_COMP_CTRL2_REG, val3);
 }
 
 #define AD7147_STAGE_LOW_INT_STAGE0_SHIFT			0
@@ -217,22 +234,22 @@ void AD7147_SetAmbientCompensationControl(AD7147_AmbCompCtrl_t ambCompCtrl)
 void AD7147_SetStageLowInterruptEnable(AD7147_Stage_Low_Int_t stageLowIntEn)
 {
 	uint16_t val = 0x0000;
-	val = (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage0  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE0_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage1  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE1_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage2  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE2_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage3  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE3_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage4  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE4_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage5  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE5_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage6  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE6_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage7  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE7_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage8  		& 0x01) 												<< AD7147_STAGE_LOW_INT_STAGE8_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage9  		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE9_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage10 		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE10_SHIFT)
-		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage11 		& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE11_SHIFT)
-		+ (((uint16_t)stageLowIntEn.ADP7147_Gpio_Setup_e 					& AD7147_STAGE_LOW_INT_ENABLE_GPIO_SETUP_MASK) 			<< AD7147_STAGE_LOW_INT_ENABLE_GPIO_SETUP_SHIFT)
-		+ (((uint16_t)stageLowIntEn.ADP7147_Gpio_Input_Configuration_e  	& AD7147_STAGE_LOW_INT_ENABLE_GPIO_INPUT_CONFIG_MASK) 	<< AD7147_STAGE_LOW_INT_ENABLE_GPIO_INPUT_CONFIG_SHIFT);
+	val = (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage0  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE0_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage1  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE1_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage2  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE2_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage3  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE3_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage4  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE4_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage5  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE5_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage6  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE6_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage7  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE7_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage8  	& 0x01) 												<< AD7147_STAGE_LOW_INT_STAGE8_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage9  	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE9_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage10 	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE10_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Stage_Low_Int_En_s.Stage11 	& 0x01) 							 					<< AD7147_STAGE_LOW_INT_STAGE11_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Gpio_Setup_e 				& AD7147_STAGE_LOW_INT_ENABLE_GPIO_SETUP_MASK) 			<< AD7147_STAGE_LOW_INT_ENABLE_GPIO_SETUP_SHIFT)
+		+ (((uint16_t)stageLowIntEn.AD7147_Gpio_Input_Configuration_e 	& AD7147_STAGE_LOW_INT_ENABLE_GPIO_INPUT_CONFIG_MASK) 	<< AD7147_STAGE_LOW_INT_ENABLE_GPIO_INPUT_CONFIG_SHIFT);
 
-	ADP7147_SetRegister(AD7147_STAGE_LOW_INT_ENABLE_REG, val);
+	AD7147_SetRegister(AD7147_STAGE_LOW_INT_ENABLE_REG, val);
 }
 
 #define AD7147_STAGE_HIGH_INT_STAGE0_SHIFT			0
@@ -250,19 +267,19 @@ void AD7147_SetStageLowInterruptEnable(AD7147_Stage_Low_Int_t stageLowIntEn)
 void AD7147_SetStageHighInterruptEnable(AD7147_Stage_High_Int_t stageHighIntEn)
 {
 	uint16_t val = 0x0000;
-	val = (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage0  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE0_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage1  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE1_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage2  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE2_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage3  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE3_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage4  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE4_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage5  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE5_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage6  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE6_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage7  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE7_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage8  		& 0x01) 												<< AD7147_STAGE_HIGH_INT_STAGE8_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage9  		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE9_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage10 		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE10_SHIFT)
-		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage11 		& 0x01) 							 					<< AD7147_STAGE_HIGH_INT_STAGE11_SHIFT);
-	ADP7147_SetRegister(AD7147_STAGE_HIGH_INT_ENABLE_REG, val);
+	val = (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage0  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE0_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage1  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE1_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage2  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE2_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage3  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE3_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage4  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE4_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage5  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE5_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage6  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE6_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage7  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE7_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage8  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE8_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage9  		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE9_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage10 		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE10_SHIFT)
+		+ (((uint16_t)stageHighIntEn.AD7147_Stage_High_Int_En_s.Stage11 		& 0x01) 		<< AD7147_STAGE_HIGH_INT_STAGE11_SHIFT);
+	AD7147_SetRegister(AD7147_STAGE_HIGH_INT_ENABLE_REG, val);
 }
 
 #define AD7147_STAGE_COMPLETE_INT_STAGE0_SHIFT			0
@@ -281,21 +298,21 @@ void AD7147_SetStageHighInterruptEnable(AD7147_Stage_High_Int_t stageHighIntEn)
 void AD7147_SetStageCompleteInterruptEnable(AD7147_Stage_Complete_Int_t stageCompleteIntEn)
 {
 	uint16_t val = 0x0000;
-	val = (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage0  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE0_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage1  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE1_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage2  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE2_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage3  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE3_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage4  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE4_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage5  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE5_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage6  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE6_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage7  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE7_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage8  		& 0x01) 												<< AD7147_STAGE_COMPLETE_INT_STAGE8_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage9  		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE9_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage10 		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE10_SHIFT)
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage11 		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE11_SHIFT);
-		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage11 		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_STAGE11_SHIFT);
-		+ (((uint16_t)stageCompleteIntEn.AD7147_GPIO_Int_En						 		& 0x01) 							 					<< AD7147_STAGE_COMPLETE_INT_ENABLE_GPIO_INT_EN_SHIFT);
-	ADP7147_SetRegister(AD7147_STAGE_COMPLETE_INT_ENABLE_REG, val);
+	val = (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage0  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE0_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage1  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE1_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage2  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE2_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage3  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE3_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage4  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE4_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage5  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE5_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage6  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE6_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage7  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE7_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage8  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE8_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage9  & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE9_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage10 & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE10_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage11 & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE11_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_Stage_Complete_Int_En_s.Stage11 & 0x01) 	<< AD7147_STAGE_COMPLETE_INT_STAGE11_SHIFT)
+		+ (((uint16_t)stageCompleteIntEn.AD7147_GPIO_Int_En						& 0x01) 	<< AD7147_STAGE_COMPLETE_INT_ENABLE_GPIO_INT_EN_SHIFT);
+	AD7147_SetRegister(AD7147_STAGE_COMPLETE_INT_ENABLE_REG, val);
 }
 
 AD7147_Stage_Low_Int_t AD7147_GetStageLowIntStatus(void)
@@ -315,10 +332,10 @@ AD7147_Stage_Low_Int_t AD7147_GetStageLowIntStatus(void)
 	ret.AD7147_Stage_Low_Int_En_s.Stage9 	= FALSE;
 	ret.AD7147_Stage_Low_Int_En_s.Stage10 	= FALSE;
 	ret.AD7147_Stage_Low_Int_En_s.Stage11	= FALSE;
-	ret.ADP7147_Gpio_Input_Configuration_e 	= ADP7147_GPIO_INPUT_CONF_UNK;
-	ret.ADP7147_Gpio_Setup_e 				= ADP7147_GPIO_SETUP_GPIO_UNK;
+	ret.AD7147_Gpio_Input_Configuration_e 	= AD7147_GPIO_INPUT_CONF_UNK;
+	ret.AD7147_Gpio_Setup_e 				= AD7147_GPIO_SETUP_GPIO_UNK;
 
-	ADP7147_GetRegister(AD7147_STAGE_LOW_INT_STATUS_REG, &val);
+	AD7147_GetRegister(AD7147_STAGE_LOW_INT_STATUS_REG, &val);
 
 	if (val & ((uint16_t)1 << AD7147_STAGE_LOW_INT_STAGE0_SHIFT))
 	{
@@ -368,6 +385,8 @@ AD7147_Stage_Low_Int_t AD7147_GetStageLowIntStatus(void)
 	{
 		ret.AD7147_Stage_Low_Int_En_s.Stage11 = TRUE;
 	}
+
+	return ret;
 }
 
 AD7147_Stage_High_Int_t AD7147_GetStageHighIntStatus(void)
@@ -388,7 +407,7 @@ AD7147_Stage_High_Int_t AD7147_GetStageHighIntStatus(void)
 	ret.AD7147_Stage_High_Int_En_s.Stage10 	= FALSE;
 	ret.AD7147_Stage_High_Int_En_s.Stage11	= FALSE;
 
-	ADP7147_GetRegister(AD7147_STAGE_HIGH_INT_STATUS_REG, &val);
+	AD7147_GetRegister(AD7147_STAGE_HIGH_INT_STATUS_REG, &val);
 
 	if (val & ((uint16_t)1 << AD7147_STAGE_HIGH_INT_STAGE0_SHIFT))
 	{
@@ -438,6 +457,8 @@ AD7147_Stage_High_Int_t AD7147_GetStageHighIntStatus(void)
 	{
 		ret.AD7147_Stage_High_Int_En_s.Stage11 = TRUE;
 	}
+
+	return ret;
 }
 
 AD7147_Stage_Complete_Int_t AD7147_GetStageCompleteIntStatus(void)
@@ -457,9 +478,9 @@ AD7147_Stage_Complete_Int_t AD7147_GetStageCompleteIntStatus(void)
 	ret.AD7147_Stage_Complete_Int_En_s.Stage9 	= FALSE;
 	ret.AD7147_Stage_Complete_Int_En_s.Stage10 	= FALSE;
 	ret.AD7147_Stage_Complete_Int_En_s.Stage11	= FALSE;
-	ret.AD7147_Stage_Complete_Int_En_s 			= ADP7147_GPIO_COMPLETE_INT_UNK;
+	ret.AD7147_GPIO_Int_En 						= AD7147_GPIO_COMPLETE_INT_UNK;
 
-	ADP7147_GetRegister(AD7147_STAGE_COMPLETE_INT_STATUS_REG, &val);
+	AD7147_GetRegister(AD7147_STAGE_COMPLETE_INT_STATUS_REG, &val);
 
 	if (val & ((uint16_t)1 << AD7147_STAGE_COMPLETE_INT_STAGE0_SHIFT))
 	{
@@ -509,6 +530,8 @@ AD7147_Stage_Complete_Int_t AD7147_GetStageCompleteIntStatus(void)
 	{
 		ret.AD7147_Stage_Complete_Int_En_s.Stage11 = TRUE;
 	}
+
+	return ret;
 }
 
 uint16_t AD7147_GetCdcResult(uint8_t stageNumb)
@@ -518,7 +541,7 @@ uint16_t AD7147_GetCdcResult(uint8_t stageNumb)
 	{
 		stageNumb = 11;
 	}
-	ADP7147_GetRegister(AD7147_CDC_RESULT_S0_REG + stageNumb, &val);
+	AD7147_GetRegister(AD7147_CDC_RESULT_S0_REG + stageNumb, &val);
 	return val;
 }
 
@@ -552,7 +575,7 @@ AD7147_Proximity_Status_t AD7147_GetProximityStatus(void)
 	ret.Stage10 = FALSE;
 	ret.Stage11	= FALSE;
 
-	ADP7147_GetRegister(AD7147_PROXIMITY_STATUS_REG, &val);
+	AD7147_GetRegister(AD7147_PROXIMITY_STATUS_REG, &val);
 
 	if (val & ((uint16_t)1 << AD7147_PROXIMITY_STATUS_STAGE0_SHIFT))
 	{
@@ -602,4 +625,117 @@ AD7147_Proximity_Status_t AD7147_GetProximityStatus(void)
 	{
 		ret.Stage11 = TRUE;
 	}
+
+	return ret;
+}
+
+
+/* Bank 2 */
+
+#define AD7147_CIN_CONNECTION_SETUP_SHIFT	12
+#define AD7147_NEG_AFE_OFFSET_DISABLE_SHIFT	14
+#define AD7147_POS_AFE_OFFSET_DISABLE_SHIFT	15
+#define AD7147_CIN_CONNECTION_SETUP_MASK	0x0003
+#define AD7147_NEG_AFE_OFFSET_DISABLE_MASK	0x0001
+#define AD7147_POS_AFE_OFFSET_DISABLE_MASK	0x0001
+void AD7147_SetStageConnection(uint8_t stageNumb, AD7147_Stage_Connection_Setup_t stageSetup)
+{
+	/* Saturate the maximum stage number */
+	if (stageNumb > 11)
+	{
+		stageNumb = 11;
+	}
+	uint16_t val1 = 0x0000;
+	for (uint16_t i = 0; i < 7; i++)
+	{
+		val1 |= ((uint16_t)stageSetup.AD7147_CIN_e[i] & AD7147_CIN_CONNECTION_SETUP_MASK) << (i * 2);
+	}
+	AD7147_SetRegister(AD7147_STAGE0_CONFIGURATION1_REG + (stageNumb * 8), val1);
+
+	uint16_t val2 = 0x0000;
+	for (uint16_t i = 7; i < 13; i++)
+	{
+		val2 |= ((uint16_t)stageSetup.AD7147_CIN_e[i] & AD7147_CIN_CONNECTION_SETUP_MASK) << ((i - 7) * 2);
+	}
+	val2 |= ((uint16_t)stageSetup.AD7147_SE_Connection_Setup_e		   & AD7147_CIN_CONNECTION_SETUP_MASK)   << AD7147_CIN_CONNECTION_SETUP_SHIFT;
+	val2 |= ((uint16_t)stageSetup.AD7147_Negative_AFE_Offset_Control_e & AD7147_NEG_AFE_OFFSET_DISABLE_MASK) << AD7147_NEG_AFE_OFFSET_DISABLE_SHIFT;
+	val2 |= ((uint16_t)stageSetup.AD7147_Positive_AFE_Offset_Control_e & AD7147_POS_AFE_OFFSET_DISABLE_MASK) << AD7147_POS_AFE_OFFSET_DISABLE_SHIFT;
+
+	AD7147_SetRegister(AD7147_STAGE0_CONFIGURATION2_REG + (stageNumb * 8), val2);
+}
+
+#define AD7147_NEG_AFE_OFFSET_SHIFT			0
+#define AD7147_NEG_AFE_OFFSET_SWAP_SHIFT	7
+#define AD7147_POS_AFE_OFFSET_SHIFT			8
+#define AD7147_POS_AFE_OFFSET_SWAP_SHIFT	15
+#define AD7147_NEG_AFE_OFFSET_MASK			0x003F
+#define AD7147_NEG_AFE_OFFSET_SWAP_MASK		0x0001
+#define AD7147_POS_AFE_OFFSET_MASK			0x003F
+#define AD7147_POS_AFE_OFFSET_SWAP_MASK		0x0001
+void AD7147_SetStageAfeOffset(uint8_t stageNumb, AD7147_Stage_Afe_Offset_t afeOffsetSetup)
+{
+	/* Saturate the maximum stage number */
+	if (stageNumb > 11)
+	{
+		stageNumb = 11;
+	}
+	uint16_t val = 0x0000;
+	val = (((uint16_t)afeOffsetSetup.AD7147_Neg_AFE_Offset 			 & AD7147_NEG_AFE_OFFSET_MASK) 	 		<< AD7147_NEG_AFE_OFFSET_SHIFT)
+		+ (((uint16_t)afeOffsetSetup.AD7147_Negative_AFE_Offset_Swap & AD7147_NEG_AFE_OFFSET_SWAP_MASK)  	<< AD7147_NEG_AFE_OFFSET_SWAP_SHIFT)
+		+ (((uint16_t)afeOffsetSetup.AD7147_Pos_AFE_Offset 			 & AD7147_POS_AFE_OFFSET_MASK) 	 		<< AD7147_POS_AFE_OFFSET_SHIFT)
+		+ (((uint16_t)afeOffsetSetup.AD7147_Positive_AFE_Offset_Swap & AD7147_POS_AFE_OFFSET_SWAP_MASK) 	<< AD7147_POS_AFE_OFFSET_SWAP_SHIFT);
+
+	AD7147_SetRegister(AD7147_STAGE0_AFE_OFFSET_REG + (stageNumb * 8), val);
+}
+
+#define AD7147_NEG_THRESHOLD_SENSITIVITY_SHIFT	0
+#define AD7147_NEG_PEAK_DETECT_SHIFT			4
+#define AD7147_POS_THRESHOLD_SENSITIVITY_SHIFT	8
+#define AD7147_POS_PEAK_DETECT_SHIFT			12
+#define AD7147_NEG_THRESHOLD_SENSITIVITY_MASK	0x000F
+#define AD7147_NEG_PEAK_DETECT_MASK				0x0070
+#define AD7147_POS_THRESHOLD_SENSITIVITY_MASK	0x000F
+#define AD7147_POS_PEAK_DETECT_MASK				0x0070
+void AD7147_SetStageSensitivity(uint8_t stageNumb, AD7147_Stage_Sensitivity_t stageSensitivity)
+{
+	/* Saturate the maximum stage number */
+	if (stageNumb > 11)
+	{
+		stageNumb = 11;
+	}
+	uint16_t val = 0x0000;
+	val = (((uint16_t)stageSensitivity.AD7147_Neg_Threshold_Sensitivity & AD7147_NEG_THRESHOLD_SENSITIVITY_MASK) << AD7147_NEG_THRESHOLD_SENSITIVITY_SHIFT)
+		+ (((uint16_t)stageSensitivity.AD7147_Neg_Peak_Detect 			& AD7147_NEG_PEAK_DETECT_MASK) 			 << AD7147_NEG_PEAK_DETECT_SHIFT)
+		+ (((uint16_t)stageSensitivity.AD7147_Pos_Threshold_Sensitivity & AD7147_POS_THRESHOLD_SENSITIVITY_MASK) << AD7147_POS_THRESHOLD_SENSITIVITY_SHIFT)
+		+ (((uint16_t)stageSensitivity.AD7147_Pos_Peak_Detect 			& AD7147_POS_PEAK_DETECT_MASK) 			 << AD7147_POS_PEAK_DETECT_SHIFT);
+
+	AD7147_SetRegister(AD7147_STAGE0_SENSITIVITY_REG + (stageNumb * 8), val);
+}
+
+void AD7147_SetStageOffset(uint8_t stageNumb, uint32_t offset)
+{
+	/* Saturate the maximum stage number */
+	if (stageNumb > 11)
+	{
+		stageNumb = 11;
+	}
+	uint16_t val_high = (uint16_t)((offset >> 16) & 0xFFFF);
+	uint16_t val_low = (uint16_t)offset;
+
+	AD7147_SetRegister(AD7147_STAGE0_OFFSET_LOW_REG + (stageNumb * 8),  val_low);
+	AD7147_SetRegister(AD7147_STAGE0_OFFSET_HIGH_REG + (stageNumb * 8), val_high);
+}
+
+void AD7147_SetStageOffsetClamp(uint8_t stageNumb, uint32_t offsetClamp)
+{
+	/* Saturate the maximum stage number */
+	if (stageNumb > 11)
+	{
+		stageNumb = 11;
+	}
+	uint16_t val_high = (uint16_t)((offsetClamp >> 16) & 0xFFFF);
+	uint16_t val_low = (uint16_t)offsetClamp;
+
+	AD7147_SetRegister(AD7147_STAGE0_OFFSET_LOW_CLAMP_REG + (stageNumb * 8),  val_low);
+	AD7147_SetRegister(AD7147_STAGE0_OFFSET_HIGH_CLAMP_REG + (stageNumb * 8), val_high);
 }

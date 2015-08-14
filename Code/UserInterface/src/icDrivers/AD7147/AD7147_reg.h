@@ -1,6 +1,8 @@
 #ifndef AD7147_REG_H_
 #define AD7147_REG_H_
 
+#include <stdint.h>
+
 /* Comments included in this file comes from the ic datasheet
  * http://www.analog.com/media/en/technical-documentation/data-sheets/AD7147.pdf */
 
@@ -163,20 +165,20 @@ typedef struct{
 	} AD7147_Stage_Low_Int_En_s;
 
 	enum{
-		ADP7147_GPIO_SETUP_DISABLE_GPIO				=	0,
-		ADP7147_GPIO_SETUP_GPIO_INPUT				=	1,
-		ADP7147_GPIO_SETUP_GPIO_ACTIVE_LOW_OUTPUT	=	2,
-		ADP7147_GPIO_SETUP_GPIO_ACTIVE_HIGH_OUTPUT	=	3,
-		ADP7147_GPIO_SETUP_GPIO_UNK					=	0xF0
-	} ADP7147_Gpio_Setup_e;
+		AD7147_GPIO_SETUP_DISABLE_GPIO				=	0,
+		AD7147_GPIO_SETUP_GPIO_INPUT				=	1,
+		AD7147_GPIO_SETUP_GPIO_ACTIVE_LOW_OUTPUT	=	2,
+		AD7147_GPIO_SETUP_GPIO_ACTIVE_HIGH_OUTPUT	=	3,
+		AD7147_GPIO_SETUP_GPIO_UNK					=	0xF0
+	} AD7147_Gpio_Setup_e;
 
 	enum{
-		ADP7147_GPIO_INPUT_CONF_TRIG_NEG_LEVEL		=	0,
-		ADP7147_GPIO_INPUT_CONF_TRIG_POS_EDGE		=	1,
-		ADP7147_GPIO_INPUT_CONF_TRIG_NEG_EDGE		=	2,
-		ADP7147_GPIO_INPUT_CONF_TRIG_POS_LEVEL		=	3,
-		ADP7147_GPIO_INPUT_CONF_UNK					=	0xF0
-	} ADP7147_Gpio_Input_Configuration_e;
+		AD7147_GPIO_INPUT_CONF_TRIG_NEG_LEVEL		=	0,
+		AD7147_GPIO_INPUT_CONF_TRIG_POS_EDGE		=	1,
+		AD7147_GPIO_INPUT_CONF_TRIG_NEG_EDGE		=	2,
+		AD7147_GPIO_INPUT_CONF_TRIG_POS_LEVEL		=	3,
+		AD7147_GPIO_INPUT_CONF_UNK					=	0xF0
+	} AD7147_Gpio_Input_Configuration_e;
 } AD7147_Stage_Low_Int_t;
 void AD7147_SetStageLowInterruptEnable(AD7147_Stage_Low_Int_t stageLowIntEn);
 
@@ -219,9 +221,9 @@ typedef struct{
 	} AD7147_Stage_Complete_Int_En_s;
 
 	enum{
-		ADP7147_GPIO_COMPLETE_INT_DISABLE	= 0,
-		ADP7147_GPIO_COMPLETE_INT_ENABLE	= 1,
-		ADP7147_GPIO_COMPLETE_INT_UNK		= 0xF0
+		AD7147_GPIO_COMPLETE_INT_DISABLE	= 0,
+		AD7147_GPIO_COMPLETE_INT_ENABLE		= 1,
+		AD7147_GPIO_COMPLETE_INT_UNK		= 0xF0
 	} AD7147_GPIO_Int_En;
 } AD7147_Stage_Complete_Int_t;
 void AD7147_SetStageCompleteInterruptEnable(AD7147_Stage_Complete_Int_t stageCompleteIntEn);
@@ -244,5 +246,87 @@ typedef struct{
 } AD7147_Proximity_Status_t;
 AD7147_Proximity_Status_t AD7147_GetProximityStatus(void);
 
+typedef enum{
+	AD7147_CIN_CONNECTION_CIN_NOT_CONNECTED					= 0,
+	AD7147_CIN_CONNECTION_CIN_CONNECTED_TO_NEG_CDC_INPUT	= 1,
+	AD7147_CIN_CONNECTION_CIN_CONNECTED_TO_POS_CDC_INPIT	= 2,
+	AD7147_CIN_CONNECTION_CIN_CONNECTED_TO_BIAS				= 3 /* Connect unused Cin to bias */
+} AD7147_Cin_Connection_Setup_t;
+
+typedef struct{
+	AD7147_Cin_Connection_Setup_t AD7147_CIN_e[13];
+
+	enum{
+		AD7147_SE_CONNECTION_SETUP_DO_NOT_USE						= 0,
+		AD7147_SE_CONNECTION_SETUP_USE_WHEN_1_CIN_CONN_TO_POS_INPUT	= 1,
+		AD7147_SE_CONNECTION_SETUP_USE_WHEN_1_CIN_CONN_TO_NEG_INPUT	= 2,
+		AD7147_SE_CONNECTION_SETUP_DIFFERENTIAL_CONNECTION_TO_CDC	= 3
+	} AD7147_SE_Connection_Setup_e;
+
+	enum{
+		AD7147_NEG_AFE_OFFSET_ENABLE			= 0,
+		AD7147_NEG_AFE_OFFSET_DISABLE			= 1
+	} AD7147_Negative_AFE_Offset_Control_e;
+
+	enum{
+		AD7147_POS_AFE_OFFSET_ENABLE			= 0,
+		AD7147_POS_AFE_OFFSET_DISABLE			= 1
+	} AD7147_Positive_AFE_Offset_Control_e;
+
+} AD7147_Stage_Connection_Setup_t;
+void AD7147_SetStageConnection(uint8_t stageNumb, AD7147_Stage_Connection_Setup_t stageSetup);
+
+typedef struct{
+	uint8_t AD7147_Neg_AFE_Offset; 	/* 1LSB = 0.32 pF of offset */
+	enum{
+		AD7147_NEG_AFE_OFFSET_SWAP_OFFSET_APPLIED_TO_NEG_CDC	= 0,
+		AD7147_NEG_AFE_OFFSET_SWAP_OFFSET_APPLIED_TO_POS_CDC	= 1
+	} AD7147_Negative_AFE_Offset_Swap;
+
+	uint8_t AD7147_Pos_AFE_Offset; 	/* 1LSB = 0.32 pF of offset */
+	enum{
+		AD7147_POS_AFE_OFFSET_SWAP_OFFSET_APPLIED_TO_NEG_CDC	= 0,
+		AD7147_POS_AFE_OFFSET_SWAP_OFFSET_APPLIED_TO_POS_CDC	= 1
+	} AD7147_Positive_AFE_Offset_Swap;
+} AD7147_Stage_Afe_Offset_t;
+void AD7147_SetStageAfeOffset(uint8_t stageNumb, AD7147_Stage_Afe_Offset_t afeOffsetSetup);
+
+typedef enum{
+	AD7147_THR_SENSITIVITY_25_PERC			= 0,
+	AD7147_THR_SENSITIVITY_29_73_PERC		= 1,
+	AD7147_THR_SENSITIVITY_34_40_PERC		= 2,
+	AD7147_THR_SENSITIVITY_39_08_PERC		= 3,
+	AD7147_THR_SENSITIVITY_43_79_PERC		= 4,
+	AD7147_THR_SENSITIVITY_48_47_PERC		= 5,
+	AD7147_THR_SENSITIVITY_53_15_PERC		= 6,
+	AD7147_THR_SENSITIVITY_57_83_PERC		= 7,
+	AD7147_THR_SENSITIVITY_62_51_PERC		= 8,
+	AD7147_THR_SENSITIVITY_67_22_PERC		= 9,
+	AD7147_THR_SENSITIVITY_71_90_PERC		= 10,
+	AD7147_THR_SENSITIVITY_76_58_PERC		= 11,
+	AD7147_THR_SENSITIVITY_81_28_PERC		= 12,
+	AD7147_THR_SENSITIVITY_85_96_PERC		= 13,
+	AD7147_THR_SENSITIVITY_90_64_PERC		= 14,
+	AD7147_THR_SENSITIVITY_95_32_PERC		= 15
+} AD7147_Threshold_Sensitivity_t;
+typedef enum{
+	AD7147_PEAK_DETECT_LEVEL_40_PERC		= 0,
+	AD7147_PEAK_DETECT_LEVEL_50_PERC		= 1,
+	AD7147_PEAK_DETECT_LEVEL_60_PERC		= 2,
+	AD7147_PEAK_DETECT_LEVEL_70_PERC		= 3,
+	AD7147_PEAK_DETECT_LEVEL_80_PERC		= 4,
+	AD7147_PEAK_DETECT_LEVEL_90_PERC		= 5
+} AD7147_Peak_Detect_Level_t;
+typedef struct{
+	AD7147_Threshold_Sensitivity_t 	AD7147_Neg_Threshold_Sensitivity;
+	AD7147_Peak_Detect_Level_t 		AD7147_Neg_Peak_Detect;
+	AD7147_Threshold_Sensitivity_t 	AD7147_Pos_Threshold_Sensitivity;
+	AD7147_Peak_Detect_Level_t 		AD7147_Pos_Peak_Detect;
+} AD7147_Stage_Sensitivity_t;
+void AD7147_SetStageSensitivity(uint8_t stageNumb, AD7147_Stage_Sensitivity_t stageSensitivity);
+
+void AD7147_SetStageOffset(uint8_t stageNumb, uint32_t offset);
+
+void AD7147_SetStageOffsetClamp(uint8_t stageNumb, uint32_t offsetClamp);
 
 #endif /* AD7147_REG_H_ */
