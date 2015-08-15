@@ -75,7 +75,7 @@ void Si114x_Init(Si114x_Settings_t Si114x_Settings)
 	/* Set the device to wake-up every 1ms and performs all CHILIST */
 	/* Maximum ALS + UV + 3x PS measurement time = 660us */
 	/* Single PS measurement takes = 155us */
-	Si114x_SetMeasurmentRate(3200);
+	Si114x_SetMeasurmentRate(320);
 
 	Si114x_PsX_Led_Select_t PsXLedSelect;
 	PsXLedSelect.PS1_Led = SI114X_LED1_ENABLE;
@@ -91,9 +91,9 @@ void Si114x_Init(Si114x_Settings_t Si114x_Settings)
 	/* TODO This should work with IR diodes, but currently i dont have any
 	 * so i used RED Leds so the PS measurements are made using a visible
 	 * photodiode */
-	Si114x_SetPs1ADC(SI114X_PS_ADC_VISIBLE_PHOTODIODE);
-	Si114x_SetPs2ADC(SI114X_PS_ADC_VISIBLE_PHOTODIODE);
-	Si114x_SetPs3ADC(SI114X_PS_ADC_VISIBLE_PHOTODIODE);
+	Si114x_SetPs1ADC(SI114X_PS_ADC_LARGE_IR);
+	Si114x_SetPs2ADC(SI114X_PS_ADC_LARGE_IR);
+	Si114x_SetPs3ADC(SI114X_PS_ADC_LARGE_IR);
 	/* Si114x_SetAuxADC() This is not set, the default values is working ok */
 
 	/* Enable interrupts */
@@ -104,7 +104,7 @@ void Si114x_Init(Si114x_Settings_t Si114x_Settings)
 	//					SI114X_PS1_IE_ENABLE , SI114X_ALS_IE_DISABLE);
 
 	/* Set the led currents */
-	Si114x_SetLedCurrents(0x0A,0x0A,0x0A);
+	Si114x_SetLedCurrents(0x0F,0x0F,0x0F);
 
 	/* 0x07 = 511 ADC Clocks = 25.55us */
 	/* 0x07 is the default value */
@@ -114,7 +114,7 @@ void Si114x_Init(Si114x_Settings_t Si114x_Settings)
 
 	/* Set High gain Signal Range on PS measurement  (1b)
 	 * and Normal Proximity Measurement mode         (1b) */
-	Si114x_SetPsAdcMisc(1, 1);
+	Si114x_SetPsAdcMisc(1, 0);
 
 	/* Default values set to 1 ADC clock = 25.55us */
 	/* This ensures low power consumption but the detection distance is reduced */

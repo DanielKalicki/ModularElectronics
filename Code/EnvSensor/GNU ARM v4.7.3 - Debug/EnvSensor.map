@@ -2316,7 +2316,7 @@ OUTPUT(EnvSensor.axf elf32-littlearm)
  .comment       0x00000000       0x71 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
  .comment       0x00000000       0x71 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
 
-.debug_info     0x00000000    0x146fe
+.debug_info     0x00000000    0x146f8
  .debug_info    0x00000000     0x19bc ./src/main.o
  .debug_info    0x000019bc     0x13b0 ./emlib/em_cmu.o
  .debug_info    0x00002d6c     0x1183 ./emlib/em_dma.o
@@ -2337,12 +2337,12 @@ OUTPUT(EnvSensor.axf elf32-littlearm)
  .debug_info    0x0000aaca      0x576 ./src/sensorsDrivers/HMC5883L.o
  .debug_info    0x0000b040      0x47f ./src/sensorsDrivers/MAX4400x.o
  .debug_info    0x0000b4bf      0x97b ./src/sensorsDrivers/MPU6050.o
- .debug_info    0x0000be3a      0xc9c ./src/sensorsDrivers/Si114x.o
- .debug_info    0x0000cad6      0x65d ./src/sensorsDrivers/Si7013.o
- .debug_info    0x0000d133     0x2124 ./src/sensorsDrivers/Si114x/Si114x_reg.o
- .debug_info    0x0000f257     0x2e92 ./src/sensorsDrivers/MPU6050/inv_mpu.o
- .debug_info    0x000120e9     0x14b2 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
- .debug_info    0x0001359b     0x1163 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
+ .debug_info    0x0000be3a      0xc96 ./src/sensorsDrivers/Si114x.o
+ .debug_info    0x0000cad0      0x65d ./src/sensorsDrivers/Si7013.o
+ .debug_info    0x0000d12d     0x2124 ./src/sensorsDrivers/Si114x/Si114x_reg.o
+ .debug_info    0x0000f251     0x2e92 ./src/sensorsDrivers/MPU6050/inv_mpu.o
+ .debug_info    0x000120e3     0x14b2 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
+ .debug_info    0x00013595     0x1163 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
 
 .debug_abbrev   0x00000000     0x3e4a
  .debug_abbrev  0x00000000      0x38e ./src/main.o
@@ -2372,7 +2372,7 @@ OUTPUT(EnvSensor.axf elf32-littlearm)
  .debug_abbrev  0x00003948      0x2d2 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
  .debug_abbrev  0x00003c1a      0x230 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
 
-.debug_loc      0x00000000     0xa5ef
+.debug_loc      0x00000000     0xa5fe
  .debug_loc     0x00000000      0x760 ./src/main.o
  .debug_loc     0x00000760     0x14cd ./emlib/em_cmu.o
  .debug_loc     0x00001c2d      0xa3e ./emlib/em_dma.o
@@ -2392,12 +2392,12 @@ OUTPUT(EnvSensor.axf elf32-littlearm)
  .debug_loc     0x00005342      0x1bf ./src/sensorsDrivers/HMC5883L.o
  .debug_loc     0x00005501       0x86 ./src/sensorsDrivers/MAX4400x.o
  .debug_loc     0x00005587      0x216 ./src/sensorsDrivers/MPU6050.o
- .debug_loc     0x0000579d      0x36b ./src/sensorsDrivers/Si114x.o
- .debug_loc     0x00005b08      0x19b ./src/sensorsDrivers/Si7013.o
- .debug_loc     0x00005ca3     0x10e4 ./src/sensorsDrivers/Si114x/Si114x_reg.o
- .debug_loc     0x00006d87     0x21f0 ./src/sensorsDrivers/MPU6050/inv_mpu.o
- .debug_loc     0x00008f77      0xcc8 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
- .debug_loc     0x00009c3f      0x9b0 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
+ .debug_loc     0x0000579d      0x37a ./src/sensorsDrivers/Si114x.o
+ .debug_loc     0x00005b17      0x19b ./src/sensorsDrivers/Si7013.o
+ .debug_loc     0x00005cb2     0x10e4 ./src/sensorsDrivers/Si114x/Si114x_reg.o
+ .debug_loc     0x00006d96     0x21f0 ./src/sensorsDrivers/MPU6050/inv_mpu.o
+ .debug_loc     0x00008f86      0xcc8 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
+ .debug_loc     0x00009c4e      0x9b0 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
 
 .debug_aranges  0x00000000      0xd08
  .debug_aranges
@@ -2480,7 +2480,7 @@ OUTPUT(EnvSensor.axf elf32-littlearm)
  .debug_ranges  0x00000e90      0x100 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
  .debug_ranges  0x00000f90      0x118 ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
 
-.debug_line     0x00000000     0x5f89
+.debug_line     0x00000000     0x5f8b
  .debug_line    0x00000000      0x582 ./src/main.o
  .debug_line    0x00000582      0x66c ./emlib/em_cmu.o
  .debug_line    0x00000bee      0x471 ./emlib/em_dma.o
@@ -2501,12 +2501,12 @@ OUTPUT(EnvSensor.axf elf32-littlearm)
  .debug_line    0x00003572      0x251 ./src/sensorsDrivers/HMC5883L.o
  .debug_line    0x000037c3      0x272 ./src/sensorsDrivers/MAX4400x.o
  .debug_line    0x00003a35      0x2fb ./src/sensorsDrivers/MPU6050.o
- .debug_line    0x00003d30      0x36d ./src/sensorsDrivers/Si114x.o
- .debug_line    0x0000409d      0x28d ./src/sensorsDrivers/Si7013.o
- .debug_line    0x0000432a      0x6d8 ./src/sensorsDrivers/Si114x/Si114x_reg.o
- .debug_line    0x00004a02      0xaf6 ./src/sensorsDrivers/MPU6050/inv_mpu.o
- .debug_line    0x000054f8      0x593 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
- .debug_line    0x00005a8b      0x4fe ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
+ .debug_line    0x00003d30      0x36f ./src/sensorsDrivers/Si114x.o
+ .debug_line    0x0000409f      0x28d ./src/sensorsDrivers/Si7013.o
+ .debug_line    0x0000432c      0x6d8 ./src/sensorsDrivers/Si114x/Si114x_reg.o
+ .debug_line    0x00004a04      0xaf6 ./src/sensorsDrivers/MPU6050/inv_mpu.o
+ .debug_line    0x000054fa      0x593 ./src/sensorsDrivers/MPU6050/inv_mpu_dmp_motion_driver.o
+ .debug_line    0x00005a8d      0x4fe ./src/sensorsDrivers/MAX4400x/MAX4400x_reg.o
 
 .debug_str      0x00000000     0x5dee
  .debug_str     0x00000000     0x1036 ./src/main.o
