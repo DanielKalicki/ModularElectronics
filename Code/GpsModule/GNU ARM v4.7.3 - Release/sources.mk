@@ -17,8 +17,6 @@ SUBDIRS := \
 src/ucPeripheralDrivers \
 src \
 src/icDrivers \
-src/icDrivers/ADP8866 \
-src/icDrivers/AD7147 \
 emlib \
 CMSIS/efm32zg \
 

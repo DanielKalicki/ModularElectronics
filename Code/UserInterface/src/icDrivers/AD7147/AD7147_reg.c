@@ -200,7 +200,6 @@ void AD7147_SetAmbientCompensationControl(AD7147_AmbCompCtrl_t ambCompCtrl)
 		 + (((uint16_t)ambCompCtrl.AD7147_Power_Down_Timeout_e 					& AD7147_PWR_DOWN_TIMEOUT_MASK) 		<< AD7147_PWR_DOWN_TIMEOUT_SHIFT)
 		 + (((uint16_t)ambCompCtrl.AD7147_Forced_Calibration_e					& AD7147_FORCED_CAL_MASK) 				<< AD7147_FORCED_CAL_SHIFT)
 		 + (((uint16_t)ambCompCtrl.AD7147_Conversion_Reset_e 					& AD7147_CONV_RESET_MASK) 				<< AD7147_CONV_RESET_SHIFT);
-
 	AD7147_SetRegister(AD7147_AMB_COMP_CTRL0_REG, val1);
 
 	uint16_t val2;

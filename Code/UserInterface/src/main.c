@@ -67,7 +67,13 @@ void initDevices(void)
 	/* -----BD6210---- */
 	if(g_Devices & BD6210_SENS)
 	{
-		BD6210_Init();
+		BD6210_Settings_t BD6210_Settings;
+		BD6210_Settings.RIN_port = gpioPortF;
+		BD6210_Settings.RIN_pin = 2;
+		BD6210_Settings.FIN_port = gpioPortF;
+		BD6210_Settings.FIN_pin = 1;
+		BD6210_Settings.timer_location = 5;
+		BD6210_Init(BD6210_Settings);
 	}
 	clockTest_short();
 }
