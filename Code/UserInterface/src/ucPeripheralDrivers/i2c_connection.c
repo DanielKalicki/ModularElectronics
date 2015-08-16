@@ -58,8 +58,8 @@ void i2c_InitMaster(struct I2C_Settings i2cSettings)
 
 }
 
-void I2C0_IRQHandler(void){
-
+void I2C0_IRQHandler(void)
+{
 	I2C_IntClear(I2C0, I2C_IntGet(I2C0));
 	I2C_Status = I2C_Transfer(I2C0);
 }
@@ -85,18 +85,12 @@ int i2c_RegisterGet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *val)
   I2C_Status = I2C_TransferInit(i2c, &seq);
   while (I2C_Status == i2cTransferInProgress && timeout--)
   {
-    I2C_Status = I2C_Transfer(I2C0);
+	  I2C_Status = I2C_Transfer(I2C0);
   }
-
-#ifdef DEBUG
-  if(timeout==(uint32_t)(-1)){
-  	  //uart_sendText("\nERROR: I2C_get_timeout\n");
-  }
-#endif
 
   if (I2C_Status != i2cTransferDone)
   {
-    return((int)I2C_Status);
+	  return((int)I2C_Status);
   }
 
   return ((int) 1);
@@ -111,17 +105,17 @@ int i2c_RegisterSet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t  val)
   /* Select register to be written */
   data[0] = ((uint8_t)reg);
   seq.buf[0].data = data;
-  if (true)		//this means to read only 1 byte
+  if (true)		/* this means to read only 1 byte */
   {
-    /* Only 1 byte reg */
-    data[1] = (uint8_t)val;
-    seq.buf[0].len = 2;
+	  /* Only 1 byte reg */
+	  data[1] = (uint8_t)val;
+      seq.buf[0].len = 2;
   }
   else
   {
-    data[1] = (uint8_t)(val >> 8);
-    data[2] = (uint8_t)val;
-    seq.buf[0].len = 3;
+	  data[1] = (uint8_t)(val >> 8);
+	  data[2] = (uint8_t)val;
+	  seq.buf[0].len = 3;
   }
 
   uint32_t timeout = I2CDRV_TRANSFER_TIMEOUT;
@@ -129,21 +123,15 @@ int i2c_RegisterSet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t  val)
   I2C_Status = I2C_TransferInit(i2c, &seq);
   while (I2C_Status == i2cTransferInProgress && timeout--)
   {
-    /* Enter EM1 while waiting for I2C interrupt */
+      /* Enter EM1 while waiting for I2C interrupt */
 	  I2C_Status = I2C_Transfer(I2C0);
-    /* Could do a timeout function here. */
+      /* Could do a timeout function here. */
   }
-
-#ifdef DEBUG
-  if(timeout==0){
-	  //uart_sendText("I2C_set_timeout\n");
-  }
-#endif
 
   return(I2C_Status);
 }
 
-int i2c_Register_Write_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
+int i2c_Register_Write_Block(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
 {
   I2C_TransferSeq_TypeDef seq;
 
@@ -159,23 +147,22 @@ int i2c_Register_Write_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_
   I2C_Status = I2C_TransferInit(i2c, &seq);
   while (I2C_Status == i2cTransferInProgress && timeout--)
   {
-    /* Enter EM1 while waiting for I2C interrupt */
+      /* Enter EM1 while waiting for I2C interrupt */
 	  I2C_Status = I2C_Transfer(I2C0);
-    /* Could do a timeout function here. */
+      /* Could do a timeout function here. */
   }
 
 #ifdef DEBUG
-  if(timeout==0){
+  if(timeout == 0){
 	  //uart_sendText("I2C_set_timeout\n");
   }
 #endif
 
   return(I2C_Status);
 }
-int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
+int i2c_Register_Read_Block(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
 {
-  I2C_TransferSeq_TypeDef    seq;
-  I2C_TransferReturn_TypeDef ret;
+  I2C_TransferSeq_TypeDef seq;
   uint8_t i2c_write_data[1];
   /* Unused parameter */
   (void) i2c;
@@ -199,20 +186,20 @@ int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t
   }
 
 #ifdef DEBUG
-  if(timeout==(uint32_t)(-1)){
-  	  //uart_sendText("I2C_set_timeout\n");
+  if(timeout == (uint32_t)(-1)){
+  	  uart_sendText("I2C_set_timeout\n");
   }
 #endif
 
   if (I2C_Status != i2cTransferDone)
   {
-    return((int) ret);
+	  return((int)I2C_Status);
   }
 
   return((int) length);
 }
 
-bool i2c_Detect    (I2C_TypeDef *i2c, uint8_t addr)
+bool i2c_Detect(I2C_TypeDef *i2c, uint8_t addr)
 {
   I2C_TransferSeq_TypeDef    seq;
   I2C_TransferReturn_TypeDef ret;
@@ -239,8 +226,6 @@ bool i2c_Detect    (I2C_TypeDef *i2c, uint8_t addr)
   while (ret == i2cTransferInProgress && timeout--)
   {
       ret = I2C_Transfer(I2C0);
-	  //UART_sendChar('e');
-	  //EMU_EnterEM1();
   }
 
   if (ret != i2cTransferDone)
@@ -252,7 +237,7 @@ bool i2c_Detect    (I2C_TypeDef *i2c, uint8_t addr)
 }
 
 #ifdef DEBUG
-void i2c_Scan (I2C_TypeDef *i2c)
+void i2c_Scan(I2C_TypeDef *i2c)
 {
 	int i = 0;
 	for (; i < 128; i++){

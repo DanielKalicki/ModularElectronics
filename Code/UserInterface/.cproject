@@ -100,11 +100,11 @@
 					<folderInfo id="com.silabs.ide.si32.gcc.release#com.silabs.ide.si32.gcc:4.7.3.20130312." name="/" resourcePath="">
 						<toolChain id="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.exe.1957281941" name="Si32 GNU ARM" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.exe">
 							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.debug.level.1229814242" name="Debug Level" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.debug.level" value="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.debug.level.default" valueType="enumerated"/>
-							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideflash.847128995" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideflash" value="true" valueType="boolean"/>
-							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashorigin.588611299" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashorigin" value="0x0800" valueType="string"/>
-							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashlength.562146265" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashlength" value="30720" valueType="string"/>
-							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideram.1632398226" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideram" value="true" valueType="boolean"/>
-							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.ramlength.844989006" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.ramlength" value="4096" valueType="string"/>
+							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideflash.847128995" name="Override default flash options" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideflash" value="true" valueType="boolean"/>
+							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashorigin.588611299" name="ORIGIN" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashorigin" value="0x0800" valueType="string"/>
+							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashlength.562146265" name="LENGTH" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.flashlength" value="30720" valueType="string"/>
+							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideram.1632398226" name="Override default RAM options" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.overrideram" value="true" valueType="boolean"/>
+							<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.ramlength.844989006" name="LENGTH" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.ramlength" value="4096" valueType="string"/>
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.silabs.ide.si32.gcc.cdt.managedbuild.target.gnu.platform.base.3926954" isAbstract="false" name="Debug Platform" osList="win32,linux,macosx" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.target.gnu.platform.base"/>
 							<builder buildPath="${workspace_loc:/UserInterface}/GNU ARM v4.7.3 - Release" id="com.silabs.ide.si32.gcc.cdt.managedbuild.target.gnu.builder.base.269360229" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Si32 GNU ARM Builder" parallelBuildOn="true" parallelizationNumber="optimal" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.base.1355123284" name="GNU ARM C Compiler" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.base">
@@ -118,8 +118,8 @@
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/Device/SiliconLabs/EFM32ZG/Include&quot;"/>
 								</option>
 								<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.def.symbols.1830862007" name="Defined symbols (-D)" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.def.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="DEBUG = 1"/>
 									<listOptionValue builtIn="false" value="EFM32ZG108F32=1"/>
-									<listOptionValue builtIn="false" value="NDEBUG=1"/>
 								</option>
 								<inputType id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.input.1345300629" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -167,4 +167,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

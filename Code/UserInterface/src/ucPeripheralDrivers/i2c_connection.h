@@ -31,10 +31,10 @@ struct I2C_Settings{
 void i2c_InitMaster(struct I2C_Settings i2cSettings);
 int i2c_RegisterGet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *val);
 int i2c_RegisterSet(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t  val);
-int i2c_Register_Write_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data);
-int i2c_Register_Read_Block (I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data);
-bool i2c_Detect    (I2C_TypeDef *i2c, uint8_t addr);
-void i2c_Scan (I2C_TypeDef *i2c);
+int i2c_Register_Write_Block(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data);
+int i2c_Register_Read_Block(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data);
+bool i2c_Detect(I2C_TypeDef *i2c, uint8_t addr);
+void i2c_Scan(I2C_TypeDef *i2c);
 
 #ifdef __cplusplus
 }

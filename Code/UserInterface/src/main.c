@@ -13,8 +13,8 @@
 #include "ucPeripheralDrivers\RTC_.h"
 #include "em_rtc.h"
 
-#include "icDrivers\ADP8866.h"
-#include "icDrivers\AD7147.h"
+/* #include "icDrivers\ADP8866.h" */
+/* #include "icDrivers\AD7147.h" */
 #include "icDrivers\BD6210.h"
 
 uint8_t g_Devices = 0;
@@ -57,12 +57,12 @@ void initDevices(void)
 	/* -----ADP8866---- */
 	if(g_Devices & ADP8866_SENS)
 	{
-		ADP8866_Init();
+		//ADP8866_Init();
 	}
 	/* -----AD7147---- */
 	if(g_Devices & AD7147_SENS)
 	{
-		AD7147_Init();
+		//AD7147_Init();
 	}
 	/* -----BD6210---- */
 	if(g_Devices & BD6210_SENS)
@@ -70,8 +70,10 @@ void initDevices(void)
 		BD6210_Settings_t BD6210_Settings;
 		BD6210_Settings.RIN_port = gpioPortF;
 		BD6210_Settings.RIN_pin = 2;
+		BD6210_Settings.RIN_CCx_Number = 2;
 		BD6210_Settings.FIN_port = gpioPortF;
 		BD6210_Settings.FIN_pin = 1;
+		BD6210_Settings.FIN_CCx_Number = 1;
 		BD6210_Settings.timer_location = 5;
 		BD6210_Init(BD6210_Settings);
 	}
@@ -84,7 +86,13 @@ void initDevices(void)
 void RTC_IRQHandler(void)
 {
 
-
+	static uint8_t speed = 0;
+	BD6210_SetSpeed(BD6210_FORWARD_DIR, speed);
+	speed += 20;
+	if (speed > 80)
+	{
+		speed = 0;
+	}
 
 	clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();
 
@@ -97,7 +105,7 @@ void detectDevices()
 	g_Devices = 0x00;
 
 	/* -----ADP8866---- */
-	if (ADP8866_Detect() == 1)
+	/*if (ADP8866_Detect() == 1)
 	{
 		#ifdef DEBUG
 		LeUart_SendText("\t\tADP8866 detected\n");
@@ -109,10 +117,10 @@ void detectDevices()
 		#ifdef DEBUG
 		LeUart_SendText("\t---\tADP8866 NOT DETECTED\t---\t\n");
 		#endif
-	}
+	}*/
 
 	/* -----AD7147---- */
-	if (AD7147_Detect() == 1)
+	/*if (AD7147_Detect() == 1)
 	{
 		#ifdef DEBUG
 		LeUart_SendText("\t\tAD7147 detected\n");
@@ -124,7 +132,7 @@ void detectDevices()
 		#ifdef DEBUG
 		LeUart_SendText("\t---\tAD7147 NOT DETECTED\t---\t\n");
 		#endif
-	}
+	}*/
 	/* -----BD6210---- */
 	if (BD6210_Detect() == 1)
 	{
@@ -181,13 +189,13 @@ int main(void)
 
 	/* RTC initialization */
 	RTC_init();
-	RTC_setTime(500);
+	RTC_setTime(50);
 	RTC_enableInt();
 
 	/* Infinite loop */
 	while (1)
 	{
 	   /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
-	  EMU_EnterEM2(false);
+	   //EMU_EnterEM2(false);
 	}
 }
