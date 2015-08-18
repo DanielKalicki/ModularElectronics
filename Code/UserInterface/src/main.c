@@ -5,8 +5,6 @@
 #include "em_i2c.h"
 #include "em_emu.h"
 
-#define DEBUG
-
 /* TODO remove i2c connection lib */
 #include "ucPeripheralDrivers\i2c_connection.h"
 #include "ucPeripheralDrivers\leuart_connection.h"
@@ -16,6 +14,7 @@
 /* #include "icDrivers\ADP8866.h" */
 /* #include "icDrivers\AD7147.h" */
 #include "icDrivers\BD6210.h"
+#include "icDrivers\BD6210\BD6210_patterns.h"
 
 uint8_t g_Devices = 0;
 #define ADP8866_SENS	(0x01)
@@ -85,13 +84,12 @@ void initDevices(void)
 /* -------------------------------------------------------------*/
 void RTC_IRQHandler(void)
 {
-
-	static uint8_t speed = 0;
-	BD6210_SetSpeed(BD6210_FORWARD_DIR, speed);
-	speed += 20;
-	if (speed > 80)
+	if (g_Devices & BD6210_SENS)
 	{
-		speed = 0;
+		if (BD6210_PatternPlaying())
+		{
+			BD6210_RTC_IRQHandler();
+		}
 	}
 
 	clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();clockTest_short();
@@ -174,6 +172,8 @@ void initInterfaces(void)
 	i2c_Scan(I2C0);
 }
 
+uint8_t mySinPattern[] = {50,55,60,65,69,74,78,82,85,89,92,94,96,98,99,100,100,100,99,98,96,94,92,89,85,82,78,74,69,65,60,55,50,45,40,35,31,26,22,18,15,11,8,6,4,2,1,0,0,0,1,2,4,6,8,11,15,18,22,26,31,35,40,45,50};
+
 int main(void)
 {
 	CHIP_Init();
@@ -192,10 +192,21 @@ int main(void)
 	RTC_setTime(50);
 	RTC_enableInt();
 
+	BD6210_Pattern_SetUserDefinePattern(mySinPattern, 64);
+	BD6210_PatternStart(BD6210_Pattern_UserDefine, 320, 10);
+
 	/* Infinite loop */
 	while (1)
 	{
-	   /* Forever enter EM2. The RTC or I2C will wake up the EFM32 */
-	   //EMU_EnterEM2(false);
+	   if (BD6210_PatternPlaying())
+	   {
+		   /* If the haptic feedback algorithm is running
+		    * we cannot change the clock settings	  */
+		   EMU_EnterEM1();
+	   }
+	   else
+	   {
+		   EMU_EnterEM2(false);
+	   }
 	}
 }

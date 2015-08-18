@@ -1,0 +1,112 @@
+/*
+ * ADP1650.h
+ *
+ *  Created on: 31-07-2015
+ *      Author: terg
+ */
+
+#ifndef ADP1650_H_
+#define ADP1650_H_
+
+#include "em_gpio.h"
+
+#define DEBUG
+
+/*----------- Initialization -----------*/
+typedef enum
+{
+	ADP160_UC_PIN_INPUT		= 0,
+	ADP160_UC_PIN_OUTPUT	= 1,
+} AD1650_uC_pin_state_t;
+typedef struct
+{
+	GPIO_Port_TypeDef 		gpio1_port;
+	unsigned int 	  		gpio1_pin;
+	AD1650_uC_pin_state_t	gpio1_state;
+	GPIO_Port_TypeDef 		gpio2_port;
+	unsigned int 	  		gpio2_pin;
+	AD1650_uC_pin_state_t	gpio2_state;
+	GPIO_Port_TypeDef 		strobe_port;
+	unsigned int 	  		strobe_pin;
+	AD1650_uC_pin_state_t	strobe_state;
+} ADP1650_GPIO_Settings_t;
+void ADP1650_Init(ADP1650_GPIO_Settings_t uC_pins);
+
+/*---------- Debug functions -----------*/
+#ifdef DEBUG
+void ADP1650_PrintRegisters(void);
+#endif
+
+/*------------- TORCH MODE -------------*/
+typedef enum
+{
+	ADP1650_TORCH_CURRENT_25mA		= 0,
+	ADP1650_TORCH_CURRENT_50mA		= 1,
+	ADP1650_TORCH_CURRENT_75mA		= 2,
+	ADP1650_TORCH_CURRENT_100mA		= 3,
+	ADP1650_TORCH_CURRENT_125mA		= 4,
+	ADP1650_TORCH_CURRENT_150mA		= 5,
+	ADP1650_TORCH_CURRENT_175mA		= 6,
+	ADP1650_TORCH_CURRENT_200mA		= 7,
+} ADP1650_Torch_Current_t;
+void ADP1650_SetTorchCurrent(ADP1650_Torch_Current_t Torch_Current);
+
+void ADP1650_TorchLedOn(void);
+
+void ADP1650_TorchLedOff(void);
+
+/*------------- FLASH MODE -------------*/
+typedef enum
+{
+	ADP1650_FLASH_CURRENT_300mA		= 0,
+	ADP1650_FLASH_CURRENT_350mA		= 1,
+	ADP1650_FLASH_CURRENT_400mA		= 2,
+	ADP1650_FLASH_CURRENT_450mA		= 3,
+	ADP1650_FLASH_CURRENT_500mA		= 4,
+	ADP1650_FLASH_CURRENT_550mA		= 5,
+	ADP1650_FLASH_CURRENT_600mA		= 6,
+	ADP1650_FLASH_CURRENT_650mA		= 7,
+	ADP1650_FLASH_CURRENT_700mA		= 8,
+	ADP1650_FLASH_CURRENT_750mA		= 9,
+	ADP1650_FLASH_CURRENT_800mA		= 10,
+	ADP1650_FLASH_CURRENT_850mA		= 11,
+	ADP1650_FLASH_CURRENT_900mA		= 12,
+	ADP1650_FLASH_CURRENT_950mA		= 13,
+	ADP1650_FLASH_CURRENT_1000mA	= 14,
+	ADP1650_FLASH_CURRENT_1050mA	= 15,
+	ADP1650_FLASH_CURRENT_1100mA	= 16,
+	ADP1650_FLASH_CURRENT_1150mA	= 17,
+	ADP1650_FLASH_CURRENT_1200mA	= 18,
+	ADP1650_FLASH_CURRENT_1250mA	= 19,
+	ADP1650_FLASH_CURRENT_1300mA	= 20,
+	ADP1650_FLASH_CURRENT_1350mA	= 21,
+	ADP1650_FLASH_CURRENT_1400mA	= 22,
+	ADP1650_FLASH_CURRENT_1450mA	= 23,
+	ADP1650_FLASH_CURRENT_1500mA	= 24
+} ADP1650_Flash_Current_t;
+void ADP1650_SetFlashCurrent(ADP1650_Flash_Current_t Flash_Current);
+
+typedef enum
+{
+	ADP1650_FLASH_TIME_100MS	= 0,
+	ADP1650_FLASH_TIME_200MS	= 1,
+	ADP1650_FLASH_TIME_300MS	= 2,
+	ADP1650_FLASH_TIME_400MS	= 3,
+	ADP1650_FLASH_TIME_500MS	= 4,
+	ADP1650_FLASH_TIME_600MS	= 5,
+	ADP1650_FLASH_TIME_700MS	= 6,
+	ADP1650_FLASH_TIME_800MS	= 7,
+	ADP1650_FLASH_TIME_900MS	= 8,
+	ADP1650_FLASH_TIME_1000MS	= 9,
+	ADP1650_FLASH_TIME_1100MS	= 10,
+	ADP1650_FLASH_TIME_1200MS	= 11,
+	ADP1650_FLASH_TIME_1300MS	= 12,
+	ADP1650_FLASH_TIME_1400MS	= 13,
+	ADP1650_FLASH_TIME_1500MS	= 14,
+	ADP1650_FLASH_TIME_1600MS	= 15
+} ADP1650_Flash_Timer_t;
+void ADP1650_SetFlashTimer(ADP1650_Flash_Timer_t Flash_Timer);
+
+void ADP1650_FlashLedOn(void);
+
+#endif /* ADP1650_H_ */

@@ -13,7 +13,7 @@
 	#error("TRUE macro == FALSE macro");
 #endif
 
-#define ADP8866_ADDR	(0x27*2)
+#define ADP8866_ADDR	(0x27 * 2)
 
 uint8_t ADP8866_Detect_LowLevel(void)
 {
