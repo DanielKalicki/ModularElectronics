@@ -53,19 +53,20 @@ void PWM_Init(PWM_Settings_t PWM_Settings)
 		TIMER_InitCC(TIMER0, CCx, &TimerCCInit);       /* apply channel configuration to Timer0 channel 0 */
 	}
 
-	TIMER1->ROUTE = (PWM_Settings.location << _TIMER_ROUTE_LOCATION_SHIFT);
+	TIMER0->ROUTE = (PWM_Settings.location << _TIMER_ROUTE_LOCATION_SHIFT);
 	if (PWM_Settings.CC0_enable == true)
 	{
-		TIMER1->ROUTE |= TIMER_ROUTE_CC0PEN;
+		TIMER0->ROUTE |= TIMER_ROUTE_CC0PEN;
 	}
 	if (PWM_Settings.CC1_enable == true)
 	{
-		TIMER1->ROUTE |= TIMER_ROUTE_CC1PEN;
+		TIMER0->ROUTE |= TIMER_ROUTE_CC1PEN;
 	}
 	if (PWM_Settings.CC2_enable == true)
 	{
-		TIMER1->ROUTE |= TIMER_ROUTE_CC2PEN;
+		TIMER0->ROUTE |= TIMER_ROUTE_CC2PEN;
 	}
+
 	TIMER_Init(TIMER0, &TimerPWMSetup);           /* apply PWM configuration to timer1 */
 }
 
@@ -78,8 +79,8 @@ void PWM_TurnOff(PWM_CC_Channel CCx)
 
 void PWM_SetDuty(PWM_CC_Channel CCx, uint32_t duty_miliPercents)
 {
-	uint32_t duty = (uint32_t)(((uint64_t)g_PWM_MainClockFrequency * (uint64_t)duty_miliPercents) / 100000ULL);
-	TIMER_CompareSet(TIMER0, CCx, duty);
+	uint32_t duty = (uint32_t)(((uint64_t)g_PWM_Period * (uint64_t)duty_miliPercents) / 10000ULL);
+	TIMER_CompareSet(TIMER0, CCx, 0);
 	TIMER_CompareBufSet(TIMER0, CCx, duty);
 	g_PWM_dutyCycle[CCx] = duty;
 }

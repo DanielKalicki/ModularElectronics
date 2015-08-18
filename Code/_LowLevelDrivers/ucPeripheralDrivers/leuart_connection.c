@@ -7,17 +7,19 @@
 
 void LeUart_Init(struct LeUart_Settings LeUartSettings)
 {
-	//Oscillators
-	CMU_ClockEnable(cmuClock_LEUART0, true);                 // enable LEUART peripheral clock
+	/* Oscillators */
+	CMU_ClockEnable(cmuClock_LEUART0, true);                 /* enable LEUART peripheral clock */
 
-	GPIO_PinModeSet(LeUartSettings.leuart_com_port, LeUartSettings.leuart_tx_pin, gpioModePushPull, 1); // set TX pin to push-pull output, initialize high (otherwise glitches can occur)
-	GPIO_PinModeSet(LeUartSettings.leuart_com_port, LeUartSettings.leuart_rx_pin, gpioModeInput,    0);    // set RX pin as input (no filter)
+	/* set TX pin to push-pull output, initialize high (otherwise glitches can occur) */
+	GPIO_PinModeSet(LeUartSettings.leuart_com_port, LeUartSettings.leuart_tx_pin, gpioModePushPull, 1);
+	/* set RX pin as input (no filter) */
+	GPIO_PinModeSet(LeUartSettings.leuart_com_port, LeUartSettings.leuart_rx_pin, gpioModeInput,    0);
 
 	LEUART_TypeDef *leuart = LEUART0;
 	LEUART_Init_TypeDef leuartInit = LEUART_INIT_DEFAULT;
 	leuartInit.baudrate = LeUartSettings.leuart_baudrate;
 
-	LEUART0->ROUTE = LEUART_ROUTE_TXPEN | LEUART_ROUTE_TXPEN | (LeUartSettings.leuart_port_location << _LEUART_ROUTE_LOCATION_SHIFT);
+	LEUART0->ROUTE = LEUART_ROUTE_TXPEN | (LeUartSettings.leuart_port_location << _LEUART_ROUTE_LOCATION_SHIFT);
 
 	LEUART_Init(leuart , &leuartInit);
 }
