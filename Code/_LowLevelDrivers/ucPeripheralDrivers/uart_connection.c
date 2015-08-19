@@ -18,7 +18,7 @@ uint8_t Uart_RxValidate_Terminator(void)
 	}
 }
 
-void uart_init(struct UART_Settings uartSettings
+void Uart_Init(struct UART_Settings uartSettings
 #ifdef UART_RX_VALIDATE_FUNC
 				, uint8_t (*Uart_RxValidate_FunctionPointer)(void)
 #endif
@@ -69,12 +69,12 @@ void uart_init(struct UART_Settings uartSettings
 
 	 USART_Enable(USART1, usartEnable);       // enable transmitter and receiver
 }
-void uart_sendChar(char c)
+void Uart_SendChar(char c)
 {
 	while (!(USART1->STATUS & (1 << 6)));   // wait for TX buffer to empty
 	USART1->TXDATA = c; 			       // send character
 }
-void uart_sendText(char * text)
+void Uart_SendText(char * text)
 {
 	int i = 0;
 	uint8_t len = 150;
@@ -120,7 +120,7 @@ void USART1_RX_IRQHandler(void) {
 }
 #endif
 
-void clearRxBuffer()
+void Uart_ClearRxBuffer()
 {
 	rxBuff.wrI = 0;
 	rxBuff.ready = false;
