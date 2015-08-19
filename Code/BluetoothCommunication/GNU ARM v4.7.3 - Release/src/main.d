@@ -48,9 +48,11 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_rtc.h \
- ../src/uart_connection.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
- ../src/i2c_connection.h ../src/RTC_.h ../src/HM11.h
+ ../src/ucPeripheralDrivers\leuart_connection.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h \
+ ../src/ucPeripheralDrivers\RTC_.h ../src/icDrivers\HM11.h \
+ ../src/icDrivers\..\ucPeripheralDrivers\uart_connection.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -150,12 +152,14 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_rtc.h:
 
-../src/uart_connection.h:
+../src/ucPeripheralDrivers\leuart_connection.h:
+
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h:
+
+../src/ucPeripheralDrivers\RTC_.h:
+
+../src/icDrivers\HM11.h:
+
+../src/icDrivers\..\ucPeripheralDrivers\uart_connection.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
-
-../src/i2c_connection.h:
-
-../src/RTC_.h:
-
-../src/HM11.h:

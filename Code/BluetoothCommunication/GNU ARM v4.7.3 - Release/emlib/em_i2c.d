@@ -39,9 +39,7 @@ emlib/em_i2c.o: ../emlib/em_i2c.c ../emlib/em_i2c.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg_dmactrl.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg_af_ports.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg_af_pins.h \
- ../emlib/em_cmu.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_bitband.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h
+ ../emlib/em_cmu.h ../emlib/em_bitband.h ../emlib/em_assert.h
 
 ../emlib/em_i2c.h:
 
@@ -127,6 +125,6 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EF
 
 ../emlib/em_cmu.h:
 
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_bitband.h:
+../emlib/em_bitband.h:
 
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h:
+../emlib/em_assert.h:

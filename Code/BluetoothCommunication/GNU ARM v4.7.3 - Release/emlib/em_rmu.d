@@ -39,8 +39,7 @@ emlib/em_rmu.o: ../emlib/em_rmu.c ../emlib/em_rmu.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg_dmactrl.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg_af_ports.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/efm32zg_af_pins.h \
- ../emlib/em_emu.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_bitband.h
+ ../emlib/em_emu.h ../emlib/em_bitband.h
 
 ../emlib/em_rmu.h:
 
@@ -126,4 +125,4 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EF
 
 ../emlib/em_emu.h:
 
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_bitband.h:
+../emlib/em_bitband.h:
