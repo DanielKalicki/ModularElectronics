@@ -5,7 +5,6 @@
 #include "em_i2c.h"
 #include "em_emu.h"
 #include "em_rtc.h"
-#include "em_cmu.h"
 
 #include "ucPeripheralDrivers\leuart_connection.h"
 #include "ucPeripheralDrivers\RTC_.h"
@@ -73,9 +72,10 @@ void RTC_IRQHandler(void)
 
     LeUart_SendChar('r');
 
+    uint8_t id = 0xAA;
     uint8_t message[7] = {0xAA, 0x55, 0xC2, 0x11, 0x22, 0x33, 0x44};
-    uint8_t crc[4] = {0xFF,0x55,0x66,0x77};
-    ModComm_Broadcast(0xAA,&message[0],7,&crc[0]);
+    uint8_t crc[4] = {0xFF, 0x55, 0x66, 0x77};
+    ModComm_Broadcast(id, &message[0], 128, &crc[0]);
 
     clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();
 
@@ -155,6 +155,6 @@ int main(void)
 
     while (1)
     {
-        //EMU_EnterEM1();
+        EMU_EnterEM1();
     }
 }
