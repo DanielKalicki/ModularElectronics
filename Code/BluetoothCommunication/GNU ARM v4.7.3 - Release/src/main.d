@@ -52,7 +52,8 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h \
  ../src/ucPeripheralDrivers\RTC_.h ../src/icDrivers\HM11.h \
  ../src/icDrivers\..\ucPeripheralDrivers\uart_connection.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
+ ../src/communicationDrivers\mod_comm.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/Device/SiliconLabs/EFM32ZG/Include/em_device.h:
 
@@ -163,3 +164,5 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h
 ../src/icDrivers\..\ucPeripheralDrivers\uart_connection.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
+
+../src/communicationDrivers\mod_comm.h:
