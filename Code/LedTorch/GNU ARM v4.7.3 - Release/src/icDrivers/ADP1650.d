@@ -38,8 +38,8 @@ src/icDrivers/ADP1650.o: ../src/icDrivers/ADP1650.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h \
  ../src/icDrivers/..\ucPeripheralDrivers\i2c_connection.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
- ../src/icDrivers/..\ucPeripheralDrivers\uart_connection.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h
+ ../src/icDrivers/..\ucPeripheralDrivers\leuart_connection.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h
 
 ../src/icDrivers/ADP1650.h:
 
@@ -119,6 +119,6 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h:
 
-../src/icDrivers/..\ucPeripheralDrivers\uart_connection.h:
+../src/icDrivers/..\ucPeripheralDrivers\leuart_connection.h:
 
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h:
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h:

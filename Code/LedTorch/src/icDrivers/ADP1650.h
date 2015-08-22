@@ -10,8 +10,6 @@
 
 #include "em_gpio.h"
 
-#define DEBUG
-
 /*----------- Initialization -----------*/
 typedef enum
 {

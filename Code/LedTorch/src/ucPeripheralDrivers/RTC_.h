@@ -12,11 +12,11 @@ extern "C" {
 
 #define LFRCO_FREQUENCY   32768
 
-void RTC_init(void);
-void RTC_disableInt(void);
-void RTC_enableInt(void);
-void RTC_setTime(uint32_t);
-void RTC_clearInt(void);
+void Rtc_Init(void);
+void Rtc_DisableInt(void);
+void Rtc_EnableInt(void);
+void Rtc_SetTime(uint32_t);
+void Rtc_ClearInt(void);
 
 #ifdef __cplusplus
 }

@@ -6,32 +6,54 @@
 #include "em_gpio.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-struct UART_Settings{
-	GPIO_Port_TypeDef uart_com_port;
-	unsigned int uart_tx_pin;
-	unsigned int uart_rx_pin;
-	uint8_t uart_port_location;
-	uint32_t uart_speed;
+#define UART_RX_IRQ
+
+/* 							!!!							  */
+/* To use UART RX you need to define UART_RX_IRQ in spi.h */
+/* 							!!!							  */
+
+struct UART_Settings
+{
+    GPIO_Port_TypeDef uart_com_port;
+    unsigned int uart_tx_pin;
+    unsigned int uart_rx_pin;
+    uint8_t uart_port_location;
+    uint32_t uart_baudrate;
 };
 
-#define UART_BUFFER_SIZE	100
+#define UART_BUFFER_SIZE	400
 
-volatile struct messageBuffer{
-	uint8_t data[UART_BUFFER_SIZE];
-	uint32_t wrI;	//write index
-	bool overflow;	//buffer overflow indicator
-	bool ready;
+volatile struct messageBuffer
+{
+    uint8_t data[UART_BUFFER_SIZE];
+    uint32_t wrI; /* write index */
+    bool overflow; /* buffer overflow indicator */
+    bool ready;
 } rxBuff;
 
-void uart_init(struct UART_Settings uartSettings);
+#define UART_MESSAGE_TERMINATOR	'\n'
 
-void uart_sendChar(char c);
-void uart_sendText(char * text);
+#define UART_RX_VALIDATE_FUNC
+#define UART_RX_VALIDATE_RESULT_FINISHED 		1
+#define UART_RX_VALIDATE_RESULT_NOT_FINISHED	0
 
-void clearRxBuffer();
+uint8_t Uart_RxValidate_Terminator(void);
+
+void Uart_Init(struct UART_Settings uartSettings
+               #ifdef UART_RX_VALIDATE_FUNC
+               ,
+               uint8_t (*Uart_RxFunctionPointer)(void)
+               #endif
+               );
+
+void Uart_SendChar(char c);
+void Uart_SendText(char * text);
+
+void Uart_ClearRxBuffer();
 
 #ifdef __cplusplus
 }

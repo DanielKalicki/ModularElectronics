@@ -11,7 +11,7 @@
 #include "em_gpio.h"
 
 #ifdef DEBUG
-#include "..\ucPeripheralDrivers\uart_connection.h"
+#include "..\ucPeripheralDrivers\leuart_connection.h"
 #include <stdio.h>
 #endif
 
@@ -390,10 +390,10 @@ void ADP1650_PrintRegisters(void)
 	for (int i = 0; i < 10; i++)
 	{
 		sprintf(buff, "[0x%02x]: 0x%02x\t", i, ADP1650_Reg_Stat[i]);
-		uart_sendText(buff);
+		LeUart_SendText(buff);
 	}
-	uart_sendChar('\n');
-	uart_sendChar('\n');
+	LeUart_SendChar('\n');
+	LeUart_SendChar('\n');
 }
 
 /*------- uC pin clear and set functions -------- */
@@ -439,7 +439,7 @@ void ADP1650_Init(ADP1650_GPIO_Settings_t uC_pins)
 	ADP1650_SetFlashTimer(ADP1650_FLASH_TIME_1600MS);
 
 	ADP1650_SetFlashCurrent(ADP1650_FLASH_CURRENT_400mA);
-	ADP1650_SetTorchCurrent(ADP1650_TORCH_CURRENT_200mA);
+	ADP1650_SetTorchCurrent(ADP1650_TORCH_CURRENT_25mA);
 
 	ADP1650_SetInductorPeakCurrent(ADP1650_INDUCTOR_PEAK_CURRENT_1750mA);
 	ADP1650_SetStrobeSense(ADP1650_STROBE_LEVEL_SENSITIVE);
@@ -514,7 +514,7 @@ void ADP1650_TorchLedOn(void)
 	else
 	{
 #ifdef DEBUG
-		uart_sendText("GPIO1 is not set as output\n");
+		LeUart_SendText("GPIO1 is not set as output\n");
 #else
 		;
 #endif
@@ -530,7 +530,7 @@ void ADP1650_TorchLedOff(void)
 	else
 	{
 #ifdef DEBUG
-		uart_sendText("GPIO1 is not set as output\n");
+		LeUart_SendText("GPIO1 is not set as output\n");
 #else
 		;
 #endif

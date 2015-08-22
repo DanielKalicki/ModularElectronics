@@ -38,6 +38,7 @@
 #include <stdbool.h>
 #include "em_device.h"
 
+//#define SPI_RX_IRQ
 
 void SPI_setup(uint8_t location, bool master);
 void SPI2_setupRXInt(char* receiveBuffer, int bytesToReceive);

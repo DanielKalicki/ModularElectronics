@@ -62,6 +62,10 @@ volatile int masterRxBufferIndex;
  *****************************************************************************/
 void SPI_setup(uint8_t location, bool master)
 {
+#ifndef SPI_RX_IRQ
+#warning "To use SPI you need to define SPI_RX_IRQ"
+#endif
+
   USART_TypeDef *spi;
   spi = USART1;
 
@@ -241,6 +245,7 @@ void SPI1_setupSlaveInt(char* receiveBuffer, int receiveBufferSize, char* transm
 /**************************************************************************//**
  * @brief USART1 RX IRQ Handler
  *****************************************************************************/
+#ifdef SPI_RX_IRQ
 void USART1_RX_IRQHandler(void)
 {
   USART_TypeDef *spi = USART1;
@@ -259,6 +264,7 @@ void USART1_RX_IRQHandler(void)
     }
   }
 }
+#endif
 
 
 

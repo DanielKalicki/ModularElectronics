@@ -17,6 +17,7 @@ SUBDIRS := \
 src/ucPeripheralDrivers \
 src \
 src/icDrivers \
+src/communicationDrivers \
 emlib \
 CMSIS/efm32zg \
 

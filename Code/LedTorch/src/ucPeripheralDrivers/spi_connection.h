@@ -11,6 +11,10 @@
 #include "em_device.h"
 #include "em_gpio.h"
 
+/* 						!!!							 */
+/* To use SPI you need to define SPI_RX_IRQ in spi.h */
+/* 						!!!							 */
+
 struct SPI_Settings{
 	GPIO_Port_TypeDef spi_miso_port;
 	unsigned int spi_miso_pin;
