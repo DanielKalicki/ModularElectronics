@@ -45,12 +45,12 @@ src/main.o: ../src/main.c \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_bitband.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_cmu.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h \
- D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_rtc.h \
  ../src/ucPeripheralDrivers\leuart_connection.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h \
- ../src/ucPeripheralDrivers\RTC_.h ../src/icDrivers\HM11.h \
+ ../src/ucPeripheralDrivers\RTC_.h \
+ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h \
+ ../src/icDrivers\HM11.h \
  ../src/icDrivers\..\ucPeripheralDrivers\uart_connection.h \
  D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_usart.h \
  ../src/communicationDrivers\mod_comm.h
@@ -147,17 +147,15 @@ D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_assert.h
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_cmu.h:
 
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h:
-
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_emu.h:
-
-D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_rtc.h:
 
 ../src/ucPeripheralDrivers\leuart_connection.h:
 
 D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_leuart.h:
 
 ../src/ucPeripheralDrivers\RTC_.h:
+
+D:\SiliconLabs\SimplicityStudio\v2\developer\sdks\efm32\v2/emlib/inc/em_i2c.h:
 
 ../src/icDrivers\HM11.h:
 

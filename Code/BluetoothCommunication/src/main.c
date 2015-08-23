@@ -2,9 +2,7 @@
 #include "em_chip.h"
 #include "em_gpio.h"
 #include "em_cmu.h"
-#include "em_i2c.h"
 #include "em_emu.h"
-#include "em_rtc.h"
 
 #include "ucPeripheralDrivers\leuart_connection.h"
 #include "ucPeripheralDrivers\RTC_.h"
@@ -66,18 +64,22 @@ void clockTest_short()
 }
 
 /* -------------RTC--------------*/
+uint8_t id = 0xAA;
+uint8_t message[7] = {0xFF, 0x55, 0xC2, 0x11, 0x22, 0x33, 0x44};
+uint8_t crc[4] = {0xFF, 0x55, 0x66, 0x77};
+
 int RTC_interrupt = 0;
 void RTC_IRQHandler(void)
 {
-
     LeUart_SendChar('r');
 
-    uint8_t id = 0xAA;
-    uint8_t message[7] = {0xAA, 0x55, 0xC2, 0x11, 0x22, 0x33, 0x44};
-    uint8_t crc[4] = {0xFF, 0x55, 0x66, 0x77};
-    ModComm_Broadcast(id, &message[0], 128, &crc[0]);
+    //ModComm_Broadcast(id, &message[0], 7, &crc[0]);
+
+    //ModComm_ReceiveBroadcasts();
 
     clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();  clockTest_short();
+
+    ModComm_Broadcast(id, &message[0], 7, &crc[0]);
 
     Rtc_ClearInt();
 }
@@ -85,12 +87,14 @@ void RTC_IRQHandler(void)
 /* -------------GPIO IRQ -----------*/
 void GPIO_EVEN_IRQHandler(void)
 {
-    ModComm_IRQ();
+    ModComm_GPIO_IRQ();
+    GPIO_IntClear(0xFFFF);
 }
 
 void GPIO_ODD_IRQHandler(void)
 {
-    ModComm_IRQ();
+    ModComm_GPIO_IRQ();
+    GPIO_IntClear(0xFFFF);
 }
 
 void initInterfaces()
@@ -143,7 +147,7 @@ int main(void)
     modComm_Settings.clk_port = gpioPortC;
     modComm_Settings.busy_pin  = 7;
     modComm_Settings.busy_port = gpioPortB;
-    ModComm_Init(modComm_Settings);
+    ModComm_Init(modComm_Settings, true);
 #ifdef DEBUG
     LeUart_SendText("ModComm Initialization\n");
 #endif
@@ -155,6 +159,11 @@ int main(void)
 
     while (1)
     {
-        EMU_EnterEM1();
+        if (ModComm_Progress()){
+            EMU_EnterEM1();
+        }
+        else {
+            EMU_EnterEM2(false);
+        }
     }
 }
