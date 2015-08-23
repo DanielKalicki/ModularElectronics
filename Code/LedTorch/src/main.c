@@ -100,6 +100,20 @@ void RTC_IRQHandler(void)
     Rtc_ClearInt();
 }
 
+/* -------------GPIO IRQ -----------*/
+void GPIO_EVEN_IRQHandler(void)
+{
+    ModComm_GPIO_IRQ();
+    GPIO_IntClear(0xFFFF);
+}
+
+void GPIO_ODD_IRQHandler(void)
+{
+    ModComm_GPIO_IRQ();
+    GPIO_IntClear(0xFFFF);
+}
+
+/* -------------MAIN -----------*/
 int main(void)
 {
     CHIP_Init();
@@ -133,7 +147,7 @@ int main(void)
     modComm_Settings.clk_port = gpioPortC;
     modComm_Settings.busy_pin  = 7;
     modComm_Settings.busy_port = gpioPortB;
-    ModComm_Init(modComm_Settings);
+    ModComm_Init(modComm_Settings, false);
 #ifdef DEBUG
     LeUart_SendText("ModComm Initialization\n");
 #endif
