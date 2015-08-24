@@ -39,6 +39,7 @@ void Rtc_SetTime(uint32_t time_ms){
 void Rtc_DisableInt(void){
 	 RTC_IntDisable(RTC_IFC_COMP0);
 	 NVIC_DisableIRQ(RTC_IRQn);
+	 RTC_IntClear(RTC_IFC_COMP0);
 }
 void Rtc_EnableInt(void){
 	 RTC_IntEnable(RTC_IFC_COMP0);

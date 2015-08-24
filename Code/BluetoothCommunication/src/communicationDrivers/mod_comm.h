@@ -19,7 +19,7 @@ typedef enum
 typedef enum
 {
     /*MOD_SEND_TYPE                 = 0, */
-    MOD_SEND_ID                     = 1,
+    MOD_SEND_ADDR                   = 1,
     /*MOD_SEND_FRAME_ID             = 2, */
     MOD_SEND_MESSAGE                = 3,
     MOD_SEND_CRC                    = 4
@@ -28,7 +28,7 @@ typedef enum
 typedef struct
 {
     Mod_Mess_Type_t mess_type;
-    uint8_t mod_id;
+    uint8_t mod_addr;
     uint8_t *message; /* Message maximum size is 128 bytes */
     uint8_t length;
     uint8_t *crc; /* CRC is always 4 bytes */
@@ -37,6 +37,7 @@ typedef struct
 
     bool finished;
     bool inProgress;
+    bool newMessageAvailable;
 } ModComm_Message_t;
 
 typedef struct
@@ -47,18 +48,21 @@ typedef struct
     unsigned int        clk_pin;
     GPIO_Port_TypeDef   busy_port;
     unsigned int        busy_pin;
-} ModComm_Settings_t;
+} ModComm_GPIO_Settings_t;
 
-void ModComm_Init(ModComm_Settings_t modComm_Settings, bool Master);
-
-void ModComm_Init_ReadData(void);
+void ModComm_Init(ModComm_GPIO_Settings_t modComm_GPIO_Settings, uint8_t module_addr, bool Master);
 
 void ModComm_GPIO_IRQ(void);
 
+ModComm_Message_t* ModComm_GetMessage(void);
+
 bool ModComm_Progress(void);
+bool ModComm_NewMessageAvailable(void);
+void ModComm_MessageDone(void);
 
-void ModComm_Broadcast(uint8_t id, uint8_t *message, uint8_t len, uint8_t *CRC);
+void ModComm_Broadcast(uint8_t addr, uint8_t *message, uint8_t len, uint8_t *CRC);
+void ModComm_Write(uint8_t addr, uint8_t *message, uint8_t len, uint8_t *CRC);
 
-void ModComm_ReceiveBroadcasts(void);
+
 
 #endif /* MOD_COMM_H_ */

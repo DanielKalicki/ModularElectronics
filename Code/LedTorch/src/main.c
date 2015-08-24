@@ -13,6 +13,8 @@
 
 #include "icDrivers\ADP1650.h"
 
+uint8_t module_addr;
+
 #include <stdio.h>
 
 void clockTest_short()
@@ -31,17 +33,24 @@ void clockTest_short()
     }
 }
 
+/* +----------------------------------------------------------------------------------------------+
+ * |                                      Init functions                                          |
+ * +----------------------------------------------------------------------------------------------+
+ */
 void initOscillators(void)
 {
-    CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_CORELEDIV2);  // select HFCORECLK/2 as clock source to LFB
-    CMU_ClockEnable(cmuClock_CORELE, true);                  // enable the Low Energy Peripheral Interface clock
+    /* select HFCORECLK/2 as clock source to LFB */
+    CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_CORELEDIV2);
+    /* enable the Low Energy Peripheral Interface clock */
+    CMU_ClockEnable(cmuClock_CORELE, true);
 
     CMU_ClockEnable(cmuClock_HFPER, true);
-    CMU_ClockEnable(cmuClock_GPIO, true);                    // enable GPIO peripheral clock
+    /* enable GPIO peripheral clock */
+    CMU_ClockEnable(cmuClock_GPIO, true);
 }
 
-void init_uart_interface(void)
-{
+ void initInterfaces(void)
+ {
 #ifdef DEBUG
     /* LeUart interface initialization */
     struct LeUart_Settings leuartSettings;
@@ -54,14 +63,7 @@ void init_uart_interface(void)
     LeUart_SendText("Startup\n");
 #endif
 
-#ifdef DEBUG
-    LeUart_SendText("Led Torch module startup\n");
-#endif
-}
-
-void init_i2c_interface(void)
-{
-    //i2c initialization
+    /* i2c initialization */
     struct I2C_Settings i2cSettings;
     i2cSettings.i2c_SCL_port = gpioPortD;
     i2cSettings.i2c_SCL_pin = 7;
@@ -72,35 +74,92 @@ void init_i2c_interface(void)
 #ifdef DEBUG
     i2c_Scan(I2C0);
 #endif
+ }
+
+ /* +----------------------------------------------------------------------------------------------+
+  * |                                    Parse received message                                    |
+  * +----------------------------------------------------------------------------------------------+
+  */
+void ParseReceivedMessage(void)
+{
+    /* Get the message */
+    ModComm_Message_t *rMessage;
+    rMessage = ModComm_GetMessage();
+
+#ifdef DEBUG
+    char buff[30];
+    LeUart_SendChar('\n');
+
+    sprintf(buff, "Addr: 0x%02x\n", rMessage->mod_addr);
+    LeUart_SendText(buff);
+
+    for (int i = 0; i < rMessage->length; i++)
+    {
+        sprintf(buff, "\t0x%02x\t", rMessage->message[i]);
+        LeUart_SendText(buff);
+    }
+    LeUart_SendText("\n\n");
+#endif
+
+    /* Parsing commands */
+    if (rMessage->message[0] == 0xFF)
+    {
+        ADP1650_TorchLedOn();
+    }
+    else
+    {
+        ADP1650_TorchLedOff();
+    }
+
+    ModComm_MessageDone();
 }
 
-uint8_t id = 0xC3;
+/* +----------------------------------------------------------------------------------------------+
+ * |                                          RTC interrupts                                      |
+ * +----------------------------------------------------------------------------------------------+
+ * | This interrupt currently sends broadcast message to the master                               |
+ * +----------------------------------------------------------------------------------------------+
+ */
+uint8_t addr = 0x1E;
 uint8_t message[9] = {0xAA, 0xAA, 0xAA, 0x00, 0xFF, 0xAA, 0x00, 0xAA, 0xFF};
 uint8_t crc[4] = {0xFF, 0x55, 0x66, 0x77};
 
-void RTC_IRQHandler(void)
-{
-    //TODO read errors from AD1650
-    ADP1650_TorchLedOff();
+bool g_RTC_Interrupt;
 
-    LeUart_SendChar('r');
+void RTC_IRQ_Function(void)
+{
+    static uint8_t counter = 0;
+
+    /*TODO read errors from AD1650 */
 
     ADP1650_PrintRegisters();
-
-    //ModComm_ReceiveBroadcasts();
 
     for (int i = 0; i < 10; i++)
     {
         clockTest_short();
     }
 
-    ModComm_Broadcast(id, &message[0], 9, &crc[0]);
+    //message[8] = counter++;
+    //message[5] = counter;
+
+    //ModComm_Broadcast(addr, &message[0], 9, &crc[0]);
 
     /* Clear RTC interrupts */
+    g_RTC_Interrupt = false;
+}
+
+void RTC_IRQHandler(void)
+{
+    g_RTC_Interrupt = true;
     Rtc_ClearInt();
 }
 
-/* -------------GPIO IRQ -----------*/
+/* +----------------------------------------------------------------------------------------------+
+ * |                                         GPIO interrupts                                      |
+ * +----------------------------------------------------------------------------------------------+
+ * | Led module uses GIO interrupts only to received messages from other modules                  |
+ * +----------------------------------------------------------------------------------------------+
+ */
 void GPIO_EVEN_IRQHandler(void)
 {
     ModComm_GPIO_IRQ();
@@ -113,17 +172,19 @@ void GPIO_ODD_IRQHandler(void)
     GPIO_IntClear(0xFFFF);
 }
 
-/* -------------MAIN -----------*/
+/* +----------------------------------------------------------------------------------------------+
+ * |                                           Main                                               |
+ * +----------------------------------------------------------------------------------------------+
+ * | Initialization of the module                                                                 |
+ * +----------------------------------------------------------------------------------------------+
+ */
 int main(void)
 {
     CHIP_Init();
     initOscillators();
 
-    /* UART initialization */
-    init_uart_interface();
-
-    /* I2C initialization */
-    init_i2c_interface();
+    /* UART and I2C initialization */
+    initInterfaces();
 
     /* Led Torch ic initialization */
     ADP1650_GPIO_Settings_t ADP1650_uC_ConnectionPins;
@@ -138,16 +199,18 @@ int main(void)
     ADP1650_uC_ConnectionPins.strobe_state = ADP160_UC_PIN_OUTPUT;
     ADP1650_Init(ADP1650_uC_ConnectionPins);
 
-    ADP1650_TorchLedOn();
+    ADP1650_TorchLedOff();
 
-    ModComm_Settings_t modComm_Settings;
-    modComm_Settings.data_pin  = 0;
-    modComm_Settings.data_port = gpioPortC;
-    modComm_Settings.clk_pin  = 1;
-    modComm_Settings.clk_port = gpioPortC;
-    modComm_Settings.busy_pin  = 7;
-    modComm_Settings.busy_port = gpioPortB;
-    ModComm_Init(modComm_Settings, false);
+    module_addr = 0x1E;
+
+    ModComm_GPIO_Settings_t modComm_GPIO_Settings;
+    modComm_GPIO_Settings.data_pin  = 0;
+    modComm_GPIO_Settings.data_port = gpioPortC;
+    modComm_GPIO_Settings.clk_pin  = 1;
+    modComm_GPIO_Settings.clk_port = gpioPortC;
+    modComm_GPIO_Settings.busy_pin  = 7;
+    modComm_GPIO_Settings.busy_port = gpioPortB;
+    ModComm_Init(modComm_GPIO_Settings, module_addr, true);
 #ifdef DEBUG
     LeUart_SendText("ModComm Initialization\n");
 #endif
@@ -156,6 +219,7 @@ int main(void)
     Rtc_Init();
     Rtc_SetTime(500);
     Rtc_EnableInt();
+    g_RTC_Interrupt = false;
 
     while (1)
     {
@@ -163,6 +227,14 @@ int main(void)
             EMU_EnterEM1();
         }
         else {
+            if (ModComm_NewMessageAvailable())
+            {
+                ParseReceivedMessage();
+            }
+            if (g_RTC_Interrupt)
+            {
+                RTC_IRQ_Function();
+            }
             EMU_EnterEM2(false);
         }
     }
